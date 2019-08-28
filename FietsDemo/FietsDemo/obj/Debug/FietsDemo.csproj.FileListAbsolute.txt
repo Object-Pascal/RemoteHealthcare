@@ -1,0 +1,9 @@
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\obj\Debug\FietsDemo.csprojAssemblyReference.cache
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\obj\Debug\FietsDemo.csproj.CoreCompileInputs.cache
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\bin\Debug\FietsDemo.exe.config
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\bin\Debug\FietsDemo.exe
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\bin\Debug\FietsDemo.pdb
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\bin\Debug\BLELibrary.dll
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\obj\Debug\FietsDemo.csproj.CopyComplete
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\obj\Debug\FietsDemo.exe
+D:\Dropbox\Avans documenten\Jaar 2\Healthcare\FietsDemo\FietsDemo\obj\Debug\FietsDemo.pdb
