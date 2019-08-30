@@ -64,33 +64,29 @@ namespace FietsDemo
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             byte[] receivedDataSubset = e.Data.SubArray(4, e.Data.Length - 2 - 4);
-            string convertedString = BitConverter.ToString(receivedDataSubset);
 
-            //Console.WriteLine(convertedString);
-
-            // TODO: Page conversie toepassen
-            PageConversion pageConversion = new PageConversion();
-
-            string value = receivedDataSubset[0].ToString("X");
-            switch (value)
+            PageConversion pageConversion = new PageConversion(receivedDataSubset);
+            pageConversion.Page10Received += (args) =>
             {
-                case "10":
-                    if (started)
-                    {
-                        travelledDistanceRawPrev = receivedDataSubset[3];
-                        started = false;
-                    }
+                if (started)
+                {
+                    travelledDistanceRawPrev = receivedDataSubset[3];
+                    started = false;
+                }
 
-                    Program.travelledDistance += (receivedDataSubset[3] - travelledDistance) - travelledDistanceRawPrev;
-                    Console.WriteLine($"Received value:                 {receivedDataSubset[3]}");
-                    Console.WriteLine($"Travelled distance previous:    {Program.travelledDistanceRawPrev}");
-                    Console.WriteLine($"Travelled distance:             {Program.travelledDistance}");
-                    break;
-                case "19":
-                    break;
-                case "50":
-                    break;
-            }
+                Program.travelledDistance += (receivedDataSubset[3] - travelledDistance) - travelledDistanceRawPrev;
+                Console.WriteLine($"Received value:                 {receivedDataSubset[3]}");
+                Console.WriteLine($"Travelled distance previous:    {Program.travelledDistanceRawPrev}");
+                Console.WriteLine($"Travelled distance:             {Program.travelledDistance}");
+            };
+            pageConversion.Page19Received += (args) =>
+            {
+
+            };
+            pageConversion.Page50Received += (args) =>
+            {
+
+            };
 
             //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
             //BitConverter.ToString(SubArray<byte>(e.Data, 4, e.Data.Length - 2 - 4)).Replace("-", " "),
