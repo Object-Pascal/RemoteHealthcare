@@ -11,9 +11,11 @@ namespace FietsDemo
     class Program
     {
         private static PageConversion pageConversion;
-        private static int travelledDistance;
 
+        private static int travelledDistance;
         private static byte travelledDistanceRawPrev;
+        private static byte travelledDistanceRawRawPrev;
+        private static byte travelledDistanceStartingValue;
         private static bool started;
 
         static async Task Main(string[] args)
@@ -70,14 +72,17 @@ namespace FietsDemo
             {
                 if (started)
                 {
-                    travelledDistanceRawPrev = args.Data[3];
+                    travelledDistanceStartingValue = args.Data[3];
                     started = false;
                 }
 
-                Program.travelledDistance += (args.Data[3] - travelledDistance) - travelledDistanceRawPrev;
+                travelledDistance += args.Data[3] - travelledDistanceRawPrev;
+                travelledDistanceRawPrev = (byte)travelledDistance;
+
                 Console.WriteLine($"Received value:                 {args.Data[3]}");
-                Console.WriteLine($"Travelled distance previous:    {Program.travelledDistanceRawPrev}");
-                Console.WriteLine($"Travelled distance:             {Program.travelledDistance}");
+                Console.WriteLine($"PreviousValue:                  {travelledDistanceRawPrev}");
+                Console.WriteLine($"Travelled starting value:       {travelledDistanceRawPrev}");
+                Console.WriteLine($"Travelled distance:             {travelledDistance}");
             };
 
             pageConversion.Page19Received += (args) =>
@@ -96,7 +101,7 @@ namespace FietsDemo
             byte[] receivedDataSubset = e.Data;
             if (e.Data.Length == 6)
             {
-                Console.WriteLine($"Heartrate data received: {receivedDataSubset[0]}, {receivedDataSubset[1]}, {receivedDataSubset[2]}, {receivedDataSubset[3]}, {receivedDataSubset[4]}, {receivedDataSubset[5]}");
+                //Console.WriteLine($"Heartrate data received: {receivedDataSubset[0]}, {receivedDataSubset[1]}, {receivedDataSubset[2]}, {receivedDataSubset[3]}, {receivedDataSubset[4]}, {receivedDataSubset[5]}");
             }
         }
 
