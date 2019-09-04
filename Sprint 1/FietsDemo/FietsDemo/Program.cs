@@ -1,5 +1,6 @@
 ﻿using Avans.TI.BLE;
 using FietsDemo.Core.Conversion;
+using FietsDemo.Core.Simulator;
 using FietsDemo.Core.Utils;
 using System;
 using System.Collections.Generic;
@@ -20,48 +21,71 @@ namespace FietsDemo
 
         static async Task Main(string[] args)
         {
-            int errorCode = 0;
-            BLE bleBike = new BLE();
-            BLE bleHeart = new BLE();
-            Thread.Sleep(1000); // We need some time to list available devices
-
-            // List available devices
-            List<String> bleBikeList = bleBike.ListDevices();
-            Console.WriteLine("Devices found: ");
-            foreach (var name in bleBikeList)
-            {
-                Console.WriteLine($"Device: {name}");
-            }
-
-            // Connecting
-            errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
-
-            Console.WriteLine($"Errorcode: {errorCode}");
-
-            var services = bleBike.GetServices;
-            foreach (var service in services)
-            {
-                Console.WriteLine($"Service: {service}");
-            }
-
-            // Set service
-            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-            // __TODO__ error check
-
-            // Subscribe
-            started = true;
-            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
             RegisterBleBikeEvents();
 
-            // Heart rate
-            errorCode =  await bleHeart.OpenDevice("Decathlon Dual HR");
+            if (Console.ReadLine().ToLower() == "sim")
+            {
+                Simulator bleBikeSim = new Simulator("FietsData_4sep.txt");
+                bleBikeSim.DataReceived += BleBikeSim_DataReceived;
+                bleBikeSim.Start();
+            }
+            else if (Console.ReadLine().ToLower() == "bike")
+            {
+                int errorCode = 0;
+                BLE bleBike = new BLE();
+                Thread.Sleep(1000); // We need some time to list available devices
 
-            await bleHeart.SetService("HeartRate");
+                // List available devices
+                List<string> bleBikeList = bleBike.ListDevices();
+                Console.WriteLine("Devices found: ");
+                foreach (string name in bleBikeList)
+                {
+                    Console.WriteLine($"Device: {name}");
+                }
 
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-            
+                // Connecting
+                errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
+
+                Console.WriteLine($"Errorcode: {errorCode}");
+
+                var services = bleBike.GetServices;
+                foreach (var service in services)
+                {
+                    Console.WriteLine($"Service: {service}");
+                }
+
+                // Set service
+                errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+                // __TODO__ error check
+
+                // Subscribe
+                started = true;
+                bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+                errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            }
+            else if (Console.ReadLine().ToLower() == "heart")
+            {
+                int errorCode = 0;
+                BLE bleHeart = new BLE();
+                Thread.Sleep(1000); // We need some time to list available devices
+
+                // List available devices
+                List<string> bleHeartList = bleHeart.ListDevices();
+                Console.WriteLine("Devices found: ");
+                foreach (string name in bleHeartList)
+                {
+                    Console.WriteLine($"Device: {name}");
+                }
+
+                // Heart rate
+                errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
+
+                await bleHeart.SetService("HeartRate");
+
+                bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+                await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+            }
+
             Console.Read();
         }
 
@@ -94,6 +118,12 @@ namespace FietsDemo
             {
 
             };
+        }
+
+        private static void BleBikeSim_DataReceived(DataReceivedArgs args)
+        {
+            byte[] receivedDataSubset = args.DataLine.SubArray(4, args.DataLine.Length - 2 - 4);
+            pageConversion.RegisterData(receivedDataSubset);
         }
 
         private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
