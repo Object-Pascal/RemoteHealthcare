@@ -15,7 +15,7 @@ namespace FietsDemo.Core.Conversion
         public event PageHandler Page50Received;
         public delegate void PageHandler(PageArgs args);
 
-        public PageConversion(byte[] data)
+        public void RegisterData(byte[] data)
         {
             string value = data[0].ToString("X");
             switch (value)

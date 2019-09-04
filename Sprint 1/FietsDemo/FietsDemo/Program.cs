@@ -10,6 +10,7 @@ namespace FietsDemo
 {
     class Program
     {
+        static PageConversion pageConversion = new PageConversion();
         static int travelledDistance;
 
         static byte travelledDistanceRawPrev;
@@ -31,41 +32,50 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
+            //errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
 
-            Console.WriteLine($"Errorcode: {errorCode}");
+            //Console.WriteLine($"Errorcode: {errorCode}");
 
-            var services = bleBike.GetServices;
-            foreach(var service in services)
-            {
-                Console.WriteLine($"Service: {service}");
-            }
+            //var services = bleBike.GetServices;
+            //foreach(var service in services)
+            //{
+            //    Console.WriteLine($"Service: {service}");
+            //}
 
-            // Set service
-            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-            // __TODO__ error check
+            //// Set service
+            //errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            //// __TODO__ error check
 
-            // Subscribe
-            started = true;
-            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            //// Subscribe
+            //started = true;
+            //bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            //errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
             errorCode =  await bleHeart.OpenDevice("Decathlon Dual HR");
 
             await bleHeart.SetService("HeartRate");
 
-            bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
             await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
             
             Console.Read();
+        }
+
+        private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        {
+            byte[] receivedDataSubset = e.Data;
+            if (e.Data.Length == 6)
+            {
+                Console.WriteLine($"Heartrate data received: {receivedDataSubset[0]}, {receivedDataSubset[1]}, {receivedDataSubset[2]}, {receivedDataSubset[3]}, {receivedDataSubset[4]}, {receivedDataSubset[5]}");
+            }
         }
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             byte[] receivedDataSubset = e.Data.SubArray(4, e.Data.Length - 2 - 4);
 
-            PageConversion pageConversion = new PageConversion(receivedDataSubset);
+            pageConversion.RegisterData(receivedDataSubset);
             pageConversion.Page10Received += (args) =>
             {
                 if (started)
