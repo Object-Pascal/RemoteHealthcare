@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Conversion\PageConversion.cs" />
+    <Compile Include="Core\Simulator\Simulator.cs" />
     <Compile Include="Core\Utils\ExtensionHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

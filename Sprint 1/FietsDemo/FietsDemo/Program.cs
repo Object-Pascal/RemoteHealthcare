@@ -26,6 +26,8 @@ namespace FietsDemo
             if (Console.ReadLine().ToLower() == "sim")
             {
                 Simulator bleBikeSim = new Simulator("FietsData_4sep.txt");
+
+                started = true;
                 bleBikeSim.DataReceived += BleBikeSim_DataReceived;
                 bleBikeSim.Start();
             }
@@ -58,6 +60,8 @@ namespace FietsDemo
                 errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
                 // __TODO__ error check
 
+                //await bleBike.WriteCharacteristic("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", new byte[] { 0x30, 0, 0, 0, 0, 0, 0, 0});           
+                
                 // Subscribe
                 started = true;
                 bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
@@ -100,12 +104,17 @@ namespace FietsDemo
                     started = false;
                 }
 
-                travelledDistance += args.Data[3] - travelledDistanceRawPrev;
+                int t = args.Data[3] - travelledDistanceRawPrev;
+                if (t < 0)
+                {
+                    t += 256;
+                }
+                travelledDistance += t;
                 travelledDistanceRawPrev = (byte)travelledDistance;
 
                 Console.WriteLine($"Received value:                 {args.Data[3]}");
-                Console.WriteLine($"PreviousValue:                  {travelledDistanceRawPrev}");
-                Console.WriteLine($"Travelled starting value:       {travelledDistanceRawPrev}");
+                //Console.WriteLine($"Previous Value:                 {travelledDistanceRawPrev}");
+                //Console.WriteLine($"Travelled starting value:       {travelledDistanceStartingValue}");
                 Console.WriteLine($"Travelled distance:             {travelledDistance}");
             };
 
