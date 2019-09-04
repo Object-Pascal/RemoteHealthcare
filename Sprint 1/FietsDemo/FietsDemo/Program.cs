@@ -112,9 +112,10 @@ namespace FietsDemo
                 travelledDistance += t;
                 travelledDistanceRawPrev = (byte)travelledDistance;
 
+                Console.Clear();
                 Console.WriteLine($"Received value:                 {args.Data[3]}");
-                //Console.WriteLine($"Previous Value:                 {travelledDistanceRawPrev}");
-                //Console.WriteLine($"Travelled starting value:       {travelledDistanceStartingValue}");
+                Console.WriteLine($"Previous Value:                 {travelledDistanceRawPrev}");
+                Console.WriteLine($"Travelled starting value:       {travelledDistanceStartingValue}");
                 Console.WriteLine($"Travelled distance:             {travelledDistance}");
             };
 
