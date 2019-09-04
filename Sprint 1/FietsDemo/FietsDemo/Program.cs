@@ -10,11 +10,11 @@ namespace FietsDemo
 {
     class Program
     {
-        static PageConversion pageConversion = new PageConversion();
-        static int travelledDistance;
+        private static PageConversion pageConversion;
+        private static int travelledDistance;
 
-        static byte travelledDistanceRawPrev;
-        static bool started;
+        private static byte travelledDistanceRawPrev;
+        private static bool started;
 
         static async Task Main(string[] args)
         {
@@ -32,24 +32,25 @@ namespace FietsDemo
             }
 
             // Connecting
-            //errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
+            errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00438");
 
-            //Console.WriteLine($"Errorcode: {errorCode}");
+            Console.WriteLine($"Errorcode: {errorCode}");
 
-            //var services = bleBike.GetServices;
-            //foreach(var service in services)
-            //{
-            //    Console.WriteLine($"Service: {service}");
-            //}
+            var services = bleBike.GetServices;
+            foreach (var service in services)
+            {
+                Console.WriteLine($"Service: {service}");
+            }
 
-            //// Set service
-            //errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-            //// __TODO__ error check
+            // Set service
+            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            // __TODO__ error check
 
-            //// Subscribe
-            //started = true;
-            //bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            //errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            // Subscribe
+            started = true;
+            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            RegisterBleBikeEvents();
 
             // Heart rate
             errorCode =  await bleHeart.OpenDevice("Decathlon Dual HR");
@@ -60,6 +61,34 @@ namespace FietsDemo
             await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
             
             Console.Read();
+        }
+
+        private static void RegisterBleBikeEvents()
+        {
+            pageConversion = new PageConversion();
+            pageConversion.Page10Received += (args) =>
+            {
+                if (started)
+                {
+                    travelledDistanceRawPrev = args.Data[3];
+                    started = false;
+                }
+
+                Program.travelledDistance += (args.Data[3] - travelledDistance) - travelledDistanceRawPrev;
+                Console.WriteLine($"Received value:                 {args.Data[3]}");
+                Console.WriteLine($"Travelled distance previous:    {Program.travelledDistanceRawPrev}");
+                Console.WriteLine($"Travelled distance:             {Program.travelledDistance}");
+            };
+
+            pageConversion.Page19Received += (args) =>
+            {
+
+            };
+
+            pageConversion.Page50Received += (args) =>
+            {
+
+            };
         }
 
         private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
@@ -74,29 +103,7 @@ namespace FietsDemo
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             byte[] receivedDataSubset = e.Data.SubArray(4, e.Data.Length - 2 - 4);
-
             pageConversion.RegisterData(receivedDataSubset);
-            pageConversion.Page10Received += (args) =>
-            {
-                if (started)
-                {
-                    travelledDistanceRawPrev = receivedDataSubset[3];
-                    started = false;
-                }
-
-                Program.travelledDistance += (receivedDataSubset[3] - travelledDistance) - travelledDistanceRawPrev;
-                Console.WriteLine($"Received value:                 {receivedDataSubset[3]}");
-                Console.WriteLine($"Travelled distance previous:    {Program.travelledDistanceRawPrev}");
-                Console.WriteLine($"Travelled distance:             {Program.travelledDistance}");
-            };
-            pageConversion.Page19Received += (args) =>
-            {
-
-            };
-            pageConversion.Page50Received += (args) =>
-            {
-
-            };
 
             //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
             //BitConverter.ToString(SubArray<byte>(e.Data, 4, e.Data.Length - 2 - 4)).Replace("-", " "),

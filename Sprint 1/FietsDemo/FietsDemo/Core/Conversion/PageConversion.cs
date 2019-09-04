@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FietsDemo.Core.Conversion
 {
@@ -21,13 +17,13 @@ namespace FietsDemo.Core.Conversion
             switch (value)
             {
                 case "10":
-                    this.Page10Received?.Invoke(new PageArgs(value));
+                    this.Page10Received?.Invoke(new PageArgs(data));
                     break;
                 case "19":
-                    this.Page19Received?.Invoke(new PageArgs(value));
+                    this.Page19Received?.Invoke(new PageArgs(data));
                     break;
                 case "50":
-                    this.Page50Received?.Invoke(new PageArgs(value));
+                    this.Page50Received?.Invoke(new PageArgs(data));
                     break;
             }
         }
@@ -35,11 +31,11 @@ namespace FietsDemo.Core.Conversion
 
     public class PageArgs : EventArgs
     {
-        public string Page { get; private set; }
+        public byte[] Data { get; private set; }
 
-        public PageArgs(string page)
+        public PageArgs(byte[] Data)
         {
-            this.Page = page;
+            this.Data = Data;
         }
     }
 }
