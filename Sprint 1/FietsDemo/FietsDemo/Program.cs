@@ -15,7 +15,6 @@ namespace FietsDemo
 
         private static int travelledDistance;
         private static byte travelledDistanceRawPrev;
-        private static byte travelledDistanceRawRawPrev;
         private static byte travelledDistanceStartingValue;
         private static bool started;
 
