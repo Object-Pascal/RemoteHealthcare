@@ -40,7 +40,7 @@ namespace FietsDemoUI.Core.Simulator
                     byte[] dataLine = ParseLineBike(DataLines[i]);
                     DataReceived?.Invoke(new DataReceivedArgs(dataLine, (double)i / DataLines.Length * 100.0d));
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(250);
                 }
                 Ended?.Invoke();
             });

@@ -38,7 +38,7 @@ namespace FietsDemoUI.Bluetooth
             });
         }
 
-        public async Task<List<string>> RetrieveBleBikes(string filter)
+        public async Task<List<string>> RetrieveBleBikes(string filter = "NO_FILTER")
         {
             if (BleBike == null)
             {
@@ -46,7 +46,7 @@ namespace FietsDemoUI.Bluetooth
                 if (!completed)
                     return null;
             }
-            return BleBike.ListDevices().Where(x => x.Contains(filter)).ToList();
+            return filter == "NO_FILTER" ? BleBike.ListDevices().ToList() : BleBike.ListDevices().Where(x => x.Contains(filter)).ToList();
         }
 
         public async void Connect(string deviceName, string serviceName)

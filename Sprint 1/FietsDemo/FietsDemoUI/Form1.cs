@@ -59,6 +59,8 @@ namespace FietsDemoUI
             lstBikes.Enabled = false;
             lstHearts.Enabled = false;
 
+            btnSimulator.Enabled = false;
+
             this.bleBikeHandler.SimValueChanged += (args) =>
             {
                 try
@@ -79,6 +81,7 @@ namespace FietsDemoUI
             {
                 lstBikes.Enabled = true;
                 lstHearts.Enabled = true;
+                btnSimulator.Enabled = true;
             };
         }
 
