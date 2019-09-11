@@ -33,7 +33,7 @@ namespace VrDemo
 
             Console.ReadKey();
 
-            string message = tunnelConnection.OpenSession(sessionData.Replace("\r", "").Replace("\n", ""));
+            string message = tunnelConnection.OpenSession(sessionData);
 
             Console.ReadKey();
         }

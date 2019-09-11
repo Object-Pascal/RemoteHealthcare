@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using VrDemo.Utils;
 
 namespace VrDemo.Connection
 {
@@ -33,7 +34,7 @@ namespace VrDemo.Connection
         public string OpenSession(string data)
         {
             byte[] prefix = new byte[] { 0x18, 0x00, 0x00, 0x00 };
-            byte[] dataBytes = Encoding.UTF8.GetBytes(data.ToCharArray(), 0, data.Length);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data.ToCleanPacketString().ToCharArray(), 0, data.Length);
 
             Send(prefix.Concat(dataBytes).ToArray());
             string message1 = ReceiveResponse();
@@ -44,7 +45,7 @@ namespace VrDemo.Connection
         public string CreateTunnel(string data)
         {
             byte[] prefix = new byte[] { 0x18, 0x00, 0x00, 0x00 };
-            byte[] dataBytes = Encoding.UTF8.GetBytes(data.ToCharArray(), 0, data.Length);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data.ToCleanPacketString().ToCharArray(), 0, data.Length);
 
             Send(prefix.Concat(dataBytes).ToArray());
             return ReceiveResponse();

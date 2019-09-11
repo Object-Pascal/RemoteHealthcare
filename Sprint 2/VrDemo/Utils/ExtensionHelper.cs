@@ -10,5 +10,10 @@ namespace VrDemo.Utils
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+        
+        public static string ToCleanPacketString(this string data)
+        {
+            return data.Replace("\r", "").Replace("\n", "");
+        }
     }
 }
