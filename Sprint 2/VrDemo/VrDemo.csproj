@@ -57,6 +57,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Sendables\Session.json" />
+    <None Include="Sendables\Tunnel.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

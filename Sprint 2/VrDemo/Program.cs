@@ -15,18 +15,25 @@ namespace VrDemo
         {
             tunnelConnection = new TunnelConnection();
 
-            // 
+            // Packets voorladen in json files
+            //
             //Console.Write("Sendable name: ");
             //string input = Console.ReadLine();
-            //string sessionData = LoadSession().Result;
+            string sessionData = LoadSession().Result;
             //Console.Write(sessionData);
             //Console.ReadKey();
 
+            // Connecten met de server enzo
+            //
             bool connected = Connect().Result;
             if (connected)
                 Console.WriteLine("Connected");
             else
                 Console.WriteLine("Unable to connect");
+
+            Console.ReadKey();
+
+            string message = tunnelConnection.OpenSession(sessionData);
 
             Console.ReadKey();
         }
