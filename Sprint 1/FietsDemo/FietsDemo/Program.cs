@@ -115,7 +115,7 @@ namespace FietsDemo
                 Console.WriteLine($"Received value:                 {args.Data[3]}");
                 Console.WriteLine($"Previous Value:                 {travelledDistanceRawPrev}");
                 Console.WriteLine($"Travelled starting value:       {travelledDistanceStartingValue}");
-                Console.WriteLine($"Travelled distance:             {travelledDistance}");
+                Console.WriteLine($"Travelled distance:             {travelledDistance - travelledDistanceStartingValue}");
             };
 
             pageConversion.Page19Received += (args) =>

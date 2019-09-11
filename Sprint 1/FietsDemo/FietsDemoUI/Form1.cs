@@ -79,9 +79,13 @@ namespace FietsDemoUI
 
             this.bleBikeHandler.SimEnded += () =>
             {
-                lstBikes.Enabled = true;
-                lstHearts.Enabled = true;
-                btnSimulator.Enabled = true;
+                // SimEnded event is still invoked from the running Simulator code on an asynchronous Task
+                this.Invoke((MethodInvoker)delegate
+                {
+                    lstBikes.Enabled = true;
+                    lstHearts.Enabled = true;
+                    btnSimulator.Enabled = true;
+                });
             };
         }
 
