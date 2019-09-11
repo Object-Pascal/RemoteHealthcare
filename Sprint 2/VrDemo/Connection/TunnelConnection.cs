@@ -36,7 +36,9 @@ namespace VrDemo.Connection
             byte[] dataBytes = Encoding.UTF8.GetBytes(data.ToCharArray(), 0, data.Length);
 
             Send(prefix.Concat(dataBytes).ToArray());
-            return ReceiveResponse();
+            string message1 = ReceiveResponse();
+            string message2 = ReceiveResponse();
+            return message1 + message2;
         }
 
         public string CreateTunnel(string data)
