@@ -1,7 +1,7 @@
 ﻿{
   "id": "tunnel/create",
   "data": {
-    "session": "",
+    "session": "[SESSION_ID]",
     "key": ""
   }
 }

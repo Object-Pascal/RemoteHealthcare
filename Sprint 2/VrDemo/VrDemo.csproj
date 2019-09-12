@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection\TunnelConnection.cs" />
+    <Compile Include="Connection\ServerConnection.cs" />
+    <Compile Include="Data\Session.cs" />
+    <Compile Include="Data\Tunnel.cs" />
     <Compile Include="IO\FolderData.cs" />
     <Compile Include="IO\JsonLoader.cs" />
     <Compile Include="Program.cs" />

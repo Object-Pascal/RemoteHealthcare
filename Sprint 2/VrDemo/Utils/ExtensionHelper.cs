@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace VrDemo.Utils
 {
@@ -10,10 +11,15 @@ namespace VrDemo.Utils
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+
+        public static string BeautifyJson(this string data)
+        {
+            return JObject.Parse(data).ToString();
+        }
         
         public static string ToCleanPacketString(this string data)
         {
-            return data.Replace("\r", "").Replace("\n", "");
+            return data.Replace("\n", "").Replace("\r", "").Replace(" ", "");
         }
     }
 }

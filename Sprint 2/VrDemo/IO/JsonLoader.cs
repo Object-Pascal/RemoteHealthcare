@@ -12,6 +12,7 @@ namespace VrDemo.IO
             Tuple<string, JObject> data = await Task.Run(() =>
             {
                 string path = Path.Combine(FolderData.SENDABLES_FOLDER, $"{name}.json").Remove(0, 1).Replace("%20", " ");
+
                 string jsonRaw = File.ReadAllText(path);
                 JObject jsonObject = JObject.Parse(jsonRaw);
 
