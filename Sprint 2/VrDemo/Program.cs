@@ -33,6 +33,7 @@ namespace VrDemo
 
             JArray data = sessionJson.Item2.SelectToken("data") as JArray;
             List<Session> sessions = new List<Session>();
+            List<Route> routes = new List<Route>();
             foreach (JObject j in data)
             {
                 string id = j.SelectToken("id").ToString();
@@ -40,11 +41,13 @@ namespace VrDemo
                 string user = j.SelectToken("clientinfo.user").ToString();
                 string file = j.SelectToken("clientinfo.file").ToString();
                 string renderer = j.SelectToken("clientinfo.renderer").ToString();
+                
 
                 sessions.Add(new Session(id, host, user, file, renderer));
+                Console.WriteLine(sessions.Last().ToString());
             }
 
-            string selectedUser = "passi";
+            string selectedUser = "maart";
             if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
                 Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
@@ -67,14 +70,22 @@ namespace VrDemo
                     }
 
                     // Als het goed is 0,0,0,0,0,0 : yaw, pitch, roll, x, y, z
-                    string terrain = LoadSendable("Terrain").Result.Replace("[TERRAIN_HEIGHTS]", "[ 0, 0, 0, 0, 0, 0 ]");
-                    string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
-                    string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
+             //       string terrain = LoadSendable("Terrain").Result.Replace("[TERRAIN_HEIGHTS]", "[ 0, 0, 0, 0, 0, 0 ]");
+                    string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "12");
+             //       string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", ).Replace("[ROTATION]", "XZ");
+             //       string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
+             //       string deleteTerrain = LoadSendable("Update").Result.Replace("scene/terrain/update", "scene/terrain/delete");
+             //       string updateTerrain = LoadSendable("Update").Result;
                     string sendTunnel = LoadSendable("SendTunnel").Result.Replace("[TUNNEL_ID]", tunnel.id);
+                    
+                
 
-                    //serverConnection.TransferToTunnel(sendTunnel, terrain);
+             //       serverConnection.TransferToTunnel(sendTunnel, terrain);
                     serverConnection.TransferToTunnel(sendTunnel, skyBoxTime);
-                    //serverConnection.TransferToTunnel(sendTunnel, skyBoxUpdate);
+             //       serverConnection.TransferToTunnel(sendTunnel, deleteTerrain);
+             //       serverConnection.TransferToTunnel(sendTunnel, skyBoxUpdate);
+             //       serverConnection.TransferToTunnel(sendTunnel, updateTerrain);
+             //       serverConnection.TransferToTunnel(sendTunnel, followRoute); 
                 }
                 catch (Exception e)
                 {
