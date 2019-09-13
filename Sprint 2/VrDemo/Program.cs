@@ -18,7 +18,7 @@ namespace VrDemo
             serverConnection = new ServerConnection();
 
             // Packets voorladen in json files
-            string sessionData = LoadSession().Result;
+            string sessionData = LoadSendable("Session").Result;
 
             // Connecten met de server enzo
             bool connected = Connect().Result;
@@ -29,7 +29,7 @@ namespace VrDemo
 
             Console.WriteLine();
 
-            Tuple<string, JObject> sessionJson = serverConnection.TransferSendable(sessionData.ToCleanPacketString());
+            Tuple<string, JObject> sessionJson = serverConnection.TransferSendableResponse(sessionData.ToCleanPacketString());
 
             JArray data = sessionJson.Item2.SelectToken("data") as JArray;
             List<Session> sessions = new List<Session>();
@@ -44,38 +44,53 @@ namespace VrDemo
                 sessions.Add(new Session(id, host, user, file, renderer));
             }
 
-            Console.WriteLine("Session used:");
-            Console.WriteLine(sessions.Last().ToString());
-            Console.WriteLine();
-
-            Tunnel tunnel = null;
-            try
+            string selectedUser = "passi";
+            if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
-                string tunnelData = LoadTunnel().Result.Replace("[SESSION_ID]", sessions.Last().id);
+                Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
 
-                Tuple<string, JObject> tunnelJson = serverConnection.TransferSendable(tunnelData.ToCleanPacketString());
-                tunnel = new Tunnel(tunnelJson.Item2.SelectToken("data.id").ToString(), tunnelJson.Item2.SelectToken("data.status").ToString());
+                Console.WriteLine("Session used:");
+                Console.WriteLine(usedSession.ToString());
+                Console.WriteLine();
 
-                if (tunnel.status.ToLower() == "ok")
+                Tunnel tunnel = null;
+                try
                 {
-                    Console.WriteLine($"Tunnel created: {tunnel.ToString()}");
+                    string tunnelData = LoadSendable("Tunnel").Result.Replace("[SESSION_ID]", usedSession.id).Replace("[SESSION_KEY]", "banaantje");
+
+                    Tuple<string, JObject> tunnelJson = serverConnection.TransferSendableResponse(tunnelData.ToCleanPacketString());
+                    tunnel = new Tunnel(tunnelJson.Item2.SelectToken("data.id").ToString(), tunnelJson.Item2.SelectToken("data.status").ToString());
+
+                    if (tunnel.status.ToLower() == "ok")
+                    {
+                        Console.WriteLine($"Tunnel created: {tunnel.ToString()}");
+                    }
+
+                    // Als het goed is 0,0,0,0,0,0 : yaw, pitch, roll, x, y, z
+                    string terrain = LoadSendable("Terrain").Result.Replace("[TERRAIN_HEIGHTS]", "[ 0, 0, 0, 0, 0, 0 ]");
+                    string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
+                    string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
+                    string sendTunnel = LoadSendable("SendTunnel").Result.Replace("[TUNNEL_ID]", tunnel.id);
+
+                    //serverConnection.TransferToTunnel(sendTunnel, terrain);
+                    serverConnection.TransferToTunnel(sendTunnel, skyBoxTime);
+                    //serverConnection.TransferToTunnel(sendTunnel, skyBoxUpdate);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Unable to create tunnel:\n{e.Message}\n{e.StackTrace}");
                 }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine($"Unable to create tunnel:\n{e.Message}\n{e.StackTrace}");
+                Console.WriteLine($@"No session host for ""{selectedUser}"" found");
             }
             Console.ReadKey();
         }
 
-        private static async Task<string> LoadSession()
+        private static async Task<string> LoadSendable(string name)
         {
-            return (await JsonLoader.LoadSendable("Session")).Item1;
-        }
-
-        private static async Task<string> LoadTunnel()
-        {
-            return (await JsonLoader.LoadSendable("Tunnel")).Item1;
+            return (await JsonLoader.LoadSendable(name)).Item1;
         }
 
         private static async Task<bool> Connect()

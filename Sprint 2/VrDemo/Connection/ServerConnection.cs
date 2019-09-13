@@ -3,6 +3,7 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using VrDemo.Utils;
 
 namespace VrDemo.Connection
 {
@@ -30,12 +31,12 @@ namespace VrDemo.Connection
         /// <summary>
         /// Sends JSON data and returns the response from the server
         /// </summary>
-        public Tuple<string, JObject> TransferSendable(string sendableRaw)
+        public Tuple<string, JObject> TransferSendableResponse(string sendableRaw)
         {
             byte[] prefix = BitConverter.GetBytes(sendableRaw.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(sendableRaw);
 
-            Send(prefix);
+            Send(prefix); 
             Send(dataBytes);
 
             byte[] jsonPacketLengthData = ReceiveResponse(4);
@@ -45,6 +46,23 @@ namespace VrDemo.Connection
             string jsonRaw = Encoding.UTF8.GetString(jsonData);
 
             return new Tuple<string, JObject>(jsonRaw, JObject.Parse(jsonRaw));
+        }
+
+        public void TransferSendableNoResponse(string sendableRaw)
+        {
+            byte[] prefix = BitConverter.GetBytes(sendableRaw.Length);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(sendableRaw);
+
+            Send(prefix);
+            Send(dataBytes);
+        }
+
+        public void TransferToTunnel(string tunnelSendableRaw, string tunnelDataSendableRaw)
+        {
+            string data = tunnelDataSendableRaw.Substring(1, tunnelDataSendableRaw.Length - 2);
+            tunnelSendableRaw = tunnelSendableRaw.Replace(@"""[TUNNEL_DATA]"": 0", data).ToCleanPacketString();
+
+            TransferSendableNoResponse(tunnelSendableRaw.ToCleanPacketString());
         }
 
         private byte[] ReceiveResponse(int packetLength)

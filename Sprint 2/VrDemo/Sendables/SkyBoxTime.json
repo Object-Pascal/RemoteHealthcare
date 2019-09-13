@@ -1,0 +1,6 @@
+﻿{
+  "id": "scene/skybox/settime",
+  "data": {
+    "time": "[SKYBOX_TIME]"
+  }
+}

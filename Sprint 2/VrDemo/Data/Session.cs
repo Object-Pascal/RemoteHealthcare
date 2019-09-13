@@ -26,7 +26,7 @@ namespace VrDemo.Data
             sb.AppendLine($"Host: {host}");
             sb.AppendLine($"User: {user}");
             sb.AppendLine($"File: {file}");
-            sb.AppendLine($"Renderer: {host}");
+            sb.AppendLine($"Renderer: {renderer}");
             return sb.ToString();
         }
     }
