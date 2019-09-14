@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection\ServerConnection.cs" />
+    <Compile Include="Data\Route.cs" />
     <Compile Include="Data\Session.cs" />
     <Compile Include="Data\Tunnel.cs" />
     <Compile Include="IO\FolderData.cs" />
@@ -58,6 +59,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Sendables\RouteFollow.json" />
     <None Include="Sendables\SendTunnel.json" />
     <None Include="Sendables\Session.json" />
     <None Include="Sendables\SkyBoxTime.json" />
@@ -65,6 +67,7 @@
     <None Include="Sendables\Terrain.json" />
     <None Include="Sendables\TerrainNode.json" />
     <None Include="Sendables\Tunnel.json" />
+    <None Include="Sendables\Update.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
