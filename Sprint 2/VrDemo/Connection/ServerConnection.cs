@@ -28,6 +28,7 @@ namespace VrDemo.Connection
                 return false;
             }
         }
+
         /// <summary>
         /// Sends JSON data and returns the response from the server
         /// </summary>
@@ -48,6 +49,9 @@ namespace VrDemo.Connection
             return new Tuple<string, JObject>(jsonRaw, JObject.Parse(jsonRaw));
         }
 
+        /// <summary>
+        /// Sends JSON data and doesn't wait for a response
+        /// </summary>
         public void TransferSendableNoResponse(string sendableRaw)
         {
             byte[] prefix = BitConverter.GetBytes(sendableRaw.Length);
@@ -57,12 +61,12 @@ namespace VrDemo.Connection
             Send(dataBytes);
         }
 
-        public void TransferToTunnel(string tunnelSendableRaw, string tunnelDataSendableRaw)
+        public Tuple<string, JObject> TransferToTunnel(string tunnelSendableRaw, string tunnelDataSendableRaw)
         {
             string data = tunnelDataSendableRaw.Substring(1, tunnelDataSendableRaw.Length - 2);
-            tunnelSendableRaw = tunnelSendableRaw.Replace(@"""[TUNNEL_DATA]"": 0", data).ToCleanPacketString();
+            tunnelSendableRaw = tunnelSendableRaw.Replace(@"""[TUNNEL_DATA]"": 0", data).MinifyJson();
 
-            TransferSendableNoResponse(tunnelSendableRaw.ToCleanPacketString());
+            return TransferSendableResponse(tunnelSendableRaw.MinifyJson());
         }
 
         private byte[] ReceiveResponse(int packetLength)

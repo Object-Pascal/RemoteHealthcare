@@ -63,6 +63,7 @@
     <None Include="Sendables\SkyBoxTime.json" />
     <None Include="Sendables\SkyBoxUpdate.json" />
     <None Include="Sendables\Terrain.json" />
+    <None Include="Sendables\TerrainNode.json" />
     <None Include="Sendables\Tunnel.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

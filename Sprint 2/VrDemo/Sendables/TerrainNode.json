@@ -1,0 +1,15 @@
+{
+  "id": "scene/node/add",
+  "data": {
+    "name": "[TERRAIN_NODE_NAME]",
+    "components": {
+      "transform": {
+        "position": [ -16, 0, -16 ],
+        "scale": 1
+      },
+      "terrain": {
+        "smoothnormals": true
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 ﻿{
   "id": "scene/terrain/add",
   "data": {
-    "size": [ 256, 256 ],
+    "size": [ 32, 32 ],
     "heights": "[TERRAIN_HEIGHTS]"
   }
 }

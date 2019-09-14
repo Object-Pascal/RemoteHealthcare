@@ -29,7 +29,7 @@ namespace VrDemo
 
             Console.WriteLine();
 
-            Tuple<string, JObject> sessionJson = serverConnection.TransferSendableResponse(sessionData.ToCleanPacketString());
+            Tuple<string, JObject> sessionJson = serverConnection.TransferSendableResponse(sessionData.MinifyJson());
 
             JArray data = sessionJson.Item2.SelectToken("data") as JArray;
             List<Session> sessions = new List<Session>();
@@ -44,7 +44,7 @@ namespace VrDemo
                 sessions.Add(new Session(id, host, user, file, renderer));
             }
 
-            string selectedUser = "passi";
+            string selectedUser = "gebruiker";
             if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
                 Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
@@ -58,7 +58,7 @@ namespace VrDemo
                 {
                     string tunnelData = LoadSendable("Tunnel").Result.Replace("[SESSION_ID]", usedSession.id).Replace("[SESSION_KEY]", "banaantje");
 
-                    Tuple<string, JObject> tunnelJson = serverConnection.TransferSendableResponse(tunnelData.ToCleanPacketString());
+                    Tuple<string, JObject> tunnelJson = serverConnection.TransferSendableResponse(tunnelData.MinifyJson());
                     tunnel = new Tunnel(tunnelJson.Item2.SelectToken("data.id").ToString(), tunnelJson.Item2.SelectToken("data.status").ToString());
 
                     if (tunnel.status.ToLower() == "ok")
@@ -66,14 +66,25 @@ namespace VrDemo
                         Console.WriteLine($"Tunnel created: {tunnel.ToString()}");
                     }
 
-                    // Als het goed is 0,0,0,0,0,0 : yaw, pitch, roll, x, y, z
-                    string terrain = LoadSendable("Terrain").Result.Replace("[TERRAIN_HEIGHTS]", "[ 0, 0, 0, 0, 0, 0 ]");
-                    string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
-                    string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
-                    string sendTunnel = LoadSendable("SendTunnel").Result.Replace("[TUNNEL_ID]", tunnel.id);
+                    // Als je dit wilt aanpassen moet dit ook in Terrain.json
+                    float[,] heights = new float[32, 32];
+                    for (int x = 0; x < 32; x++)
+                        for (int y = 0; y < 32; y++)
+                            heights[x, y] = 2 + (float)(Math.Cos(x / 5.0) + Math.Cos(y / 5.0));
 
-                    //serverConnection.TransferToTunnel(sendTunnel, terrain);
-                    serverConnection.TransferToTunnel(sendTunnel, skyBoxTime);
+                    string heightsRaw = heights.Cast<float>().ToArray().ToSimpleString();
+
+                    string sendTunnel = LoadSendable("SendTunnel").Result.Replace("[TUNNEL_DEST]", tunnel.id);
+
+                    string terrain = LoadSendable("Terrain").Result.Replace(@"""[TERRAIN_HEIGHTS]""", heightsRaw);
+                    string terrainNode = LoadSendable("TerrainNode").Result.Replace("[TERRAIN_NODE_NAME]", "floor");
+
+                    //string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
+                    //string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
+
+                    Tuple<string, JObject> resp1 = serverConnection.TransferToTunnel(sendTunnel, terrain);
+                    Tuple<string, JObject> resp2 = serverConnection.TransferToTunnel(sendTunnel, terrainNode);
+                    //serverConnection.TransferToTunnel(sendTunnel, skyBoxTime);
                     //serverConnection.TransferToTunnel(sendTunnel, skyBoxUpdate);
                 }
                 catch (Exception e)
