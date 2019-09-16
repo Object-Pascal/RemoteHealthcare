@@ -3,7 +3,7 @@
 	"data" :
 	{
 		"route" : "[ROUTE_ID]",
-		"node" : "[NODE_ID]",
+		"node" : "[NODE_GUID]",
 		"speed" : "1.0",
 		"offset" : 0.0,
 		"rotate" : "XZ",

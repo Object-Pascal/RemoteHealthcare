@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connection\ServerConnection.cs" />
+    <Compile Include="Data\Node.cs" />
     <Compile Include="Data\Route.cs" />
     <Compile Include="Data\Session.cs" />
     <Compile Include="Data\Tunnel.cs" />
@@ -59,6 +60,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Sendables\DeleteNode.json" />
     <None Include="Sendables\RouteFollow.json" />
     <None Include="Sendables\SendTunnel.json" />
     <None Include="Sendables\Session.json" />

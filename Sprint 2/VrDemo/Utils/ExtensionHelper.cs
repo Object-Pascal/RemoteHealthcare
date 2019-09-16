@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Text;
+using VrDemo.Data;
 
 namespace VrDemo.Utils
 {
@@ -31,6 +32,15 @@ namespace VrDemo.Utils
             sb.Append("]");
 
             return sb.ToString();
+        }
+
+        public static Node ToNode(this JObject data)
+        {
+            return new Node(data.SelectToken("data.data.data.name").ToString(), data.SelectToken("data.data.data.uuid").ToString());
+        }
+        public static bool IsNodeResponseOk(this JObject data)
+        {
+            return data.SelectToken("data.data.status").ToString() == "ok" ? true : false;
         }
 
         public static string BeautifyJson(this string data)

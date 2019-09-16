@@ -13,6 +13,8 @@ namespace VrDemo
     class Program
     {
         private static ServerConnection serverConnection;
+        private static Node terrainNode;
+
         static void Main(string[] args)
         {
             serverConnection = new ServerConnection();
@@ -47,7 +49,7 @@ namespace VrDemo
                 Console.WriteLine(sessions.Last().ToString());
             }
 
-            string selectedUser = "gebruiker";
+            string selectedUser = "passi";
             if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
                 Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
@@ -69,7 +71,7 @@ namespace VrDemo
                         Console.WriteLine($"Tunnel created: {tunnel.ToString()}");
                     }
 
-                    // Als je dit wilt aanpassen moet dit ook in Terrain.json
+                    // Als je dit wilt aanpassen moet dit ook in Terrain.json (32 x 32)
                     float[,] heights = new float[32, 32];
                     for (int x = 0; x < 32; x++)
                         for (int y = 0; y < 32; y++)
@@ -80,16 +82,28 @@ namespace VrDemo
                     string sendTunnel = LoadSendable("SendTunnel").Result.Replace("[TUNNEL_DEST]", tunnel.id);
 
                     string terrain = LoadSendable("Terrain").Result.Replace(@"""[TERRAIN_HEIGHTS]""", heightsRaw);
-                    string terrainNode = LoadSendable("TerrainNode").Result.Replace("[TERRAIN_NODE_NAME]", "floor");
+                    string terrainNodeRaw = LoadSendable("TerrainNode").Result.Replace("[TERRAIN_NODE_NAME]", "floor");
+
+                    string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", "-").Replace("[NODE_GUID]", "-"));
 
                     //string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
-                    //string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", ).Replace("[ROTATION]", "XZ");
                     //string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
                     //string deleteTerrain = LoadSendable("Update").Result.Replace("scene/terrain/update", "scene/terrain/delete");
                     //string updateTerrain = LoadSendable("Update").Result;
+                    //Tuple<string, JObject> resp3 = serverConnection.TransferToTunnel(sendTunnel, treeload); 
+                    //Tuple<string, JObject> resp4 = serverConnection.TransferToTunnel(sendTunnel, skyBoxTime); 
+                    //string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");                   
 
                     Tuple<string, JObject> resp1 = serverConnection.TransferToTunnel(sendTunnel, terrain);
-                    Tuple<string, JObject> resp2 = serverConnection.TransferToTunnel(sendTunnel, terrainNode);
+                    Tuple<string, JObject> resp2 = serverConnection.TransferToTunnel(sendTunnel, terrainNodeRaw);
+;
+                    if (resp2.Item2.IsNodeResponseOk())
+                    {
+                        terrainNode = resp2.Item2.ToNode();
+                    }
+
+                    string deleteNode = LoadSendable("DeleteNode").Result.Replace("[NODE_GUID]", terrainNode.guid);
+                    Tuple<string, JObject> responseDelete = serverConnection.TransferToTunnel(sendTunnel, deleteNode);
                 }
                 catch (Exception e)
                 {
@@ -98,7 +112,7 @@ namespace VrDemo
             }
             else
             {
-                Console.WriteLine($@"No session host for ""{selectedUser}"" found");
+                Console.WriteLine($@"No session user for filter ""{selectedUser}"" found");
             }
             Console.ReadKey();
         }
