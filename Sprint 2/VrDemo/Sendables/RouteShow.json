@@ -2,6 +2,6 @@
 	"id" : "route/show",
 	"data" :
 	{
-		"[SHOW_ROUTE]" : false
+		"show" : "[SHOW_ROUTE]"
 	}
 }

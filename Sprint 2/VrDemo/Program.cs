@@ -101,7 +101,7 @@ namespace VrDemo
 
                     string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");
 
-                    string routeShow = LoadSendable("RouteShow").Result.Replace("[SHOW_ROUTE]", "true");
+                    string routeShow = LoadSendable("RouteShow").Result.Replace(@"""[SHOW_ROUTE]""", "true");
                     
 
                     Tuple<string, JObject> resp1 = serverConnection.TransferToTunnel(sendTunnel, terrain);
