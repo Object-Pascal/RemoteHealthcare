@@ -1,7 +1,7 @@
-{
-  "id": "route/show",
-  "data": 
-  {
-	"show" : true
-  }
+﻿{
+	"id" : "route/show",
+	"data" :
+	{
+		"[SHOW_ROUTE]" : false
+	}
 }

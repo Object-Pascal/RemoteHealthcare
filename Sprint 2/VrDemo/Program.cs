@@ -87,22 +87,30 @@ namespace VrDemo
 
                     string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", "-").Replace("[NODE_GUID]", "-");
 
+                    string route = LoadSendable("RouteAdd").Result;
+
+
                     //string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
                     //string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", ).Replace("[ROTATION]", "XZ");
 
                     //string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
                     //string deleteTerrain = LoadSendable("Update").Result.Replace("scene/terrain/update", "scene/terrain/delete");
                     //string updateTerrain = LoadSendable("Update").Result;
-                    //Tuple<string, JObject> resp3 = serverConnection.TransferToTunnel(sendTunnel, treeload); 
-                    //Tuple<string, JObject> resp4 = serverConnection.TransferToTunnel(sendTunnel, skyBoxTime); 
+                    
                     //string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");                   
 
-                    string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree"); 
+                    string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");
+
+                    string routeShow = LoadSendable("RouteShow").Result.Replace("[SHOW_ROUTE]", "true");
                     
 
                     Tuple<string, JObject> resp1 = serverConnection.TransferToTunnel(sendTunnel, terrain);
                     Tuple<string, JObject> resp2 = serverConnection.TransferToTunnel(sendTunnel, terrainNodeRaw);
-                    Tuple<string, JObject> resp3 = serverConnection.TransferToTunnel(sendTunnel, treeload);
+                    //Tuple<string, JObject> resp3 = serverConnection.TransferToTunnel(sendTunnel, treeload); 
+                    //Tuple<string, JObject> resp4 = serverConnection.TransferToTunnel(sendTunnel, skyBoxTime); 
+                    Tuple<string, JObject> resp5 = serverConnection.TransferToTunnel(sendTunnel, route);
+                    Tuple<string, JObject> resp6 = serverConnection.TransferToTunnel(sendTunnel, routeShow);
+
 
                     if (resp2.Item2.IsNodeResponseOk())
                     {
@@ -110,7 +118,7 @@ namespace VrDemo
                     }
 
                     string deleteNode = LoadSendable("DeleteNode").Result.Replace("[NODE_GUID]", terrainNode.guid);
-                    Tuple<string, JObject> responseDelete = serverConnection.TransferToTunnel(sendTunnel, deleteNode); 
+                    //Tuple<string, JObject> responseDelete = serverConnection.TransferToTunnel(sendTunnel, deleteNode); 
                 }
                 catch (Exception e)
                 {

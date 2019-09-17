@@ -61,7 +61,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Sendables\DeleteNode.json" />
+    <None Include="Sendables\RouteAdd.json" />
     <None Include="Sendables\RouteFollow.json" />
+    <None Include="Sendables\RouteShow.json" />
     <None Include="Sendables\SendTunnel.json" />
     <None Include="Sendables\Session.json" />
     <None Include="Sendables\SkyBoxTime.json" />

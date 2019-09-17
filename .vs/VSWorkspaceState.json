@@ -1,7 +1,6 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Sprint 1",
     "\\Sprint 1\\FietsDemo",
     "\\Sprint 1\\FietsDemo\\FietsDataSim",
     "\\Sprint 1\\FietsDemo\\FietsDemo",
@@ -10,5 +9,6 @@
     "\\Sprint 2\\VrDemo\\Connection",
     "\\Sprint 2\\VrDemo\\Sendables"
   ],
+  "SelectedNode": "\\Sprint 2\\VrDemo\\VrDemo.sln",
   "PreviewInSolutionExplorer": false
 }
