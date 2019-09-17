@@ -53,7 +53,7 @@ namespace VrDemo
             string selectedUser = "kjcox";
             if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
-                Session usedSession = sessions.Where(x => x.host.ToLower() == selectedUser).First();
+                Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
 
                 Console.WriteLine("Session used:");
                 Console.WriteLine(usedSession.ToString());
@@ -85,7 +85,7 @@ namespace VrDemo
                     string terrain = LoadSendable("Terrain").Result.Replace(@"""[TERRAIN_HEIGHTS]""", heightsRaw);
                     string terrainNodeRaw = LoadSendable("TerrainNode").Result.Replace("[TERRAIN_NODE_NAME]", "floor");
 
-                    string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", "-").Replace("[NODE_GUID]", "-"));
+                    string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", "-").Replace("[NODE_GUID]", "-");
 
                     //string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
                     //string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", ).Replace("[ROTATION]", "XZ");
