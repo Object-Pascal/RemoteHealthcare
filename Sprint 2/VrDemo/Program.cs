@@ -50,10 +50,10 @@ namespace VrDemo
             }
 
             //string selectedUser = "passi";
-            string selectedUser = "kjcox";
-            if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
+            string selectedUser = "voyager";
+            if (sessions.Any(x => x.host.ToLower().Contains(selectedUser)))
             {
-                Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
+                Session usedSession = sessions.Where(x => x.host.ToLower() == selectedUser).First();
 
                 Console.WriteLine("Session used:");
                 Console.WriteLine(usedSession.ToString());
