@@ -1,21 +1,21 @@
-{
-	"id": "scene/node/add",
-	"data": {
-		"name": "[TREE-LOAD]",
-	
-		"components": {
-			"transform": {
-				"position": [ -16, 0, -16 ],
-				"scale": 1,
-				"rotation": [ 0, 0, 0 ]
-			},
+﻿{
+    "id": "scene/node/add",
+    "data": {
+        "name": "[TREE-LOAD]",
+
+        "components": {
+            "transform": {
+                "position": [ -16, 0, -16 ],
+                "scale": 1,
+                "rotation": [ 0, 0, 0 ]
+            },
       "model": {
-        "file": "C:\\Users\\joelle\\Desktop\\NetworkEngine\\data\\NetworkEngine\\models\\cars\\white\\car_white.obj",
+        "file": "C:\Users\joelle\Desktop\NetworkEngine\data\NetworkEngine\models\cars\white\car_white.obj",
         "cullbackfaces": true,
         "animated": false,
         "animation": "animationname"
       }
-			
-		}
-	}
+
+        }
+    }
 }

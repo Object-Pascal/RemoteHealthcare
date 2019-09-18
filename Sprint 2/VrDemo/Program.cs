@@ -49,11 +49,10 @@ namespace VrDemo
                 Console.WriteLine(sessions.Last().ToString());
             }
 
-            //string selectedUser = "passi";
-            string selectedUser = "voyager";
-            if (sessions.Any(x => x.host.ToLower().Contains(selectedUser)))
+            string selectedUser = "kjcox";
+            if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
-                Session usedSession = sessions.Where(x => x.host.ToLower() == selectedUser).First();
+                Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
 
                 Console.WriteLine("Session used:");
                 Console.WriteLine(usedSession.ToString());
@@ -85,10 +84,7 @@ namespace VrDemo
                     string terrain = LoadSendable("Terrain").Result.Replace(@"""[TERRAIN_HEIGHTS]""", heightsRaw);
                     string terrainNodeRaw = LoadSendable("TerrainNode").Result.Replace("[TERRAIN_NODE_NAME]", "floor");
 
-                    string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", "-").Replace("[NODE_GUID]", "-");
-
                     string route = LoadSendable("RouteAdd").Result;
-
 
                     //string skyBoxTime = LoadSendable("SkyBoxTime").Result.Replace(@"""[SKYBOX_TIME]""", "0");
                     //string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", ).Replace("[ROTATION]", "XZ");
@@ -96,13 +92,16 @@ namespace VrDemo
                     //string skyBoxUpdate = LoadSendable("SkyBoxUpdate").Result;
                     //string deleteTerrain = LoadSendable("Update").Result.Replace("scene/terrain/update", "scene/terrain/delete");
                     //string updateTerrain = LoadSendable("Update").Result;
-                    
+
                     //string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");                   
 
                     string treeload = LoadSendable("Treeload").Result.Replace("[TREE-LOAD]", "tree");
 
                     string routeShow = LoadSendable("RouteShow").Result.Replace(@"""[SHOW_ROUTE]""", "true");
-                    
+
+                    //Node van auto hier toevoegen
+                    string followRoute = LoadSendable("RouteFollow").Result.Replace("[ROUTE_ID]", route).Replace("[NODE_GUID]", treeload);
+
 
                     Tuple<string, JObject> resp1 = serverConnection.TransferToTunnel(sendTunnel, terrain);
                     Tuple<string, JObject> resp2 = serverConnection.TransferToTunnel(sendTunnel, terrainNodeRaw);
@@ -110,6 +109,7 @@ namespace VrDemo
                     //Tuple<string, JObject> resp4 = serverConnection.TransferToTunnel(sendTunnel, skyBoxTime); 
                     Tuple<string, JObject> resp5 = serverConnection.TransferToTunnel(sendTunnel, route);
                     Tuple<string, JObject> resp6 = serverConnection.TransferToTunnel(sendTunnel, routeShow);
+                    Tuple<string, JObject> resp7 = serverConnection.TransferToTunnel(sendTunnel, followRoute);
 
 
                     if (resp2.Item2.IsNodeResponseOk())
