@@ -10,7 +10,7 @@
                 "rotation": [ 0, 0, 0 ]
             },
       "model": {
-        "file": "C:\Users\joelle\Desktop\NetworkEngine\data\NetworkEngine\models\cars\white\car_white.obj",
+        "file": "data/NetworkEngine/models/cars/white/car_white.obj",
         "cullbackfaces": true,
         "animated": false,
         "animation": "animationname"

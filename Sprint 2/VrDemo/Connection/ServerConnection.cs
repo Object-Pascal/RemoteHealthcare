@@ -78,7 +78,7 @@ namespace VrDemo.Connection
 
                 while (readPosition < packetLength)
                 {
-                    readPosition += client.GetStream().Read(receivedBuff, 0, packetLength);
+                    readPosition += client.GetStream().Read(receivedBuff, readPosition, packetLength - readPosition);
                 }
 
                 return receivedBuff;

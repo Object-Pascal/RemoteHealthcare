@@ -49,7 +49,7 @@ namespace VrDemo
                 Console.WriteLine(sessions.Last().ToString());
             }
 
-            string selectedUser = "kjcox";
+            string selectedUser = "marle";
             if (sessions.Any(x => x.user.ToLower().Contains(selectedUser)))
             {
                 Session usedSession = sessions.Where(x => x.user.ToLower() == selectedUser).First();
