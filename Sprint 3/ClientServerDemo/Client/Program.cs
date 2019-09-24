@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 //using static System.Net.Mime.MediaTypeNames;
-using System.Windows; 
+using System.Windows;
 
 namespace Client
 {
@@ -15,11 +15,13 @@ namespace Client
         private static NetworkStream stream;
         private static byte[] buffer = new byte[1024];
         static string totalBuffer = "";
-
         static void Main(string[] args)
         {
             TcpClient client = new TcpClient();
+            
             client.Connect("localhost", 80);
+
+            BikeData bikedata = new BikeData();
 
             stream = client.GetStream();
 
@@ -60,6 +62,11 @@ namespace Client
             string name = Console.ReadLine();
             Console.WriteLine("your password");
             string wachtwoord = Console.ReadLine();
+            Console.WriteLine("Select your bike: ");
+
+            bikedata.getBikes();
+
+
             Console.ReadKey(); 
 
             Write("login\r\n" + name + "\r\n" + wachtwoord + "\r\n\r\n");
@@ -92,9 +99,10 @@ namespace Client
         }
         //Kirsten hiermee kan je de vr data naar de server versturen hij leest hem daar nu nog alleen maar uit en print het uit
         
-        private static void writeFiets(string v)
+        public static void writeFiets(string v)
         {
             Write($"fiets\r\n{v}\r\n\r\n");
+
         }
         //thijs hiermee kan je de fiets data naar de server versturen hij leest hem daar nu nog alleen maar uit en print het uit
 
