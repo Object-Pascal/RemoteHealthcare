@@ -17,6 +17,7 @@ using ClientGUI.Sim;
 using ClientGUI.Connection;
 using Newtonsoft.Json.Linq;
 using Client.Json_Structure;
+using ClientGUI.Bluetooth;
 
 namespace ClientGUI
 {
@@ -35,6 +36,12 @@ namespace ClientGUI
         private byte travelledDistanceRawPrev;
         private byte travelledDistanceStartingValue;
         private bool started;
+
+        private BleBikeHandler bleBikeHandler;
+        private BleHeartHandler bleHeartHandler;
+
+        private List<string> bleBikeList;
+        private List<string> bleHeartList;
 
         public Form1()
         {
@@ -147,12 +154,13 @@ namespace ClientGUI
                 }
                 travelledDistance += t;
                 travelledDistanceRawPrev = (byte)travelledDistance;
+                writeFiets(travelledDistance.ToString());
 
                 try
                 {
                     this.Invoke((MethodInvoker)delegate
                     {
-                        //lblDistance.Text = $"{travelledDistance - travelledDistanceStartingValue}m";
+                      //  lblDistance.Text = $"{travelledDistance - travelledDistanceStartingValue}m";
                     });
                 }
                 catch (ObjectDisposedException) { }

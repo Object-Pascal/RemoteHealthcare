@@ -1,14 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Sprint 1\\FietsDemo",
-    "\\Sprint 1\\FietsDemo\\FietsDataSim",
-    "\\Sprint 1\\FietsDemo\\FietsDemo",
-    "\\Sprint 2",
-    "\\Sprint 2\\VrDemo",
-    "\\Sprint 2\\VrDemo\\Connection",
-    "\\Sprint 2\\VrDemo\\Sendables"
+    "\\Sprint 3",
+    "\\Sprint 3\\ClientServerDemo",
+    "\\Sprint 3\\ClientServerDemo\\ClientGUI",
+    "\\Sprint 3\\ClientServerDemo\\Server"
   ],
-  "SelectedNode": "\\Sprint 2\\VrDemo\\VrDemo.sln",
   "PreviewInSolutionExplorer": false
 }
