@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,11 +46,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Json Structure\JsonPacketBuilder.cs" />
+    <Compile Include="Json Structure\Serializables\DeleteNode.cs" />
+    <Compile Include="Json Structure\Serializables\RouteAdd.cs" />
+    <Compile Include="Json Structure\Serializables\RouteFollow.cs" />
+    <Compile Include="Json Structure\Serializables\RouteShow.cs" />
+    <Compile Include="Json Structure\Serializables\Session.cs" />
+    <Compile Include="Json Structure\Serializables\SkyBoxTime.cs" />
+    <Compile Include="Json Structure\Serializables\SkyBoxUpdate.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Components1.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Components2.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data1.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data10.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data2.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data3.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data4.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data5.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data6.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data7.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data8.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data9.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Files.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Model.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\RouteNode.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Terrain.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Transform.cs" />
+    <Compile Include="Json Structure\Serializables\Terrain.cs" />
+    <Compile Include="Json Structure\Serializables\TerrainNode.cs" />
+    <Compile Include="Json Structure\Serializables\Treeload.cs" />
+    <Compile Include="Json Structure\Serializables\Tunnel.cs" />
+    <Compile Include="Json Structure\Serializables\Update.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
