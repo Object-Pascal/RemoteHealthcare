@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Bluetooth\BleBikeHandler.cs" />
     <Compile Include="Bluetooth\BleHeartHandler.cs" />
+    <Compile Include="ConnectServer.cs" />
     <Compile Include="Connection\ServerConnection.cs" />
     <Compile Include="Conversion\PageConversion.cs" />
     <Compile Include="Json Structure\JsonPacketBuilder.cs" />

@@ -10,9 +10,9 @@ namespace ClientGUI
     {
 
         private string name;
-        private decimal patientID;
+        private string patientID;
 
-        public Patient(string name, decimal patientID)
+        public Patient(string name, string patientID)
         {
             this.name = name;
             this.patientID = patientID;
