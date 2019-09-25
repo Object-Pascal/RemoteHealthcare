@@ -15,6 +15,7 @@ namespace Doctor
         public Form1()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
         }
     }
 }
