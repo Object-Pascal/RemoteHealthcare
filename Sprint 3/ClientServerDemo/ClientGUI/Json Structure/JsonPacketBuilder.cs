@@ -194,7 +194,7 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteShow>(json, obj);
         }
 
-        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, string speed, float offset, string rotate, float smoothing, bool followHeight)
+        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, int speed)
         {
             RouteFollow obj = new RouteFollow()
             {
@@ -203,11 +203,11 @@ namespace Client.Json_Structure
                 {
                     route = routeID,
                     node = nodeID,
-                    speed = speed,
-                    offset = offset,
-                    rotate = rotate,
-                    smoothing = smoothing,
-                    followHeight = followHeight,
+                    speed = speed.ToString(),
+                    //offset = offset,
+                    //rotate = rotate,
+                    //smoothing = smoothing,
+                    followHeight = true,
                     rotateOffset = new int[] { 0, 0, 0 },
                     positionOffset = new int[] { 0, 0, 0 }
                 }
@@ -244,6 +244,30 @@ namespace Client.Json_Structure
             };
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, Treeload>(json, obj);
+        }
+
+        public Tuple<string, PanelAdd> BuildPanelAddPacket(string name,  int[] size, int[] resolution, int[] background)
+        {
+            PanelAdd obj = new PanelAdd()
+            {
+                id = "scene/node/add",
+                data = new Data12()
+                {
+                    name = name,
+                    components = new Components3()
+                    {
+                        panel = new Panel1()
+                        {
+                            size = size,
+                            resolution = resolution,
+                            background = background,
+                            castShadow = false
+                        }
+                    }                  
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, PanelAdd>(json, obj);
         }
     }
 }

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 //using static System.Net.Mime.MediaTypeNames;
-using System.Windows;
 using ClientGUI.Conversion;
 using ClientGUI.Utils;
 using ClientGUI.Sim;
@@ -18,6 +13,7 @@ using ClientGUI.Connection;
 using Newtonsoft.Json.Linq;
 using Client.Json_Structure;
 using ClientGUI.Bluetooth;
+using ClientGUI.Sub_Objects;
 
 namespace ClientGUI
 {
@@ -43,16 +39,18 @@ namespace ClientGUI
         private List<string> bleBikeList;
         private List<string> bleHeartList;
 
+        private Dictionary<string, string> users;
+
         public Form1()
         {
             InitializeComponent();
-
+            users = new Dictionary<string, string>();
             jsonPacketBuilder = new JsonPacketBuilder();
             serverConnection = new ServerConnection();
             connected = false;
             Connect();
 
-            Simulator sim = new Simulator(@"C:\Users\thijz\Desktop\TI jaar 2\project 2.1\RemoteHealthcare\Sprint 1\FietsData_4sep.txt");
+            Simulator sim = new Simulator(@"C:\Users\kjcox\Documents\School\Periode 2.1\Proftaak\Git\RemoteHealthcare\Sprint 1\FietsData_4sep.txt");
             sim.DataReceived += (args) =>
             {
                 try
@@ -160,7 +158,7 @@ namespace ClientGUI
                 {
                     this.Invoke((MethodInvoker)delegate
                     {
-                      //  lblDistance.Text = $"{travelledDistance - travelledDistanceStartingValue}m";
+                        //  lblDistance.Text = $"{travelledDistance - travelledDistanceStartingValue}m";
                     });
                 }
                 catch (ObjectDisposedException) { }
@@ -238,26 +236,57 @@ namespace ClientGUI
         }
         // hier kijkt hij wat voor data er binnenkomt. 
 
-        string id = "";
         private void Button1_Click(object sender, EventArgs e)
         {
             Tuple<string, JObject> sessionResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSessionPacket().Item1);
-          
+            
             JArray data = sessionResponse.Item2.SelectToken("data") as JArray;
             foreach (JObject j in data)
             {
-                id = j.SelectToken("id").ToString();
+                if (!users.Keys.Contains(j.SelectToken("clientinfo.user").ToString())) 
+                    users.Add(j.SelectToken("clientinfo.user").ToString(), j.SelectToken("id").ToString());
             }
+            btnLoadSessions.Enabled = false;
         }
 
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            string panelJson = jsonPacketBuilder.BuildPanelPacket("speed", "distance", 100, 100, 100).Item1;
 
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(id, "banaantje").Item1);
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["kjcox"], "banaantje").Item1);
 
-            string sendJson = jsonPacketBuilder.BuildSendTunnelPacket("DEST", panelJson).Item1;
+            string destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
+
+            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 100, 100 }, new int[] { 1, 1, 1, 1 }).Item1;
+
+            string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(destination, panelAddJson).Item1;
+
+            Tuple<string, JObject> panelAddResponse = serverConnection.TransferSendableResponse(sendPanelAddJson);
+
+            string clearPanelJsonRaw = @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelAddResponse.Item2.SelectToken("data.data.data.uuid") + @"""}}";
+            string sendJson1 = jsonPacketBuilder.BuildSendTunnelPacket(destination, clearPanelJsonRaw).Item1;
+            Tuple<string, JObject> panelClearResponse = serverConnection.TransferSendableResponse(sendJson1);
+
+            string panelJson = jsonPacketBuilder.BuildPanelPacket(panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString(), "distance", 0, 0, 10).Item1;
+            string sendJson = jsonPacketBuilder.BuildSendTunnelPacket(destination, panelJson).Item1;
+
             Tuple<string, JObject> panelResponse = serverConnection.TransferSendableResponse(sendJson);
+
+
+        }
+
+        private void AddRoute_Click(object sender, EventArgs e)
+        {
+
+            RouteNode[] routeArray = new RouteNode[] {  new RouteNode(new int[]{ 0, 0, 0 },new int[] { 5, 0, -5 }) ,
+                                                        new RouteNode(new int[]{ 50, 0, 0 },new int[] { 5, 0, 5 }) ,
+                                                        new RouteNode(new int[]{ 50, 0, 50 },new int[] { -5, 0, 5 }) ,
+                                                        new RouteNode(new int[]{ 0, 0, 50 },new int[] { -5, 0, -5 })};
+
+            Model bike = new Model();
+
+            Tuple<string, JObject> addroute = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
+
+            Tuple<string, JObject> fllowRoute = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildRouteFollowPacket("routeID ????", bike.ToString() ,travelledDistance).Item1);
         }
     }
 }
