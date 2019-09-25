@@ -194,7 +194,7 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteShow>(json, obj);
         }
 
-        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, int speed)
+        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, float speed, float offset, string rotate, float smoothing)
         {
             RouteFollow obj = new RouteFollow()
             {
@@ -203,10 +203,10 @@ namespace Client.Json_Structure
                 {
                     route = routeID,
                     node = nodeID,
-                    speed = speed.ToString(),
-                    //offset = offset,
-                    //rotate = rotate,
-                    //smoothing = smoothing,
+                    speed = speed,
+                    offset = offset,
+                    rotate = rotate,
+                    smoothing = smoothing,
                     followHeight = true,
                     rotateOffset = new int[] { 0, 0, 0 },
                     positionOffset = new int[] { 0, 0, 0 }

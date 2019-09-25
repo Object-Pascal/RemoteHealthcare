@@ -286,13 +286,16 @@ namespace ClientGUI
 
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
 
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", "data/NetworkEngine/models/cars/white/car_white.obj", -16, 0, -16, 0.01, true, false, "animationname").Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", "data/NetworkEngine/models/cars/white/car_white.obj", 0, 0, 0, 0.01, true, false, "animationname").Item1);
 
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addBike.Item2.SelectToken("data.data.data.uuid").ToString(), "t", travelledDistance).Item1);
+            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 1.0f).Item1);
+
+            
         }
 
         private Tuple<string, JObject> SendToTunnel(string packet)
         {
+            Console.WriteLine(packet);
             return serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(destination, packet).Item1);
         }
     }
