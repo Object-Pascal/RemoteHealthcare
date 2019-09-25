@@ -7,17 +7,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClientGUI.Bluetooth;
 
 namespace ClientGUI
 {
     public partial class LoginScreen : Form
     {
+
+        private BleBikeHandler bleBikeHandler;
+        private BleHeartHandler bleHeartHandler;
+
+        private List<string> bleBikeList;
+        private List<string> bleHeartList;
         public LoginScreen()
         {
             InitializeComponent();
+            InitializeDeclarations();
+        }
+
+        private void InitializeDeclarations()
+        {
+            this.bleBikeHandler = new BleBikeHandler();
+            this.bleHeartHandler = new BleHeartHandler();
+        }
+
+        private async void LoadBikes()
+        {
+            this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
+            this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
         }
 
         private bool RoomExist(string roomID)
+        {
+            return true;
+        }
+
+        private bool BikeExist(string bikeID)
         {
             return true;
         }
@@ -29,18 +54,18 @@ namespace ClientGUI
 
         private void Login_Click(object sender, EventArgs e)
         {
-            if (RoomExist(roomName.Text))
+            if (RoomExist(patientNumber.Text))
             {
 
             } else
             {
-                this.noRoom.Visible = true;
+                this.unknownNumber.Visible = true;
             }
         }
 
         private void Name_Enter(object sender, EventArgs e)
         {
-            if (name.Text == "Name")
+            if (name.Text == "Naam")
             {
                 name.Text = "";
 
@@ -53,28 +78,28 @@ namespace ClientGUI
         {
             if (name.Text == "")
             {
-                name.Text = "Name";
+                name.Text = "Naam";
                 name.ForeColor = Color.Silver;
             }
         }
 
-        private void RoomName_Enter(object sender, EventArgs e)
+        private void PatientNumber_Enter(object sender, EventArgs e)
         {
-            if (roomName.Text == "Room name")
+            if (patientNumber.Text == "Patiëntnummer")
             {
-                roomName.Text = "";
+                patientNumber.Text = "";
 
-                roomName.ForeColor = Color.Black;
+                patientNumber.ForeColor = Color.Black;
             }
         }
 
-        private void Roomname_Leave(object sender, EventArgs e)
+        private void PatientNumber_Leave(object sender, EventArgs e)
         {
-            if (roomName.Text == "")
+            if (patientNumber.Text == "")
             {
-                roomName.Text = "Room name";
+                patientNumber.Text = "Patiëntnummer";
 
-                roomName.ForeColor = Color.Silver;
+                patientNumber.ForeColor = Color.Silver;
             }
         }
 

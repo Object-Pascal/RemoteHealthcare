@@ -59,7 +59,7 @@ namespace ClientGUI.Sim
         }
 
         public void Stop() => this.StopToken = true;
- //       public void LoadLines() => this.DataLines = File.ReadAllLines(this.TargetDataFile);
+        public void LoadLines() => this.DataLines = File.ReadAllLines(this.TargetDataFile);
     }
 
     public class DataReceivedArgs : EventArgs
