@@ -216,9 +216,9 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteFollow>(json, obj);
         }
 
-        public Tuple<string, Treeload> BuildTreeloadPacket(string name, string file, int x, int y, int z, int scale, bool cullbackfaces, bool animated, string animation)
+        public Tuple<string, ModelLoad> BuildModelLoadPacket(string name, string file, int x, int y, int z, double scale, bool cullbackfaces, bool animated, string animation)
         {
-            Treeload obj = new Treeload()
+            ModelLoad obj = new ModelLoad()
             {
                 id = "scene/node/add",
                 data = new Data2()
@@ -231,19 +231,20 @@ namespace Client.Json_Structure
                             position = new int[] { x, y, z },
                             scale = scale,
                             rotation = new int[] { 0, 0, 0 }
+                        },
+                        model = new Model()
+                        {
+                            file = file,
+                            cullbackfaces = cullbackfaces,
+                            animated = animated,
+                            animation = animation
                         }
-                    },
-                    model = new Model()
-                    {
-                        file = file,
-                        cullbackfaces = cullbackfaces,
-                        animated = animated,
-                        animation = animation
                     }
+
                 }
             };
             string json = JsonConvert.SerializeObject(obj);
-            return new Tuple<string, Treeload>(json, obj);
+            return new Tuple<string, ModelLoad>(json, obj);
         }
 
         public Tuple<string, PanelAdd> BuildPanelAddPacket(string name,  int[] size, int[] resolution, int[] background)

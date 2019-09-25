@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Json Structure\JsonPacketBuilder.cs" />
     <Compile Include="Json Structure\Serializables\DeleteNode.cs" />
+    <Compile Include="Json Structure\Serializables\ModelLoad.cs" />
     <Compile Include="Json Structure\Serializables\Panel.cs" />
     <Compile Include="Json Structure\Serializables\PanelAdd.cs" />
     <Compile Include="Json Structure\Serializables\RouteAdd.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="Json Structure\Serializables\Sub Objects\Transform.cs" />
     <Compile Include="Json Structure\Serializables\Terrain.cs" />
     <Compile Include="Json Structure\Serializables\TerrainNode.cs" />
-    <Compile Include="Json Structure\Serializables\Treeload.cs" />
     <Compile Include="Json Structure\Serializables\Tunnel.cs" />
     <Compile Include="Json Structure\Serializables\Update.cs" />
     <Compile Include="Program.cs" />

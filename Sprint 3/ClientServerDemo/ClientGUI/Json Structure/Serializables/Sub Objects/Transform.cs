@@ -3,7 +3,7 @@
     public class Transform
     {
         public int[] position { get; set; }
-        public int scale { get; set; }
+        public double scale { get; set; }
         public int[] rotation { get; set; }
     }
 }

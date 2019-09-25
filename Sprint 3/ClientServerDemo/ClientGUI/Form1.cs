@@ -249,12 +249,12 @@ namespace ClientGUI
             btnLoadSessions.Enabled = false;
         }
 
+        string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["marle"], "banaantje").Item1);
 
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["kjcox"], "banaantje").Item1);
-
-            string destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
+            destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
             string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 100, 100 }, new int[] { 1, 1, 1, 1 }).Item1;
 
@@ -282,11 +282,18 @@ namespace ClientGUI
                                                         new RouteNode(new int[]{ 50, 0, 50 },new int[] { -5, 0, 5 }) ,
                                                         new RouteNode(new int[]{ 0, 0, 50 },new int[] { -5, 0, -5 })};
 
-            Model bike = new Model();
+            Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
 
-            Tuple<string, JObject> addroute = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
+            Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
 
-            Tuple<string, JObject> fllowRoute = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildRouteFollowPacket("routeID ????", bike.ToString() ,travelledDistance).Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", "data/NetworkEngine/models/cars/white/car_white.obj", -16, 0, -16, 0.01, true, false, "animationname").Item1);
+
+            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addBike.Item2.SelectToken("data.data.data.uuid").ToString(), "t", travelledDistance).Item1);
+        }
+
+        private Tuple<string, JObject> SendToTunnel(string packet)
+        {
+            return serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(destination, packet).Item1);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ClientGUI.Json_Structure.Serializables
 {
-    public class Treeload
+    public class ModelLoad
     {
         public string id { get; set; }
         public Data2 data { get; set; }

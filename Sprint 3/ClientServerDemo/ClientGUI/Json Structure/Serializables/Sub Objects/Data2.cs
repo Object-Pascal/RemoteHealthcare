@@ -4,6 +4,5 @@
     {
         public string name { get; set; }
         public Components1 components { get; set; }
-        public Model model { get; set; }
     }
 }
