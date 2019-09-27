@@ -277,8 +277,8 @@ namespace ClientGUI
         private void AddRoute_Click(object sender, EventArgs e)
         {
 
-            addAndShowAndFollowRoute("data/NetworkEngine/models/cars/white/car_white.obj");
-
+            // addAndShowAndFollowRoute("data/NetworkEngine/models/cars/white/car_white.obj");
+            loadTerrainAndDeleteGroundPlane(16,16);
           
             
         }
@@ -297,12 +297,23 @@ namespace ClientGUI
                                                         new RouteNode(new int[]{ 0, 0, 50 },new int[] { -5, 0, -5 })};
 
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
-
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
-
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 1.0f).Item1);
 
+        }
+        //Deze methode voegt een route toe en laat hier een object over heen rijden
+
+        private void loadTerrainAndDeleteGroundPlane(int width, int height)
+        {
+            int sizeHeightMap = width * height;
+            float[] heightmap = new float[sizeHeightMap];
+            for (int i = 0; i < heightmap.Length; i++)
+            {
+                    heightmap[i] = 2;
+            }
+            Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, height, heightmap).Item1);
+            Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", 0, 0, 0, 1, true).Item1);
         }
     }
 }

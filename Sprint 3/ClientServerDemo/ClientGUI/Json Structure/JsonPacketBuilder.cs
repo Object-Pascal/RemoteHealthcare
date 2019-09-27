@@ -270,5 +270,7 @@ namespace Client.Json_Structure
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, PanelAdd>(json, obj);
         }
+
+      
     }
 }

@@ -95,6 +95,7 @@
     <Compile Include="Json Structure\Serializables\Sub Objects\Terrain.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Transform.cs" />
     <Compile Include="Json Structure\Serializables\Terrain.cs" />
+    <Compile Include="Json Structure\Serializables\TerrainAdd.cs" />
     <Compile Include="Json Structure\Serializables\TerrainNode.cs" />
     <Compile Include="Json Structure\Serializables\Tunnel.cs" />
     <Compile Include="Json Structure\Serializables\Update.cs" />
