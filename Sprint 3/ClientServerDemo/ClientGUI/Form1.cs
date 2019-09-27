@@ -277,6 +277,20 @@ namespace ClientGUI
         private void AddRoute_Click(object sender, EventArgs e)
         {
 
+            addAndShowAndFollowRoute("data/NetworkEngine/models/cars/white/car_white.obj");
+
+          
+            
+        }
+
+        private Tuple<string, JObject> SendToTunnel(string packet)
+        {
+            Console.WriteLine(packet);
+            return serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(destination, packet).Item1);
+        }
+
+        private void addAndShowAndFollowRoute(string objectPath)
+        {
             RouteNode[] routeArray = new RouteNode[] {  new RouteNode(new int[]{ 0, 0, 0 },new int[] { 5, 0, -5 }) ,
                                                         new RouteNode(new int[]{ 50, 0, 0 },new int[] { 5, 0, 5 }) ,
                                                         new RouteNode(new int[]{ 50, 0, 50 },new int[] { -5, 0, 5 }) ,
@@ -285,18 +299,10 @@ namespace ClientGUI
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
 
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", "data/NetworkEngine/models/cars/white/car_white.obj", 0, 0, 0, 0.01, true, false, "animationname").Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
 
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 1.0f).Item1);
 
-            
-        }
-
-        private Tuple<string, JObject> SendToTunnel(string packet)
-        {
-            Console.WriteLine(packet);
-            return serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(destination, packet).Item1);
         }
     }
 }
