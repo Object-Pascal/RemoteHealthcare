@@ -278,7 +278,7 @@ namespace ClientGUI
         {
 
             // addAndShowAndFollowRoute("data/NetworkEngine/models/cars/white/car_white.obj");
-            loadTerrainAndDeleteGroundPlane(16,16);
+            loadTerrainAndDeleteGroundPlane(256,256);
           
             
         }
@@ -308,10 +308,16 @@ namespace ClientGUI
         {
             int sizeHeightMap = width * height;
             float[] heightmap = new float[sizeHeightMap];
+            int j = 1;
             for (int i = 0; i < heightmap.Length; i++)
             {
-                    heightmap[i] = 2;
+                heightmap[i] = j;
+                j++;
+
+                
             }
+
+
             Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, height, heightmap).Item1);
             Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", 0, 0, 0, 1, true).Item1);
         }
