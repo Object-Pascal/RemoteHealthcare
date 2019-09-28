@@ -304,21 +304,46 @@ namespace ClientGUI
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden
 
-        private void loadTerrainAndDeleteGroundPlane(int width, int height)
+        private void loadTerrainAndDeleteGroundPlane(int width, int lenght)
         {
-            int sizeHeightMap = width * height;
+            int sizeHeightMap = width * lenght;
             float[] heightmap = new float[sizeHeightMap];
-            int j = 1;
-            for (int i = 0; i < heightmap.Length; i++)
+            int i = 1;
+            int writePlace = 0;
+            for (int j = 0; j < (lenght * (width / 4)); j++)
             {
-                heightmap[i] = j;
-                j++;
-
-                
+                heightmap[writePlace] = i;
+                writePlace++;
             }
+            i++;
+
+            for (int k = 0; k < (lenght * (width / 4)); k++)
+            {
+                    heightmap[writePlace] = i;
+                    writePlace++;
+
+            }
+            i++;
+            for (int l = 0; l < (lenght * (width / 4)); l++)
+            {
+                heightmap[writePlace] = i;
+                writePlace++;
+            }
+            i++;
+
+            for (int m = 0; m < (lenght * (width / 4)); m++)
+            {
+                heightmap[writePlace] = i;
+                writePlace++;
+
+            }
+            i++;
 
 
-            Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, height, heightmap).Item1);
+
+
+
+            Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
             Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", 0, 0, 0, 1, true).Item1);
         }
     }
