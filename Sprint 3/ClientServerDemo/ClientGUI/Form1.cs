@@ -308,43 +308,29 @@ namespace ClientGUI
         {
             int sizeHeightMap = width * lenght;
             float[] heightmap = new float[sizeHeightMap];
-            int i = 1;
+            int i = 0;
             int writePlace = 0;
-            for (int j = 0; j < (lenght * (width / 4)); j++)
-            {
-                heightmap[writePlace] = i;
-                writePlace++;
-            }
-            i++;
+            int timesTheHeightChanges = width / 20;
 
-            for (int k = 0; k < (lenght * (width / 4)); k++)
+            //TODO: fix deze logica naar iets mooiers
+
+            for (int k = 0; k < 8; k++)
             {
+                for (int j = 0; j < (lenght * (width / 8)); j++)
+                {
                     heightmap[writePlace] = i;
                     writePlace++;
-
+                }
+                i++;
             }
-            i++;
-            for (int l = 0; l < (lenght * (width / 4)); l++)
-            {
-                heightmap[writePlace] = i;
-                writePlace++;
-            }
-            i++;
 
-            for (int m = 0; m < (lenght * (width / 4)); m++)
-            {
-                heightmap[writePlace] = i;
-                writePlace++;
-
-            }
-            i++;
 
 
 
 
 
             Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
-            Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", 0, 0, 0, 1, true).Item1);
+            Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", -128, 0, -128, 1, true).Item1);
         }
     }
 }
