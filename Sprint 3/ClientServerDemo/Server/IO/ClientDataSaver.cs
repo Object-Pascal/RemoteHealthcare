@@ -1,4 +1,7 @@
-﻿using Server.IO.Data;
+﻿using Newtonsoft.Json;
+using Server.IO.Data;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Server.IO
@@ -13,20 +16,36 @@ namespace Server.IO
             return await JsonHandler.LoadObject<ClientCollection>("clientData.json");
         }
 
-        public void Toevoegen(Client client)
+        public async Task ToevoegenAsync(Client client)
         {
-            LoadClients(); 
-            
+            ClientCollection clientCollection = await LoadClients();
+            List<object> list = clientCollection.clients.ToList<object>();
+            list.Add(client);
+            list.ToArray();
+            string output = JsonConvert.SerializeObject(list);
+            JsonHandler.SaveFile("this", output);
         }
 
-        public void Verwijderen()
+        public async Task VerwijderenAsync(Client client)
         {
-
+            ClientCollection clientCollection = await LoadClients();
+            clientCollection.clients.Where(x => x.Id == client.Id).First();
+            string output = JsonConvert.SerializeObject(clientCollection.clients);
+            JsonHandler.SaveFile("this", output);
         }
 
-        public void Aanpassen()
+        public async Task AanpassenAsync(Client client1, Client client2)
         {
-
+            ClientCollection clientCollection = await LoadClients();
+            List<Client> list = clientCollection.clients.ToList<Client>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Equals(client1))
+                    list[i] = client2;
+            }
+            list.ToArray();
+            string output = JsonConvert.SerializeObject(list);
+            JsonHandler.SaveFile("this", output);
         }
 
         /*  
