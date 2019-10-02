@@ -26,6 +26,7 @@ namespace ClientGUI
         private List<string> bleHeartList;
         private ConnectServer connect;
         private bool started;
+        private System.Timers.Timer timer;
 
         public LoginScreen()
         {
@@ -33,6 +34,7 @@ namespace ClientGUI
             InitializeComponent();
             InitializeDeclarations();
             LoadBikes();
+            timer = new System.Timers.Timer();
         }
 
         private void InitializeDeclarations()
