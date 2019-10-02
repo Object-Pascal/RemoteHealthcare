@@ -1,4 +1,5 @@
 ﻿using System;
+using Avans.TI.BLE;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,13 +11,14 @@ using System.Windows.Forms;
 using ClientGUI.Bluetooth;
 using ClientGUI.Conversion;
 using ClientGUI.Utils;
+using System.Threading;
 
 namespace ClientGUI
 {
     public partial class LoginScreen : Form
     {
 
-       private static PageConversion pageConversion;
+        private static PageConversion pageConversion;
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
 
@@ -61,21 +63,55 @@ namespace ClientGUI
             }
         }
 
+        private async Task Connect_HeartrateAsync()
+        {
+            int errorCode = 0;
+            BLE bleHeart = new BLE();
+            Thread.Sleep(1000); // We need some time to list available devices
+
+            // List available devices
+            List<string> bleHeartList = bleHeart.ListDevices();
+            Console.WriteLine("Devices found: ");
+            foreach (string name in bleHeartList)
+            {
+                Console.WriteLine($"Device: {name}");
+            }
+
+            // Heart rate
+            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
+
+            await bleHeart.SetService("HeartRate");
+
+            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+        }
+
+        private void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        {
+            byte[] receivedDataSubset = e.Data;
+            if (e.Data.Length == 6)
+            {
+                Console.Write($"Heartrate: {receivedDataSubset[1]}");
+                Console.WriteLine($"Heartrate data received: {receivedDataSubset[0]}, {receivedDataSubset[1]}, {receivedDataSubset[2]}, {receivedDataSubset[3]}, {receivedDataSubset[4]}, {receivedDataSubset[5]}");
+            }
+        }
         private bool PatientExist(string patientID)
         {
             return true;
         }
 
- 
+
 
         private void Login_Click(object sender, EventArgs e)
         {
             if (PatientExist(patientNumber.Text))
             {
-                connect.Connect();
-                connect.sendPatient(new Patient(name.Text, patientNumber.Text));
+                Connect_HeartrateAsync();
+                // connect.Connect();
+                //connect.sendPatient(new Patient(name.Text, patientNumber.Text));
 
-            } else
+            }
+            else
             {
                 this.unknownNumber.Visible = true;
             }
