@@ -17,6 +17,8 @@ namespace Doctor
         private List<Patient> selectedPatients;
         private List<Patient> availablePatients;
 
+        private String broadcastMessage { get; set; }
+
         public DokterForm()
         {
             InitializeComponent();
@@ -26,7 +28,6 @@ namespace Doctor
             availablePatients = new List<Patient>();
 
             testDataAvailablePatients();
-            setAvailablePatientList();
 
 
 
@@ -51,7 +52,6 @@ namespace Doctor
             selectedPatients.ForEach(x => availablePatients.Remove(x));
         }
 
-        
         private void DeselectBtn_Click(object sender, EventArgs e)
         {
             ListBox.SelectedIndexCollection selectedIndexes = selectedListBox.SelectedIndices;
@@ -64,21 +64,13 @@ namespace Doctor
             {
                 availablePatients.Add(selectedPatients[i]);
                 availableListBox.Items.Add(selectedPatients[i].toString());
-                addBtnToFlowpanel(selectedPatients[i]);
+                removeBtnFromFlowpanel(selectedPatients[i]);
                 selectedListBox.Items.Remove(selectedPatients[i].toString());
             }
 
             availablePatients.ForEach(x => selectedPatients.Remove(x));
 
 
-        }
-
-        private void setAvailablePatientList()
-        {
-            foreach (Patient p in availablePatients)
-            {
-                availableListBox.Items.Add(p.toString());
-            }
         }
 
         private void BroadcastTextBox_Enter(object sender, EventArgs e)
@@ -107,13 +99,14 @@ namespace Doctor
         private void BroadcastBtn_Click(object sender, EventArgs e)
         {
             //Send message to server for broadcasting
+            broadcastMessage = BroadcastTextBox.Text;
 
-            //Clear textbox
+            //Clears textbox
             BroadcastTextBox.Clear();
             BroadcastTextBox.Text = "Typ het uitzendbericht:";
             BroadcastTextBox.ForeColor = Color.Gray;
             BroadcastTextBox.Font = new Font(BroadcastTextBox.Font, FontStyle.Italic);
-            
+
         }
 
         private void addBtnToFlowpanel(Patient p)
@@ -126,6 +119,16 @@ namespace Doctor
             btn.TextAlign = ContentAlignment.TopLeft;
             btn.BackColor = Color.White;
             panel.Controls.Add(btn);
+            btn.Click += new EventHandler(button_click);
+        }
+
+        private void button_click(object sender, EventArgs e)
+        {
+            //send selected patient back to server
+            //open detailed information form
+
+            BroadcastTextBox.Text = "WELLOE DIT WERKT";
+
         }
 
         private void removeBtnFromFlowpanel(Patient p)
@@ -134,7 +137,10 @@ namespace Doctor
 
             foreach (Button b in panel.Controls)
             {
-               // if (//check contains)
+                if (b.Text.Contains(p.Name))
+                {
+                    LayoutPanelClient.Controls.Remove(b);
+                }
             }
 
         }
@@ -151,7 +157,6 @@ namespace Doctor
 
         }
 
-       
     }
 
   
