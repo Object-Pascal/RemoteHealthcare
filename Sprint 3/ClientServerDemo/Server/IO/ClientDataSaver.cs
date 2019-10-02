@@ -13,6 +13,22 @@ namespace Server.IO
             return await JsonHandler.LoadObject<ClientCollection>("clientData.json");
         }
 
+        public void Toevoegen(Client client)
+        {
+            LoadClients(); 
+            
+        }
+
+        public void Verwijderen()
+        {
+
+        }
+
+        public void Aanpassen()
+        {
+
+        }
+
         /*  
             Toevoegen()
                 1. Inladen naar ClientCollection
