@@ -16,5 +16,34 @@ namespace Doctor
         {
             InitializeComponent();
         }
+
+        private void Stop_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBox5_TextChanged(object sender, EventArgs e)
+        {
+                    }
+
+        private void BirthDate_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
