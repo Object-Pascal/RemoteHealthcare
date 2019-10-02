@@ -17,10 +17,12 @@ namespace FietsDemo
         private static byte travelledDistanceRawPrev;
         private static byte travelledDistanceStartingValue;
         private static bool started;
+        private BLE bleBike;
+        private BLE bleHeart;
 
         static async Task Main(string[] args)
         {
-            RegisterBleBikeEvents();
+      //      RegisterBleBikeEvents();
 
             if (Console.ReadLine().ToLower() == "sim")
             {
@@ -67,8 +69,17 @@ namespace FietsDemo
                 errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
                 if (Console.ReadLine().ToLower() == "resistance")
                 {
+
+                    byte[] output = new byte[13];
+                    output[0] = 0x4A; // Sync bit;
+                    output[1] = 0x09; // Message Length
+                    output[2] = 0x4E; // Message type
+                    output[3] = 0x05; // Message type
+                    output[4] = 0x30; // Data Type
+                    output[11] = 0x64;
+                    output[12] = 0xFF;
                     Console.WriteLine("Changing resistance");
-                    int t = await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", new byte[] { 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x63 });
+                    int t = await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", output);
                     Console.WriteLine($"Resistance changed: {t}");
                 }
             }
@@ -97,6 +108,8 @@ namespace FietsDemo
 
             Console.Read();
         }
+
+
 
         private static void RegisterBleBikeEvents()
         {
@@ -153,7 +166,7 @@ namespace FietsDemo
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             byte[] receivedDataSubset = e.Data.SubArray(4, e.Data.Length - 2 - 4);
-            pageConversion.RegisterData(receivedDataSubset);
+      //      pageConversion.RegisterData(receivedDataSubset);
 
             //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
             //BitConverter.ToString(SubArray<byte>(e.Data, 4, e.Data.Length - 2 - 4)).Replace("-", " "),
