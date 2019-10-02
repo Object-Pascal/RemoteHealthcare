@@ -35,17 +35,9 @@
             this.SelectBtn = new System.Windows.Forms.Button();
             this.deselectBtn = new System.Windows.Forms.Button();
             this.LayoutPanelClient = new System.Windows.Forms.FlowLayoutPanel();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
             this.PatientLabel = new System.Windows.Forms.Label();
             this.BroadcastTextBox = new System.Windows.Forms.TextBox();
             this.BroadcastBtn = new System.Windows.Forms.Button();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button12 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.button14 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.LayoutPanelClient.SuspendLayout();
             this.SuspendLayout();
@@ -114,68 +106,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LayoutPanelClient.AutoScroll = true;
             this.LayoutPanelClient.AutoScrollMinSize = new System.Drawing.Size(30, 100);
-            this.LayoutPanelClient.Controls.Add(this.button6);
-            this.LayoutPanelClient.Controls.Add(this.button7);
-            this.LayoutPanelClient.Controls.Add(this.button8);
-            this.LayoutPanelClient.Controls.Add(this.button9);
-            this.LayoutPanelClient.Controls.Add(this.button11);
-            this.LayoutPanelClient.Controls.Add(this.button12);
-            this.LayoutPanelClient.Controls.Add(this.button13);
-            this.LayoutPanelClient.Controls.Add(this.button14);
             this.LayoutPanelClient.Controls.Add(this.button2);
             this.LayoutPanelClient.Location = new System.Drawing.Point(28, 183);
             this.LayoutPanelClient.Name = "LayoutPanelClient";
             this.LayoutPanelClient.Padding = new System.Windows.Forms.Padding(2);
             this.LayoutPanelClient.Size = new System.Drawing.Size(787, 187);
             this.LayoutPanelClient.TabIndex = 6;
-            // 
-            // button6
-            // 
-            this.button6.BackColor = System.Drawing.SystemColors.Window;
-            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button6.Location = new System.Drawing.Point(5, 5);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(147, 82);
-            this.button6.TabIndex = 5;
-            this.button6.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button6.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button6.UseVisualStyleBackColor = false;
-            // 
-            // button7
-            // 
-            this.button7.BackColor = System.Drawing.SystemColors.Window;
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button7.Location = new System.Drawing.Point(158, 5);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(147, 82);
-            this.button7.TabIndex = 6;
-            this.button7.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button7.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button7.UseVisualStyleBackColor = false;
-            // 
-            // button8
-            // 
-            this.button8.BackColor = System.Drawing.SystemColors.Window;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Location = new System.Drawing.Point(311, 5);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(147, 82);
-            this.button8.TabIndex = 7;
-            this.button8.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button8.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button8.UseVisualStyleBackColor = false;
-            // 
-            // button9
-            // 
-            this.button9.BackColor = System.Drawing.SystemColors.Window;
-            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Location = new System.Drawing.Point(464, 5);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(147, 82);
-            this.button9.TabIndex = 8;
-            this.button9.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button9.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button9.UseVisualStyleBackColor = false;
             // 
             // PatientLabel
             // 
@@ -203,59 +139,11 @@
             this.BroadcastBtn.Text = "Uitzenden";
             this.BroadcastBtn.UseVisualStyleBackColor = true;
             // 
-            // button11
-            // 
-            this.button11.BackColor = System.Drawing.SystemColors.Window;
-            this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button11.Location = new System.Drawing.Point(617, 5);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(147, 82);
-            this.button11.TabIndex = 10;
-            this.button11.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button11.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button11.UseVisualStyleBackColor = false;
-            // 
-            // button12
-            // 
-            this.button12.BackColor = System.Drawing.SystemColors.Window;
-            this.button12.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button12.Location = new System.Drawing.Point(5, 93);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(147, 82);
-            this.button12.TabIndex = 11;
-            this.button12.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button12.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button12.UseVisualStyleBackColor = false;
-            // 
-            // button13
-            // 
-            this.button13.BackColor = System.Drawing.SystemColors.Window;
-            this.button13.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button13.Location = new System.Drawing.Point(158, 93);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(147, 82);
-            this.button13.TabIndex = 12;
-            this.button13.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button13.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button13.UseVisualStyleBackColor = false;
-            // 
-            // button14
-            // 
-            this.button14.BackColor = System.Drawing.SystemColors.Window;
-            this.button14.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button14.Location = new System.Drawing.Point(311, 93);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(147, 82);
-            this.button14.TabIndex = 13;
-            this.button14.Text = "name: Kirsten Cox\r\nleeftijd: 20 \r\ngeslacht: vrouw\r\nBPM : -";
-            this.button14.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.button14.UseVisualStyleBackColor = false;
-            // 
             // button2
             // 
             this.button2.BackColor = System.Drawing.SystemColors.Window;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button2.Location = new System.Drawing.Point(464, 93);
+            this.button2.Location = new System.Drawing.Point(5, 5);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(147, 82);
             this.button2.TabIndex = 15;
@@ -300,16 +188,8 @@
         private System.Windows.Forms.Button deselectBtn;
         private System.Windows.Forms.FlowLayoutPanel LayoutPanelClient;
         private System.Windows.Forms.Label PatientLabel;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
         private System.Windows.Forms.TextBox BroadcastTextBox;
         private System.Windows.Forms.Button BroadcastBtn;
-        private System.Windows.Forms.Button button11;
-        private System.Windows.Forms.Button button12;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button14;
         private System.Windows.Forms.Button button2;
     }
 }

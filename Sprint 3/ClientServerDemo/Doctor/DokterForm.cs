@@ -7,17 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using 
+
 
 namespace Doctor
 {
     public partial class DokterForm : Form
     {
         private FlowLayoutPanel panel;
+        private List<Client> patients;
 
         public DokterForm()
         {
             InitializeComponent();
-            this.WindowState = FormWindowState.Maximized;
             panel = LayoutPanelClient;
 
 
@@ -48,6 +50,9 @@ namespace Doctor
             //Client to selected patient list
 
             //Client added to flowpanel
+            Button btn = new Button();
+            btn.Text = "hoi werkt dit ?";
+            panel.Controls.Add(btn);
         }
     }
 }
