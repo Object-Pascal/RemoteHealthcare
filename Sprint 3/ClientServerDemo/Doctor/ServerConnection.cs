@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClientGUI.Connection
 {
+    //Dokter
     class ServerConnection
     {
         private TcpClient client;
