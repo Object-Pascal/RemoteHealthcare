@@ -8,12 +8,29 @@ namespace Doctor
 {
     class Patient
     {
-        private String name { get; set; }
+        public Patient(string name, int age, string gender, string fietsId)
+        {
+            Name = name;
+            Age = age;
+            Gender = gender;
+            Bpm = 0;
+            FietsId = fietsId;
+        }
 
-        private int age { get; set; }
+        public String Name { get; private set; }
 
-        private String gender { get; set; }
+        public int Age { get; set; }
 
-        private int bpm { get; set; }
+        public String Gender { get; set; }
+
+        public int Bpm { get; set; }
+
+        public String FietsId { get; set; }
+
+
+        public String toString()
+        {
+            return $"{Name} - {FietsId} " ;
+        }
     }
 }
