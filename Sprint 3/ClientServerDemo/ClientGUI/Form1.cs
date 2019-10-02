@@ -225,7 +225,7 @@ namespace ClientGUI
                 case "login":
                     Console.WriteLine($"Je bent ingelogd: {data[1]}");
                     break;
-                    break;
+                   
                 case "message":
                     Console.WriteLine($"Bericht van {data[1]}: {data[2]}");
                     break;
@@ -280,6 +280,7 @@ namespace ClientGUI
             // addAndShowAndFollowRoute1("data/NetworkEngine/models/cars/white/car_white.obj");
             loadTerrainAndDeleteGroundPlane(256,256);
             addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
+            roadAdd();
 
 
 
@@ -354,6 +355,11 @@ namespace ClientGUI
         private void resetVRScene()
         {
             Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneReset().Item1);
+        }
+
+        private void roadAdd()
+        {
+            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd().Item1);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ClientGUI.Json_Structure.Serializables;
+using ClientGUI.Json_Structure.Serializables.Sub_Objects;
 using ClientGUI.Sub_Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -283,6 +284,27 @@ namespace Client.Json_Structure
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, SceneReset>(json, obj);
 
+        }
+
+        public Tuple<string, RoadAdd> BuildRoadAdd()
+        {
+            RoadAdd obj = new RoadAdd()
+            {
+                id = "scene/road/add",
+                data = new DataRoad()
+                {
+                    route = "route uuid",
+                    diffuse = "data/NetworkEngine/textures/tarmac_diffuse.png",
+                    normal = "data/NetworkEngine/textures/tarmac_normale.png",
+                    specular = "data/NetworkEngine/textures/tarmac_specular.png",
+                    heightoffset = 0.01f
+
+                }
+
+            };
+
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, RoadAdd>(json, obj);
         }
 
       

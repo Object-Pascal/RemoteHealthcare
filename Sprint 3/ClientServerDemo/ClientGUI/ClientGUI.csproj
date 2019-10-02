@@ -67,6 +67,7 @@
     <Compile Include="Json Structure\Serializables\ModelLoad.cs" />
     <Compile Include="Json Structure\Serializables\Panel.cs" />
     <Compile Include="Json Structure\Serializables\PanelAdd.cs" />
+    <Compile Include="Json Structure\Serializables\RoadAdd.cs" />
     <Compile Include="Json Structure\Serializables\RouteAdd.cs" />
     <Compile Include="Json Structure\Serializables\RouteFollow.cs" />
     <Compile Include="Json Structure\Serializables\RouteShow.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Json Structure\Serializables\SkyBoxTime.cs" />
     <Compile Include="Json Structure\Serializables\SkyBoxUpdate.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Data12.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\DataRoad.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Panel1.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Components1.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Components2.cs" />
