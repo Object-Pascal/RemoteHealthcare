@@ -271,6 +271,20 @@ namespace Client.Json_Structure
             return new Tuple<string, PanelAdd>(json, obj);
         }
 
+        public Tuple<string, SceneReset> BuildSceneReset()
+        {
+            SceneReset obj = new SceneReset()
+            {
+                id = "scene/reset",
+                data = new Data10()
+                {
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, SceneReset>(json, obj);
+
+        }
+
       
     }
 }
