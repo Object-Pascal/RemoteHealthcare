@@ -96,6 +96,7 @@
             this.SelectBtn.TabIndex = 4;
             this.SelectBtn.Text = "Selecteer";
             this.SelectBtn.UseVisualStyleBackColor = true;
+            this.SelectBtn.Click += new System.EventHandler(this.SelectBtn_Click);
             // 
             // deselectBtn
             // 

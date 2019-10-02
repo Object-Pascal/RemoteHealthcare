@@ -12,11 +12,13 @@ namespace Doctor
 {
     public partial class DokterForm : Form
     {
+        private FlowLayoutPanel panel;
+
         public DokterForm()
         {
             InitializeComponent();
             this.WindowState = FormWindowState.Maximized;
-
+            panel = LayoutPanelClient;
 
 
         }
@@ -39,6 +41,13 @@ namespace Doctor
                 BroadcastTextBox.Text = "Typ het uitzendbericht:";
                 BroadcastTextBox.ForeColor = Color.Silver;
             }
+        }
+
+        private void SelectBtn_Click(object sender, EventArgs e)
+        {
+            //Client to selected patient list
+
+            //Client added to flowpanel
         }
     }
 }
