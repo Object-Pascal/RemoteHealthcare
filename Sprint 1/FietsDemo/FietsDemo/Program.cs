@@ -65,6 +65,12 @@ namespace FietsDemo
                 started = true;
                 bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                 errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+                if (Console.ReadLine().ToLower() == "resistance")
+                {
+                    Console.WriteLine("Changing resistance");
+                    int t = await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", new byte[] { 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x63 });
+                    Console.WriteLine($"Resistance changed: {t}");
+                }
             }
             else if (Console.ReadLine().ToLower() == "heart")
             {
