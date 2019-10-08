@@ -38,6 +38,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,7 +50,9 @@
   <ItemGroup>
     <Compile Include="IO\Data\Client.cs" />
     <Compile Include="IO\Data\ClientCollection.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="Listener\PacketHandler.cs" />
+    <Compile Include="Listener\PacketType.cs" />
+    <Compile Include="Listener\ServerListener.cs" />
     <Compile Include="IO\ClientDataSaver.cs" />
     <Compile Include="IO\JsonHandler.cs" />
     <Compile Include="Program.cs" />
