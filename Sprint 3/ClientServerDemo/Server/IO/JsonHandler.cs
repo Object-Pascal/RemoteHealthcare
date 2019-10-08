@@ -13,9 +13,6 @@ namespace Server.IO
 
             using (StreamReader reader = File.OpenText(savePath))
             {
-                // Laad eigenlijk op dezelfde manier weer in als de JsonPacketBuilder maar dan anderson (string > object) ipv (object > string)
-                // Het generieke type T is bij ons dus ClientCollection
-
                 string rawData = await reader.ReadToEndAsync();
                 return await Task.Run(() => JsonConvert.DeserializeObject<T>(rawData));
             }

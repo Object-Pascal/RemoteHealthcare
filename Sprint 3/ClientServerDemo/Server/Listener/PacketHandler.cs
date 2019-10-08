@@ -12,30 +12,34 @@ namespace Server.Listener
         public Tuple<string, PacketType> HandlePacket(string packet)
         {
             string[] lines = Regex.Split(packet, "\r\n");
-            switch (lines[0])
+            if (lines.Length > 1)
             {
-                case "status":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Status);
-                case "clientdataget":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.ClientDataGet);
-                case "clientdatasave":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.ClientDataSave);
-                case "login":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Login);
-                case "logout":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Logout);
-                case "broadcast":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Broadcast);
-                case "vr":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Vr);
-                case "bike":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Bike);
-                case "message":
-                    return new Tuple<string, PacketType>(lines[0], PacketType.Message);
-                default:
-                    // De packet kan ook leeg zijn maar either way is het een unkown packet
-                    return new Tuple<string, PacketType>(lines[0], PacketType.UnknownPacket);
+                switch (lines[0])
+                {
+                    case "Client/Status":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Status);
+                    case "Client/DataGet":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DataGet);
+                    case "Client/DataSave":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DataSave);
+                    case "Client/LogIn":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Login);
+                    case "Client/LogOut":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Logout);
+                    case "Client/Broadcast":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Broadcast);
+                    case "Client/VR":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Vr);
+                    case "Client/Bike":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Bike);
+                    case "Client/message":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Message);
+                    default:
+                        return new Tuple<string, PacketType>(lines[1], PacketType.UnknownPacket);
+                }
             }
+            else
+                return new Tuple<string, PacketType>(string.Empty, PacketType.EmptyPacket);
         }
 
         public bool IsStatusOk(string packet)

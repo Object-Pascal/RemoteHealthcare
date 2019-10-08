@@ -8,8 +8,7 @@ namespace Server.IO
 {
     public class ClientDataSaver
     {
-        // Allemaal netjes asynchroon :))))
-        public async Task<ClientCollection> LoadClients()
+        public static async Task<ClientCollection> LoadClients()
         {
             // Ik ga er hiervan uit dat de data in de clientData.json alleen bestaat uit een json array (JArray) met client objecten.
             // In de file staat een voorbeeldje.
@@ -23,15 +22,16 @@ namespace Server.IO
             list.Add(client);
             list.ToArray();
             string output = JsonConvert.SerializeObject(list);
-            JsonHandler.SaveFile("this", output);
+            JsonHandler.SaveFile("clientData.json", output);
         }
 
         public async Task VerwijderenAsync(Client client)
         {
             ClientCollection clientCollection = await LoadClients();
             clientCollection.clients.Where(x => x.Id == client.Id).First();
+
             string output = JsonConvert.SerializeObject(clientCollection.clients);
-            JsonHandler.SaveFile("this", output);
+            JsonHandler.SaveFile("clientData.json", output);
         }
 
         public async Task AanpassenAsync(Client client1, Client client2)
@@ -45,7 +45,7 @@ namespace Server.IO
             }
             list.ToArray();
             string output = JsonConvert.SerializeObject(list);
-            JsonHandler.SaveFile("this", output);
+            JsonHandler.SaveFile("clientData.json", output);
         }
 
         /*  

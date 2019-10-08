@@ -3,14 +3,15 @@
     public enum PacketType
     {
         Status,
-        ClientDataGet,
-        ClientDataSave,
+        DataGet,
+        DataSave,
         Login,
         Logout,
         Broadcast,
         Vr,
         Bike,
         Message,
-        UnknownPacket
+        UnknownPacket,
+        EmptyPacket
     }
 }

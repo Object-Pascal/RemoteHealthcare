@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Doctor.PacketHandling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,24 +14,48 @@ namespace Doctor
 {
     public partial class DokterForm : Form
     {
+        private ServerConnection serverConnection;
+        private bool serverConnected;
+        private PacketHandler packetHandler;
+
         private FlowLayoutPanel panel;
         private List<Patient> selectedPatients;
         private List<Patient> availablePatients;
 
-        private String broadcastMessage { get; set; }
+        private string broadcastMessage { get; set; }
 
         public DokterForm()
         {
             InitializeComponent();
-            panel = LayoutPanelClient;
+            InitializeServerConnection();
 
-            selectedPatients = new List<Patient>();
-            availablePatients = new List<Patient>();
+            if (this.serverConnected)
+            {
+                this.FormClosing += (s, e) =>
+                {
+                    serverConnection.Disconnect();
+                };
 
-            testDataAvailablePatients();
+                panel = LayoutPanelClient;
 
+                selectedPatients = new List<Patient>();
+                availablePatients = new List<Patient>();
 
+                testDataAvailablePatients();
+            }
+        }
 
+        private async void InitializeServerConnection()
+        {
+            this.packetHandler = new PacketHandler();
+            this.serverConnection = new ServerConnection();
+            this.serverConnected = await serverConnection.Connect("192.168.1.2", 25570);
+
+            string responsePacket = await this.serverConnection.SendWithResponse("Client/DataGet\r\nALL_CLIENT_DATA");
+            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+
+            MessageBox.Show(handledPacket.Item1);
+            //Console.WriteLine(handledPacket.Item1);
         }
 
         private void SelectBtn_Click(object sender, EventArgs e)
@@ -69,8 +94,6 @@ namespace Doctor
             }
 
             availablePatients.ForEach(x => selectedPatients.Remove(x));
-
-
         }
 
         private void BroadcastTextBox_Enter(object sender, EventArgs e)
@@ -92,7 +115,6 @@ namespace Doctor
                 BroadcastTextBox.Text = "Typ het uitzendbericht:";
                 BroadcastTextBox.ForeColor = Color.Gray;
                 BroadcastTextBox.Font = new Font(BroadcastTextBox.Font, FontStyle.Italic);
-
             }
         }
 
@@ -128,7 +150,6 @@ namespace Doctor
             //open detailed information form
 
             BroadcastTextBox.Text = "WELLOE DIT WERKT";
-
         }
 
         private void removeBtnFromFlowpanel(Patient p)
@@ -142,7 +163,6 @@ namespace Doctor
                     LayoutPanelClient.Controls.Remove(b);
                 }
             }
-
         }
 
         private void testDataAvailablePatients()
@@ -153,12 +173,6 @@ namespace Doctor
             availablePatients.Add(new Patient("Joelle", 20, "Vrouw", "0000"));
             availablePatients.Add(new Patient("Marleen", 20, "Vrouw", "0000"));
             availablePatients.Add(new Patient("Kirsten", 20, "Vrouw", "0000"));
-
-
         }
-
-    }
-
-  
-
+    } 
 }
