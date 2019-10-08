@@ -29,6 +29,7 @@ namespace ClientServerDemo
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
             Console.ReadKey();
         }
+
         // hier start hij met uitlezen
 
         private void OnConnect(IAsyncResult ar)
