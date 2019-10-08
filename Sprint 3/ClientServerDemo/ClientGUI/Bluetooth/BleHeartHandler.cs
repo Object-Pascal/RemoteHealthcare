@@ -46,12 +46,19 @@ namespace ClientGUI.Bluetooth
         {
             // "Decathlon Dual HR"
             // "HeartRate"
-            int errorCode = await this.BleHeart.OpenDevice(deviceName);
-            errorCode = await this.BleHeart.SetService(serviceName);
+            try
+            {
+                int errorCode = await this.BleHeart.OpenDevice(deviceName);
+                errorCode = await this.BleHeart.SetService(serviceName);
 
             // "HeartRateMeasurement"
             this.BleHeart.SubscriptionValueChanged += (s, e) => SubscriptionValueChanged?.Invoke(e);
             errorCode = await this.BleHeart.SubscribeToCharacteristic(serviceName);
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

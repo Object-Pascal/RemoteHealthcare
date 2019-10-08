@@ -21,11 +21,14 @@ namespace ClientGUI
         private static PageConversion pageConversion;
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
+        private BLE bleBike;
+        private BLE bleHeart;
 
         private List<string> bleBikeList;
         private List<string> bleHeartList;
         private ConnectServer connect;
         private bool started;
+        private System.Timers.Timer timer;
 
         public LoginScreen()
         {
@@ -33,6 +36,7 @@ namespace ClientGUI
             InitializeComponent();
             InitializeDeclarations();
             LoadBikes();
+            timer = new System.Timers.Timer();
         }
 
         private void InitializeDeclarations()
@@ -46,55 +50,6 @@ namespace ClientGUI
             this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
             this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
         }
-
-        private void SelectBike_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string selectedItem = selectBike.SelectedItem as string;
-            if (!string.IsNullOrEmpty(selectedItem))
-            {
-                this.bleBikeHandler.Connect(selectedItem, "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-                this.started = true;
-
-                this.bleBikeHandler.SubscriptionValueChanged += (args) =>
-                {
-                    byte[] receivedDataSubset = args.Data.SubArray(4, args.Data.Length - 2 - 4);
-                    pageConversion.RegisterData(receivedDataSubset);
-                };
-            }
-        }
-
-        private async Task Connect_HeartrateAsync()
-        {
-            int errorCode = 0;
-            BLE bleHeart = new BLE();
-            Thread.Sleep(1000); // We need some time to list available devices
-
-            // List available devices
-            List<string> bleHeartList = bleHeart.ListDevices();
-            Console.WriteLine("Devices found: ");
-            foreach (string name in bleHeartList)
-            {
-                Console.WriteLine($"Device: {name}");
-            }
-
-            // Heart rate
-            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
-
-            await bleHeart.SetService("HeartRate");
-
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-        }
-
-        private void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        {
-            byte[] receivedDataSubset = e.Data;
-            if (e.Data.Length == 6)
-            {
-                Console.Write($"Heartrate: {receivedDataSubset[1]}");
-                Console.WriteLine($"Heartrate data received: {receivedDataSubset[0]}, {receivedDataSubset[1]}, {receivedDataSubset[2]}, {receivedDataSubset[3]}, {receivedDataSubset[4]}, {receivedDataSubset[5]}");
-            }
-        }
         private bool PatientExist(string patientID)
         {
             return true;
@@ -104,15 +59,26 @@ namespace ClientGUI
 
         private void Login_Click(object sender, EventArgs e)
         {
-            if (PatientExist(patientNumber.Text))
+            if (selectBike.SelectedItem != null)
             {
-                Connect_HeartrateAsync();
-                // connect.Connect();
-                //connect.sendPatient(new Patient(name.Text, patientNumber.Text));
+                if (PatientExist(patientNumber.Text))
+                {
+                    bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
+                    bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+                    // connect.Connect();
+                    //connect.sendPatient(new Patient(name.Text, patientNumber.Text));
 
+                }
+                else
+                {
+                    this.unknownNumber.Text = "Patiëntnummer bestaat niet!";
+                    this.unknownNumber.Visible = true;
+                    
+            }
             }
             else
             {
+                this.unknownNumber.Text = "     Geen fiets geselecteerd!";
                 this.unknownNumber.Visible = true;
             }
         }
