@@ -18,6 +18,15 @@ namespace Server.IO
             }
         }
 
+        public static async void SaveObject<T>(string filename, T classObject)
+        {
+            string saveFolder = Directory.GetCurrentDirectory();
+            string savePath = Path.Combine(saveFolder, filename);
+
+            string rawData = await Task.Run(() => JsonConvert.SerializeObject(classObject));
+            await Task.Run(() => File.WriteAllText(savePath, rawData));
+        }
+
         public static async void SaveFile(string filename, string content)
         {
             string saveFolder = Directory.GetCurrentDirectory();

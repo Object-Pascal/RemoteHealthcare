@@ -56,14 +56,41 @@
     <Compile Include="DokterForm.Designer.cs">
       <DependentUpon>DokterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoginScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginScreen.Designer.cs">
+      <DependentUpon>LoginScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DetailDoctorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DetailDoctorForm.Designer.cs">
+      <DependentUpon>DetailDoctorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClientHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClientHistoryForm.Designer.cs">
+      <DependentUpon>ClientHistoryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PacketHandling\PacketHandler.cs" />
     <Compile Include="PacketHandling\PacketType.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConnection.cs" />
+    <EmbeddedResource Include="ClientHistoryForm.resx">
+      <DependentUpon>ClientHistoryForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DokterForm.resx">
       <DependentUpon>DokterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginScreen.resx">
+      <DependentUpon>LoginScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DetailDoctorForm.resx">
+      <DependentUpon>DetailDoctorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

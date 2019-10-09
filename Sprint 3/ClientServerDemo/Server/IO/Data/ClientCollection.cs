@@ -1,14 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Server.IO.Data
 {
     public class ClientCollection
     {
-        public Client[] clients { get; set; }
-
-        internal object OfType<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public List<Client> clients { get; set; }
     }
 }
