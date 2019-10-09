@@ -60,17 +60,25 @@ namespace ClientGUI.Bluetooth
             errorCode = await this.BleBike.SubscribeToCharacteristic(serviceName);
         }
 
+        public async void ChangeResistance(Byte hex)
+        {
+                byte[] output = new byte[13];
+                output[0] = 0x4A; // Sync bit;
+                output[1] = 0x09; // Message Length
+                output[2] = 0x4E; // Message type
+                output[3] = 0x05; // Message type
+                output[4] = 0x30; // Data Type
+                output[11] = hex;
+                output[12] = 0xFF;
+                int i = await this.BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", output);
+            }
+
         public void ConnectSim(string fileName)
         {
             Simulator bleBikeSim = new Simulator(fileName);
             bleBikeSim.DataReceived += (e) => SimValueChanged?.Invoke(e);
             bleBikeSim.Ended += () => SimEnded?.Invoke();
             bleBikeSim.Start();
-        }
-
-        public async void WriteCharacteristic(string serciveName, byte[] bytes)
-        {
-            await this.BleBike.WriteCharacteristic(serciveName, bytes);
         }
     }
 }

@@ -9,13 +9,12 @@
                 "scale": 1,
                 "rotation": [ 0, 0, 0 ]
             },
-      "model": {
-        "file": "data/NetworkEngine/models/cars/white/car_white.obj",
-        "cullbackfaces": true,
-        "animated": false,
-        "animation": "animationname"
-      }
-
+		  "model": {
+			"file": "data/NetworkEngine/models/cars/white/car_white.obj",
+			"cullbackfaces": true,
+			"animated": false,
+			"animation": "animationname"
+		  }
         }
     }
 }

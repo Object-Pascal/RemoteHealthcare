@@ -68,6 +68,8 @@
     <Compile Include="ClientHistoryForm.Designer.cs">
       <DependentUpon>ClientHistoryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PacketHandling\PacketHandler.cs" />
+    <Compile Include="PacketHandling\PacketType.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
