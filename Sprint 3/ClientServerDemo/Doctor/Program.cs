@@ -16,7 +16,7 @@ namespace Doctor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DokterForm());
+            Application.Run(new DetailDoctorForm());
         }
     }
 }
