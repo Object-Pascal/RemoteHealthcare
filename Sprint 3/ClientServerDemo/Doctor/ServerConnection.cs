@@ -4,7 +4,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClientGUI.Connection
+namespace Doctor
+
 {
     class ServerConnection
     {
