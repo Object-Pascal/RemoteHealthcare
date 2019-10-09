@@ -364,23 +364,30 @@ namespace ClientGUI
 
         private void addObjectsInSurroundings()
         {
+
+            //for (int i = 10; i < 100; i = i +10)
+            //{
+            //    addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", -120 + i, 0, -100);
+            //    addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 1, -80);
+            //    addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 2, -60);
+            //    addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 3, -40);
+            //    addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 4, -20);
+            //}
+
             Random random = new Random();
+           
 
-            for (int i = 10; i < 100; i = i +10)
+            for (int i = 0; i < 10; i++)
             {
-
-                int x = random.Next(1, 121);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", -120 + i, 0, -100);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 1, -80);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 2, -60);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 3, -40);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 4, -20);
+                int x = random.Next(-100, 0);
+                int z = random.Next(-120, -110);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 0, z);
             }
         }
 
         private void addObject(string objectPath, int x, int y, int z)
         {
-            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
+            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 2, true, false, "animationname").Item1);
         }
     }
 }
