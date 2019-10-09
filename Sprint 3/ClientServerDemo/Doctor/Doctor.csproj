@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="LoginScreen.Designer.cs">
       <DependentUpon>LoginScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="DetailDoctorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -87,6 +88,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LoginScreen.resx">
       <DependentUpon>LoginScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DetailDoctorForm.resx">
       <DependentUpon>DetailDoctorForm.cs</DependentUpon>
     </EmbeddedResource>
