@@ -281,8 +281,7 @@ namespace ClientGUI
             loadTerrainAndDeleteGroundPlane(256,256);
             addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
             roadAdd();
-
-
+            addObjectsInSurroundings();
 
         }
 
@@ -362,5 +361,17 @@ namespace ClientGUI
             Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd().Item1);
         }
         //Deze methode laat een weg over de route lopen
+
+        private void addObjectsInSurroundings()
+        {
+            addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", -120, 0, -100);
+            addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120, 1, -80);
+            addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120, 2, -60);
+        }
+
+        private void addObject(string objectPath, int x, int y, int z)
+        {
+            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
+        }
     }
 }
