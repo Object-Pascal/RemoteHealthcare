@@ -280,7 +280,7 @@ namespace ClientGUI
             // addAndShowAndFollowRoute1("data/NetworkEngine/models/cars/white/car_white.obj");
             loadTerrainAndDeleteGroundPlane(256,256);
             addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
-            roadAdd();
+          
             addObjectsInSurroundings();
 
         }
@@ -299,10 +299,11 @@ namespace ClientGUI
                                                         new RouteNode(new int[]{ 0, 0, 50 },new int[] { -5, 0, -5 })};
 
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
+            Console.WriteLine(addroute);
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 0.0f).Item1);
-
+            
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden
 
@@ -345,10 +346,11 @@ namespace ClientGUI
                                                        };
 
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
+            string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 7.0f, 1f, "XYZ",1.0f).Item1);
-
+            roadAdd(routeId);
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
         private void resetVRScene()
@@ -356,9 +358,9 @@ namespace ClientGUI
             Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneReset().Item1);
         }
         //Deze methode reset de VR Scene
-        private void roadAdd()
+        private void roadAdd(string routeId)
         {
-            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd().Item1);
+            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd(routeId).Item1);
         }
         //Deze methode laat een weg over de route lopen
 

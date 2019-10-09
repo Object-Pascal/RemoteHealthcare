@@ -286,22 +286,24 @@ namespace Client.Json_Structure
 
         }
 
-        public Tuple<string, RoadAdd> BuildRoadAdd()
+        public Tuple<string, RoadAdd> BuildRoadAdd(string routeId)
         {
             RoadAdd obj = new RoadAdd()
             {
                 id = "scene/road/add",
                 data = new DataRoad()
                 {
-                    route = "data.data.data.uuid",
+                    route = routeId,
                     diffuse = "data/NetworkEngine/textures/tarmac_diffuse.png",
                     normal = "data/NetworkEngine/textures/tarmac_normale.png",
                     specular = "data/NetworkEngine/textures/tarmac_specular.png",
                     heightoffset = 0.01f
-
+                    //hier wordt de weg aangemaakt
                 }
 
             };
+
+            
 
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, RoadAdd>(json, obj);
