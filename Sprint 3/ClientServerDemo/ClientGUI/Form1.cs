@@ -335,7 +335,7 @@ namespace ClientGUI
             Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
             Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", -128, 0, -128, 1, true).Item1);
         }
-
+        //Deze methode voegt een terrein toe met hoogte verschillen
         private void addAndShowAndFollowRoute2(string objectPath)
         {
 
@@ -351,15 +351,16 @@ namespace ClientGUI
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 1f, "XYZ",1.0f).Item1);
 
         }
-
+        //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
         private void resetVRScene()
         {
             Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneReset().Item1);
         }
-
+        //Deze methode reset de VR Scene
         private void roadAdd()
         {
             Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd().Item1);
         }
+        //Deze methode laat een weg over de route lopen
     }
 }
