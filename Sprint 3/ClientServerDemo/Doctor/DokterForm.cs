@@ -77,7 +77,7 @@ namespace Doctor
             selectedPatients.ForEach(x => availablePatients.Remove(x));
         }
 
-        private void DeselectBtn_Click(object sender, EventArgs e)
+        private void DeselectBtn_Click(object sender, EventArgs e) 
         {
             ListBox.SelectedIndexCollection selectedIndexes = selectedListBox.SelectedIndices;
             int[] selectedIndexesArray = new int[selectedIndexes.Count];
@@ -154,7 +154,6 @@ namespace Doctor
 
         private void removeBtnFromFlowpanel(Patient p)
         {
-            Button remove;
 
             foreach (Button b in panel.Controls)
             {
