@@ -1,6 +1,6 @@
 ﻿namespace Doctor
 {
-    partial class Form2
+    partial class DetailDoctorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chBikeSpeed = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btnStartSesion = new System.Windows.Forms.Button();
             this.btnEmergencyBreak = new System.Windows.Forms.Button();
@@ -45,23 +45,25 @@
             this.lblBirthDate = new System.Windows.Forms.Label();
             this.lblPantiëntKey = new System.Windows.Forms.Label();
             this.lblGender = new System.Windows.Forms.Label();
+            this.btnHistory = new System.Windows.Forms.Button();
+            this.tbMessageHistory = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chBikeSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chHeartRate)).BeginInit();
             this.SuspendLayout();
             // 
             // chBikeSpeed
             // 
-            chartArea3.Name = "ChartArea1";
-            this.chBikeSpeed.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.chBikeSpeed.Legends.Add(legend3);
+            chartArea5.Name = "ChartArea1";
+            this.chBikeSpeed.ChartAreas.Add(chartArea5);
+            legend5.Name = "Legend1";
+            this.chBikeSpeed.Legends.Add(legend5);
             this.chBikeSpeed.Location = new System.Drawing.Point(418, 80);
             this.chBikeSpeed.Name = "chBikeSpeed";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.chBikeSpeed.Series.Add(series3);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Legend = "Legend1";
+            series5.Name = "Series1";
+            this.chBikeSpeed.Series.Add(series5);
             this.chBikeSpeed.Size = new System.Drawing.Size(400, 300);
             this.chBikeSpeed.TabIndex = 3;
             this.chBikeSpeed.Text = "chart1";
@@ -69,7 +71,7 @@
             // 
             // btnStartSesion
             // 
-            this.btnStartSesion.Location = new System.Drawing.Point(12, 417);
+            this.btnStartSesion.Location = new System.Drawing.Point(12, 532);
             this.btnStartSesion.Name = "btnStartSesion";
             this.btnStartSesion.Size = new System.Drawing.Size(130, 25);
             this.btnStartSesion.TabIndex = 4;
@@ -79,7 +81,7 @@
             // 
             // btnEmergencyBreak
             // 
-            this.btnEmergencyBreak.Location = new System.Drawing.Point(282, 417);
+            this.btnEmergencyBreak.Location = new System.Drawing.Point(282, 532);
             this.btnEmergencyBreak.Name = "btnEmergencyBreak";
             this.btnEmergencyBreak.Size = new System.Drawing.Size(130, 25);
             this.btnEmergencyBreak.TabIndex = 5;
@@ -89,17 +91,17 @@
             // 
             // chHeartRate
             // 
-            chartArea4.Name = "ChartArea1";
-            this.chHeartRate.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.chHeartRate.Legends.Add(legend4);
+            chartArea6.Name = "ChartArea1";
+            this.chHeartRate.ChartAreas.Add(chartArea6);
+            legend6.Name = "Legend1";
+            this.chHeartRate.Legends.Add(legend6);
             this.chHeartRate.Location = new System.Drawing.Point(12, 80);
             this.chHeartRate.Name = "chHeartRate";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.chHeartRate.Series.Add(series4);
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Legend = "Legend1";
+            series6.Name = "Series1";
+            this.chHeartRate.Series.Add(series6);
             this.chHeartRate.Size = new System.Drawing.Size(400, 300);
             this.chHeartRate.TabIndex = 6;
             this.chHeartRate.Text = "chart2";
@@ -107,7 +109,7 @@
             // 
             // btnSendPrivateMessage
             // 
-            this.btnSendPrivateMessage.Location = new System.Drawing.Point(418, 386);
+            this.btnSendPrivateMessage.Location = new System.Drawing.Point(418, 500);
             this.btnSendPrivateMessage.Name = "btnSendPrivateMessage";
             this.btnSendPrivateMessage.Size = new System.Drawing.Size(130, 25);
             this.btnSendPrivateMessage.TabIndex = 10;
@@ -118,13 +120,13 @@
             // tbTextBoxSendMessage
             // 
             this.tbTextBoxSendMessage.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.tbTextBoxSendMessage.Location = new System.Drawing.Point(12, 386);
-            this.tbTextBoxSendMessage.Multiline = true;
+            this.tbTextBoxSendMessage.Location = new System.Drawing.Point(12, 501);
             this.tbTextBoxSendMessage.Name = "tbTextBoxSendMessage";
-            this.tbTextBoxSendMessage.Size = new System.Drawing.Size(400, 25);
+            this.tbTextBoxSendMessage.Size = new System.Drawing.Size(400, 22);
             this.tbTextBoxSendMessage.TabIndex = 11;
             this.tbTextBoxSendMessage.Text = "Stuur bericht ...";
             this.tbTextBoxSendMessage.Enter += new System.EventHandler(this.TextBoxSendMessage_Enter);
+            this.tbTextBoxSendMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxSendMessage_KeyDown);
             this.tbTextBoxSendMessage.Leave += new System.EventHandler(this.TextBoxSendMessage_Leave);
             // 
             // lblName
@@ -142,7 +144,7 @@
             // 
             // btnStopSesion
             // 
-            this.btnStopSesion.Location = new System.Drawing.Point(148, 417);
+            this.btnStopSesion.Location = new System.Drawing.Point(148, 532);
             this.btnStopSesion.Name = "btnStopSesion";
             this.btnStopSesion.Size = new System.Drawing.Size(130, 25);
             this.btnStopSesion.TabIndex = 13;
@@ -180,11 +182,33 @@
             this.lblGender.Text = "Gender";
             this.lblGender.Click += new System.EventHandler(this.Gender_Click);
             // 
+            // btnHistory
+            // 
+            this.btnHistory.Location = new System.Drawing.Point(688, 12);
+            this.btnHistory.Name = "btnHistory";
+            this.btnHistory.Size = new System.Drawing.Size(130, 25);
+            this.btnHistory.TabIndex = 17;
+            this.btnHistory.Text = "Geschiedenis";
+            this.btnHistory.UseVisualStyleBackColor = true;
+            this.btnHistory.Click += new System.EventHandler(this.BtnHistory_Click);
+            // 
+            // tbMessageHistory
+            // 
+            this.tbMessageHistory.Location = new System.Drawing.Point(12, 387);
+            this.tbMessageHistory.Multiline = true;
+            this.tbMessageHistory.Name = "tbMessageHistory";
+            this.tbMessageHistory.ReadOnly = true;
+            this.tbMessageHistory.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbMessageHistory.Size = new System.Drawing.Size(400, 108);
+            this.tbMessageHistory.TabIndex = 18;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 453);
+            this.ClientSize = new System.Drawing.Size(832, 563);
+            this.Controls.Add(this.tbMessageHistory);
+            this.Controls.Add(this.btnHistory);
             this.Controls.Add(this.lblGender);
             this.Controls.Add(this.lblPantiëntKey);
             this.Controls.Add(this.lblBirthDate);
@@ -196,6 +220,7 @@
             this.Controls.Add(this.btnEmergencyBreak);
             this.Controls.Add(this.btnStartSesion);
             this.Controls.Add(this.chBikeSpeed);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "Form2";
             this.Text = "Form2";
             this.Load += new System.EventHandler(this.Form2_Load);
@@ -218,5 +243,7 @@
         private System.Windows.Forms.Label lblBirthDate;
         private System.Windows.Forms.Label lblPantiëntKey;
         private System.Windows.Forms.Label lblGender;
+        private System.Windows.Forms.Button btnHistory;
+        private System.Windows.Forms.TextBox tbMessageHistory;
     }
 }
