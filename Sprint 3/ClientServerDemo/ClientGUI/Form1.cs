@@ -347,7 +347,7 @@ namespace ClientGUI
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 1f, "XYZ",1.0f).Item1);
+            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 7.0f, 1f, "XYZ",1.0f).Item1);
 
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
@@ -382,6 +382,71 @@ namespace ClientGUI
                 int x = random.Next(-100, 0);
                 int z = random.Next(-120, -110);
                 addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 0, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(-100, 0);
+                int z = random.Next(-120, -110);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 0, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(0 , 120);
+                int z = random.Next(-90, -70);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", x, 1, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(0, 120);
+                int z = random.Next(-90, -70);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 1, z);
+            }
+
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(0, 120);
+                int z = random.Next(-60, -50);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 2, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(0, 120);
+                int z = random.Next(-60, -50);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(-120, -50);
+                int z = random.Next(-30, -10);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", x, 2, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(-120, -80);
+                int z = random.Next(-60, -50);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
+            }
+
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(-120, -80);
+                int z = random.Next(-60, -50);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(-120, -50);
+                int z = random.Next(-30, -10);
+                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
             }
         }
 

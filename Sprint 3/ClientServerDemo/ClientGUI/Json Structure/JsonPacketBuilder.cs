@@ -293,7 +293,7 @@ namespace Client.Json_Structure
                 id = "scene/road/add",
                 data = new DataRoad()
                 {
-                    route = "route uuid",
+                    route = "data.data.data.uuid",
                     diffuse = "data/NetworkEngine/textures/tarmac_diffuse.png",
                     normal = "data/NetworkEngine/textures/tarmac_normale.png",
                     specular = "data/NetworkEngine/textures/tarmac_specular.png",
