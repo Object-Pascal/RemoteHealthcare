@@ -56,6 +56,12 @@
     <Compile Include="DokterForm.Designer.cs">
       <DependentUpon>DokterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoginScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginScreen.Designer.cs">
+      <DependentUpon>LoginScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="PacketHandling\PacketHandler.cs" />
     <Compile Include="PacketHandling\PacketType.cs" />
     <Compile Include="Patient.cs" />
@@ -64,6 +70,9 @@
     <Compile Include="ServerConnection.cs" />
     <EmbeddedResource Include="DokterForm.resx">
       <DependentUpon>DokterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginScreen.resx">
+      <DependentUpon>LoginScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
