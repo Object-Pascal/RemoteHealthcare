@@ -355,12 +355,12 @@ namespace ClientGUI
         //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
         private void resetVRScene()
         {
-            Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneReset().Item1);
+            Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneResetPacket().Item1);
         }
         //Deze methode reset de VR Scene
         private void roadAdd(string routeId)
         {
-            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAdd(routeId).Item1);
+            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAddPacket(routeId).Item1);
         }
         //Deze methode laat een weg over de route lopen
 

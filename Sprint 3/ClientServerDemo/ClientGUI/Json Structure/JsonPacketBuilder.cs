@@ -272,7 +272,7 @@ namespace Client.Json_Structure
             return new Tuple<string, PanelAdd>(json, obj);
         }
 
-        public Tuple<string, SceneReset> BuildSceneReset()
+        public Tuple<string, SceneReset> BuildSceneResetPacket()
         {
             SceneReset obj = new SceneReset()
             {
@@ -286,7 +286,7 @@ namespace Client.Json_Structure
 
         }
 
-        public Tuple<string, RoadAdd> BuildRoadAdd(string routeId)
+        public Tuple<string, RoadAdd> BuildRoadAddPacket(string routeId)
         {
             RoadAdd obj = new RoadAdd()
             {
