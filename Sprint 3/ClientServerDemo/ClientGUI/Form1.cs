@@ -456,5 +456,15 @@ namespace ClientGUI
         {
             Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 2, true, false, "animationname").Item1);
         }
+
+        private void TabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button1_Click_2(object sender, EventArgs e)
+        {
+
+        }
     }
 }
