@@ -252,7 +252,7 @@ namespace ClientGUI
         string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["marle"], "banaantje").Item1);
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["Voyager"], "banaantje").Item1);
 
             destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
@@ -457,6 +457,19 @@ namespace ClientGUI
             Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 2, true, false, "animationname").Item1);
         }
 
+        private void addAllPanels(int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
+        {
+            addPanel("speed",""+  speed, speed2.Item1, speed2.Item2, 50);
+            addPanel("heartrate", "" + heartrate, heartrate2.Item1, heartrate2.Item2, 50);
+            addPanel("meters", "" + meters, meters2.Item1, meters2.Item2, 50);
+
+        }
+
+        private void addPanel(string id, string text, int x, int y, double size)
+        {
+        Tuple<string, JObject> addPanel = SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
+        }
+
         private void TabPage1_Click(object sender, EventArgs e)
         {
 
@@ -465,6 +478,11 @@ namespace ClientGUI
         private void Button1_Click_2(object sender, EventArgs e)
         {
 
+        }
+
+        private void Addpanels_Click(object sender, EventArgs e)
+        {
+            addAllPanels(50, 50, 50, (0, 0), (2, 2), (4, 4));
         }
     }
 }
