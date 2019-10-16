@@ -71,12 +71,31 @@ namespace Client.Json_Structure
                     id = id,
                     text = text,
                     position = new int[] { x, y },
-                    size = size
+                    size = size,
+                  
                 }
             };
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, Panel>(json, obj);
         }
+
+        public Tuple<string, SwapPanel> BuildSwapPanelPacket(string id)
+        {
+            SwapPanel obj = new SwapPanel()
+            {
+                id = "scene/panel/swap",
+                data = new Data10()
+                {
+                    id = id,
+                   
+
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, SwapPanel>(json, obj);
+        }
+
+
 
         public Tuple<string, SkyBoxTime> BuildSkyboxTimePacket(string time)
         {

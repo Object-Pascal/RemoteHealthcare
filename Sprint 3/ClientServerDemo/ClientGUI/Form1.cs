@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using Client.Json_Structure;
 using ClientGUI.Bluetooth;
 using ClientGUI.Sub_Objects;
+using System.Threading;
 
 namespace ClientGUI
 {
@@ -252,26 +253,36 @@ namespace ClientGUI
         string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["Voyager"], "banaantje").Item1);
-
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["joelle"], "banaantje").Item1);
             destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
-            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 100, 100 }, new int[] { 1, 1, 1, 1 }).Item1;
 
+            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
             string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(destination, panelAddJson).Item1;
-
             Tuple<string, JObject> panelAddResponse = serverConnection.TransferSendableResponse(sendPanelAddJson);
 
-            string clearPanelJsonRaw = @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelAddResponse.Item2.SelectToken("data.data.data.uuid") + @"""}}";
-            string sendJson1 = jsonPacketBuilder.BuildSendTunnelPacket(destination, clearPanelJsonRaw).Item1;
-            Tuple<string, JObject> panelClearResponse = serverConnection.TransferSendableResponse(sendJson1);
+            string panelAddId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
 
-            string panelJson = jsonPacketBuilder.BuildPanelPacket(panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString(), "distance", 0, 0, 10).Item1;
+            string panelJson = jsonPacketBuilder.BuildPanelPacket(panelAddId, "distance", 0, 0, 10).Item1;
             string sendJson = jsonPacketBuilder.BuildSendTunnelPacket(destination, panelJson).Item1;
 
             Tuple<string, JObject> panelResponse = serverConnection.TransferSendableResponse(sendJson);
 
+            addAllPanels(panelAddId, 50, 50, 50, (5, 25), (95, 25), (185, 25));
 
+            // ff wat simuleren
+            Thread.Sleep(3000);
+
+            ClearPanel(panelAddId);
+            addAllPanels(panelAddId, 20, 30, 40, (5, 25), (95, 25), (185, 25));
+        }
+
+        private void ClearPanel(string panelId)
+        {
+            string clearPanelJsonRaw = @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelId + @"""}}";
+            string clearPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(destination, clearPanelJsonRaw).Item1;
+            Tuple<string, JObject> panelClearResponse = serverConnection.TransferSendableResponse(clearPanelPacket);
+            // De response boeit nog even niet zo zeer
         }
 
         private void AddRoute_Click(object sender, EventArgs e)
@@ -457,17 +468,23 @@ namespace ClientGUI
             Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 2, true, false, "animationname").Item1);
         }
 
-        private void addAllPanels(int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
+        private void addAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
         {
-            addPanel("speed",""+  speed, speed2.Item1, speed2.Item2, 50);
-            addPanel("heartrate", "" + heartrate, heartrate2.Item1, heartrate2.Item2, 50);
-            addPanel("meters", "" + meters, meters2.Item1, meters2.Item2, 50);
+            addPanel(id, $"{speed}m/s", speed2.Item1, speed2.Item2, 32);
+            addPanel(id, $"{heartrate}bpm", heartrate2.Item1, heartrate2.Item2, 32);
+            addPanel(id, $"{meters}m", meters2.Item1, meters2.Item2, 32);
 
+            swapPanel(id); 
+        }
+
+        private void swapPanel(string id)
+        {
+            Tuple<string, JObject> swapPanel = SendToTunnel(jsonPacketBuilder.BuildSwapPanelPacket(id).Item1);
         }
 
         private void addPanel(string id, string text, int x, int y, double size)
         {
-        Tuple<string, JObject> addPanel = SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
+             Tuple<string, JObject> addPanel = SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
         }
 
         private void TabPage1_Click(object sender, EventArgs e)
@@ -482,7 +499,7 @@ namespace ClientGUI
 
         private void Addpanels_Click(object sender, EventArgs e)
         {
-            addAllPanels(50, 50, 50, (0, 0), (2, 2), (4, 4));
+            
         }
     }
 }
