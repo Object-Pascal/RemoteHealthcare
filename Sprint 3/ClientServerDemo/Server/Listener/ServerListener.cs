@@ -34,7 +34,7 @@ namespace Server.Listener
             this.clientThreads = new Dictionary<TcpClient, Thread>();
 
             this.clientStreams = new Dictionary<TcpClient, SslStream>();
-            this.serverCertificate = new X509Certificate2(certificatePath, "bruh");
+            this.serverCertificate = new X509Certificate2(certificatePath, "banaantje");
         }
 
         private void SetupSslStreamForClient(TcpClient client)
@@ -104,31 +104,72 @@ namespace Server.Listener
 
                                 switch (packetBundle.Item2)
                                 {
-                                    case PacketType.Status:
-                                        Console.WriteLine($"\t> Status packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.ClientStatus:
+                                        Console.WriteLine($"\t> Client Status packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         break;
-                                    case PacketType.Login:
-                                        Console.WriteLine($"\t> LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.ClientLogin:
+                                        Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         break;
-                                    case PacketType.Logout:
-                                        Console.WriteLine($"\t> LogOut packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.ClientLogout:
+                                        Console.WriteLine($"\t> Client LogOut packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         clientInThread.Close();
                                         connectedClients.Remove(clientInThread);
 
                                         Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
                                         break;
-                                    case PacketType.DataGet:
-                                        Console.WriteLine($"\t> ClientDataGet packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.ClientVr:
+                                        Console.WriteLine($"\t> Client VR packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        if (packetBundle.Item1 == "ALL_CLIENT_DATA")
+                                        break;
+                                    case PacketType.ClientBike:
+                                        Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        break;
+                                    case PacketType.ClientMessage:
+                                        Console.WriteLine($"\t> Client Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        break;
+
+                                    case PacketType.DoctorLogin:
+                                        Console.WriteLine($"\t> Doctor Login packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        string testUsername = "Pascal Stoop";
+                                        string testPassword = "123";
+
+                                        string[] data = Regex.Split(packetBundle.Item1, "\r\n");
+
+                                        if (data.Length == 2)
+                                        {
+                                            if (testUsername == data[0] && testPassword == data[1])
+                                            {
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                            }
+                                            else
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        }
+                                        SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        break;
+                                    case PacketType.DoctorLogout:
+                                        Console.WriteLine($"\t> Doctor Logout packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        clientInThread.Close();
+                                        connectedClients.Remove(clientInThread);
+
+                                        Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
+
+                                        break;
+                                    case PacketType.DoctorDataGet:
+                                        Console.WriteLine($"\t> Doctor DataGet packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        if (packetBundle.Item1 == "ALL_CLIENTS")
                                         {
                                             ClientCollection clientCollection = await ClientDataSaver.LoadClients();
                                             string packet = "Server/DataGet\r\n";
 
-                                            for (int i = 0; i < clientCollection.clients.Length; i++)
+                                            for (int i = 0; i < clientCollection.clients.Count; i++)
                                             {
                                                 packet += clientCollection.clients[i].Name + "//" + clientCollection.clients[i].Id;
                                             }
@@ -137,41 +178,35 @@ namespace Server.Listener
                                         }
 
                                         break;
-                                    case PacketType.DataSave:
-                                        Console.WriteLine($"\t> ClientDataSave packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.DoctorDataSave:
+                                        Console.WriteLine($"\t> Doctor DataSave packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //TODO: Client data opslaan naar de client
+                                        //TODO: Client data opslaan
 
                                         break;
-                                    case PacketType.Broadcast:
-                                        Console.WriteLine($"\t> Broadcast packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.DoctorAddClientHistory:
+                                        Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // Packet opstelling: "Doctor/AddClientHistory\r\n"[CLIENT_ID]\r\n[SHORT_DATE]\r\n[JSON_DATA]
+
+                                        break;
+                                    case PacketType.DoctorBroadcast:
+                                        Console.WriteLine($"\t> Doctor Broadcast packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
                                         connectedClients.ForEach(x =>
                                         {
                                             string responseFromClient = SendWithResponse(x, $"broadcast\r\n{packetBundle.Item1}", 3000);
                                             if (responseFromClient != null)
                                             {
                                                 Tuple<string, PacketType> responseFromClientPacketBundle = packetHandler.HandlePacket(responseFromClient);
-                                                if (responseFromClientPacketBundle.Item2 == PacketType.Status)
+                                                if (responseFromClientPacketBundle.Item2 == PacketType.DoctorStatus)
                                                 {
                                                     if (!packetHandler.IsStatusOk(responseFromClientPacketBundle.Item1))
-                                                        Console.WriteLine("\t> Client did not respond with status ok!");
+                                                        Console.WriteLine("\t> Doctor did not respond with status ok!");
                                                 }
                                             }
                                             else
-                                                Console.WriteLine("\t> Client did not send a response");
+                                                Console.WriteLine("\t> Doctor did not send a response");
                                         });
-                                        break;
-                                    case PacketType.Vr:
-                                        Console.WriteLine($"\t> VR packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-
-                                        break;
-                                    case PacketType.Bike:
-                                        Console.WriteLine($"\t> Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-
-                                        break;
-                                    case PacketType.Message:
-                                        Console.WriteLine($"\t> Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-
                                         break;
                                     case PacketType.UnknownPacket:
                                         Console.WriteLine($"\t> Unknown packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");

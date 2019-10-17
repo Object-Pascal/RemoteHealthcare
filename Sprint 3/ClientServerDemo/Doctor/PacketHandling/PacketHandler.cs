@@ -12,6 +12,8 @@ namespace Doctor.PacketHandling
             {
                 switch (lines[0])
                 {
+                    case "Server/Status":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.Status);
                     case "Server/DataGet":
                         return new Tuple<string, PacketType>(lines[1], PacketType.DataGet);
                     default:

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Doctor
 {
-    class ServerConnection
+    public class ServerConnection
     {
         private TcpClient client;
         private SslStream sslStream;

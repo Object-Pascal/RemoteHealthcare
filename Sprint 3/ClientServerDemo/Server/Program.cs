@@ -12,21 +12,26 @@ namespace Server
 
         static void Main(string[] args)
         {
-            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "192.168.1.2", 25570);
+            string cerFile = Directory.GetCurrentDirectory() + "\\certificate.cer";
+            string pfxFile = Directory.GetCurrentDirectory() + "\\certificate.pfx";
+
+            if (!File.Exists(cerFile) && !File.Exists(pfxFile))
+            {
+                CreateCertificate("80.115.121.54");
+            }
+
+            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "192.168.1.22", 30000);
             server.Start();
 
             Console.ReadKey();
-
-            //CreateCertificate();
         }
 
-        private static void CreateCertificate()
+        private static void CreateCertificate(string cn)
         {
+            Console.WriteLine("Creating certificate...");
             using (CryptContext ctx = new CryptContext())
             {
                 ctx.Open();
-
-                string cn = "192.168.1.2";
 
                 X509Certificate2 cert = ctx.CreateSelfSignedCertificate(
                     new SelfSignedCertProperties
@@ -39,7 +44,7 @@ namespace Server
                     }
                 );
 
-                byte[] certFileRaw = cert.Export(X509ContentType.Pfx, "bruh");
+                byte[] certFileRaw = cert.Export(X509ContentType.Pfx, "banaantje");
                 string filePath = Directory.GetCurrentDirectory() + "\\certificate.pfx";
 
                 File.WriteAllBytes(filePath, certFileRaw);
@@ -49,12 +54,15 @@ namespace Server
                         + Convert.ToBase64String(cert.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks)
                         + "\r\n-----END CERTIFICATE-----"
                 );
+                Console.WriteLine("Done");
 
+                Console.WriteLine("Adding to store...");
                 using (X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
                 {
                     store.Open(OpenFlags.ReadWrite);
                     store.Add(cert);
                 }
+                Console.WriteLine("Done");
             }
         }
     }

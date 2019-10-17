@@ -17,23 +17,34 @@ namespace Server.Listener
                 switch (lines[0])
                 {
                     case "Client/Status":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Status);
-                    case "Client/DataGet":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DataGet);
-                    case "Client/DataSave":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DataSave);
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientStatus);
                     case "Client/LogIn":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Login);
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientLogin);
                     case "Client/LogOut":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Logout);
-                    case "Client/Broadcast":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Broadcast);
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientLogout);
                     case "Client/VR":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Vr);
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientVr);
                     case "Client/Bike":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Bike);
-                    case "Client/message":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.Message);
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientBike);
+                    case "Client/Message":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientMessage);
+
+                    case "Doctor/Status":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorStatus);
+                    case "Doctor/DataGet":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataGet);
+                    case "Doctor/DataSave":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataSave);
+                    case "Doctor/AddClientHistory":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddClientHistory);
+                    case "Doctor/LogIn":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
+                    case "Doctor/LogOut":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogout);
+                    case "Doctor/Broadcast":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
+                    case "Doctor/Message":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogout);
                     default:
                         return new Tuple<string, PacketType>(lines[1], PacketType.UnknownPacket);
                 }

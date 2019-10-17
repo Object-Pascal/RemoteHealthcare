@@ -40,7 +40,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.login.Location = new System.Drawing.Point(199, 151);
-            this.login.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.login.Margin = new System.Windows.Forms.Padding(2);
             this.login.Name = "login";
             this.login.Size = new System.Drawing.Size(109, 30);
             this.login.TabIndex = 0;
@@ -55,7 +55,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDoctorName.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.txtDoctorName.Location = new System.Drawing.Point(199, 107);
-            this.txtDoctorName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDoctorName.Margin = new System.Windows.Forms.Padding(2);
             this.txtDoctorName.Name = "txtDoctorName";
             this.txtDoctorName.Size = new System.Drawing.Size(109, 20);
             this.txtDoctorName.TabIndex = 1;
@@ -70,7 +70,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDoctorPassword.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.txtDoctorPassword.Location = new System.Drawing.Point(199, 127);
-            this.txtDoctorPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDoctorPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txtDoctorPassword.Name = "txtDoctorPassword";
             this.txtDoctorPassword.PasswordChar = '*';
             this.txtDoctorPassword.Size = new System.Drawing.Size(109, 20);
@@ -103,7 +103,8 @@
             this.Controls.Add(this.txtDoctorPassword);
             this.Controls.Add(this.txtDoctorName);
             this.Controls.Add(this.login);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "LoginScreen";
             this.Text = "LoginScreen";
             this.ResumeLayout(false);

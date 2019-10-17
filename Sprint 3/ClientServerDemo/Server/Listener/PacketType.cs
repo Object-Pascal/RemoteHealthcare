@@ -2,16 +2,23 @@
 {
     public enum PacketType
     {
-        Status,
-        DataGet,
-        DataSave,
-        Login,
-        Logout,
-        Broadcast,
-        Vr,
-        Bike,
-        Message,
         UnknownPacket,
-        EmptyPacket
+        EmptyPacket,
+
+        ClientStatus,
+        ClientLogin,
+        ClientLogout,
+        ClientVr,
+        ClientBike,
+        ClientMessage,
+
+        DoctorStatus,
+        DoctorDataGet,
+        DoctorDataSave,
+        DoctorAddClientHistory,
+        DoctorLogin,
+        DoctorLogout,
+        DoctorBroadcast,
+        DoctorMessage
     }
 }

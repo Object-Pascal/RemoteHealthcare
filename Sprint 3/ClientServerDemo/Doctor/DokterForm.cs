@@ -14,6 +14,7 @@ namespace Doctor
 {
     public partial class DokterForm : Form
     {
+        private LoginScreen loginScreen;
         private ServerConnection serverConnection;
         private bool serverConnected;
         private PacketHandler packetHandler;
@@ -22,40 +23,25 @@ namespace Doctor
         private List<Patient> selectedPatients;
         private List<Patient> availablePatients;
 
-        private string broadcastMessage { get; set; }
-
         public DokterForm()
         {
             InitializeComponent();
-            InitializeServerConnection();
 
-            if (this.serverConnected)
-            {
-                this.FormClosing += (s, e) =>
-                {
-                    serverConnection.Disconnect();
-                };
+            loginScreen = new LoginScreen();
 
-                panel = LayoutPanelClient;
-
-                selectedPatients = new List<Patient>();
-                availablePatients = new List<Patient>();
-
-                testDataAvailablePatients();
-            }
+            loginScreen.LoggedIn += LoginScreen_LoggedIn;
+            loginScreen.FalseLogin += LoginScreen_FalseLogin;
+            loginScreen.ShowDialog();
         }
 
-        private async void InitializeServerConnection()
+        private void LoginScreen_LoggedIn()
         {
-            this.packetHandler = new PacketHandler();
-            this.serverConnection = new ServerConnection();
-            this.serverConnected = await serverConnection.Connect("192.168.1.2", 25570);
+            loginScreen.Close();
+        }
 
-            string responsePacket = await this.serverConnection.SendWithResponse("Client/DataGet\r\nALL_CLIENT_DATA");
-            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
-
-            MessageBox.Show(handledPacket.Item1);
-            //Console.WriteLine(handledPacket.Item1);
+        private void LoginScreen_FalseLogin()
+        {
+            MessageBox.Show("False login credentials");
         }
 
         private void SelectBtn_Click(object sender, EventArgs e)
@@ -121,7 +107,7 @@ namespace Doctor
         private void BroadcastBtn_Click(object sender, EventArgs e)
         {
             //Send message to server for broadcasting
-            broadcastMessage = BroadcastTextBox.Text;
+            string broadcastmessage = BroadcastTextBox.Text;
 
             //Clears textbox
             BroadcastTextBox.Clear();
