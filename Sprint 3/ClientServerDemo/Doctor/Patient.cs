@@ -8,13 +8,12 @@ namespace Doctor
 {
     class Patient
     {
-        public Patient(string name, int age, string gender, string fietsId)
+        public Patient(string name, int age, string gender)
         {
             Name = name;
             Age = age;
             Gender = gender;
             Bpm = 0;
-            FietsId = fietsId;
         }
 
         public String Name { get; private set; }
@@ -25,12 +24,11 @@ namespace Doctor
 
         public int Bpm { get; set; }
 
-        public String FietsId { get; set; }
-
+        public List<Session> sessions { get; set; }
 
         public String toString()
         {
-            return $"{Name} - {FietsId} " ;
+            return $"{Name} - FietsId " ;
         }
     }
 }
