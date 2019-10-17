@@ -53,10 +53,14 @@
   <ItemGroup>
     <Compile Include="IO\Data\Client.cs" />
     <Compile Include="IO\Data\ClientCollection.cs" />
+    <Compile Include="IO\Data\ClientData.cs" />
+    <Compile Include="IO\Data\ClientDataCollection.cs" />
+    <Compile Include="IO\Data\Doctor.cs" />
+    <Compile Include="IO\Data\DoctorCollection.cs" />
     <Compile Include="Listener\PacketHandler.cs" />
     <Compile Include="Listener\PacketType.cs" />
     <Compile Include="Listener\ServerListener.cs" />
-    <Compile Include="IO\ClientDataSaver.cs" />
+    <Compile Include="IO\IODataHandler.cs" />
     <Compile Include="IO\JsonHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

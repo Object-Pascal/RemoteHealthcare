@@ -31,16 +31,20 @@ namespace Server.Listener
 
                     case "Doctor/Status":
                         return new Tuple<string, PacketType>(lines[1], PacketType.DoctorStatus);
-                    case "Doctor/DataGet":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataGet);
-                    case "Doctor/DataSave":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataSave);
-                    case "Doctor/AddClientHistory":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddClientHistory);
                     case "Doctor/LogIn":
                         return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
                     case "Doctor/LogOut":
                         return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogout);
+                    case "Doctor/DataGet":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataGet);
+                    case "Doctor/DataSave":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataSave);
+                    case "Doctor/AddNewClient":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddNewClient);
+                    case "Doctor/AddClientHistory":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddClientHistory);
+                    case "Doctor/GetClientHistory":
+                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorGetClientHistory);
                     case "Doctor/Broadcast":
                         return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
                     case "Doctor/Message":

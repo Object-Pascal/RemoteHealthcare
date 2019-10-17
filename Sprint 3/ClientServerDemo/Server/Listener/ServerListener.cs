@@ -18,7 +18,8 @@ namespace Server.Listener
 
         private PacketHandler packetHandler;
 
-        List<TcpClient> connectedClients;
+        private IODataHandler iODataHandler;
+        private List<TcpClient> connectedClients;
         private Dictionary<TcpClient, Thread> clientThreads;
 
         private X509Certificate2 serverCertificate;
@@ -30,6 +31,7 @@ namespace Server.Listener
 
             this.packetHandler = new PacketHandler();
 
+            this.iODataHandler = new IODataHandler();
             this.connectedClients = new List<TcpClient>();
             this.clientThreads = new Dictionary<TcpClient, Thread>();
 
@@ -107,9 +109,13 @@ namespace Server.Listener
                                     case PacketType.ClientStatus:
                                         Console.WriteLine($"\t> Client Status packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        // Obsolete until further notice
+
                                         break;
                                     case PacketType.ClientLogin:
                                         Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // TODO Client login logic 
 
                                         break;
                                     case PacketType.ClientLogout:
@@ -123,27 +129,31 @@ namespace Server.Listener
                                     case PacketType.ClientVr:
                                         Console.WriteLine($"\t> Client VR packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        // Obsolete until further notice
+
                                         break;
                                     case PacketType.ClientBike:
                                         Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        // TODO Realtime bike data tunneling to connected Doctor
+
                                         break;
                                     case PacketType.ClientMessage:
                                         Console.WriteLine($"\t> Client Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // TODO Realtime message tunneling to connected Doctor
 
                                         break;
 
                                     case PacketType.DoctorLogin:
                                         Console.WriteLine($"\t> Doctor Login packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        string testUsername = "Pascal Stoop";
-                                        string testPassword = "123";
+                                        string[] loginData = Regex.Split(packetBundle.Item1, "\r\n");
 
-                                        string[] data = Regex.Split(packetBundle.Item1, "\r\n");
-
-                                        if (data.Length == 2)
+                                        if (loginData.Length == 2)
                                         {
-                                            if (testUsername == data[0] && testPassword == data[1])
+                                            Doctor doctor = await iODataHandler.GetDoctorAsync(loginData[0], loginData[1]);
+                                            if (doctor != null)
                                             {
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nok");
                                             }
@@ -166,7 +176,7 @@ namespace Server.Listener
 
                                         if (packetBundle.Item1 == "ALL_CLIENTS")
                                         {
-                                            ClientCollection clientCollection = await ClientDataSaver.LoadClients();
+                                            ClientCollection clientCollection = await IODataHandler.LoadClients();
                                             string packet = "Server/DataGet\r\n";
 
                                             for (int i = 0; i < clientCollection.clients.Count; i++)
@@ -176,37 +186,153 @@ namespace Server.Listener
 
                                             SendWithNoResponse(clientInThread, packet);
                                         }
-
+                                        else
+                                            SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
                                         break;
                                     case PacketType.DoctorDataSave:
                                         Console.WriteLine($"\t> Doctor DataSave packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //TODO: Client data opslaan
+                                        // Obsolete until further notice
+
+                                        break;
+                                    case PacketType.DoctorAddNewClient:
+                                        Console.WriteLine($"\t> Doctor AddNewClient packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // EG: Doctor/AddNewClient\r\nNAME
+                                        string[] newClientData = Regex.Split(packetBundle.Item1, "\r\n");
+
+                                        if (newClientData.Length == 0)
+                                        {
+                                            int newId = await iODataHandler.ProvideNewClientId();                                 
+                                            if (newId > -1)
+                                            {
+                                                Client newClient = new Client();
+                                                newClient.Name = newClientData[0];
+                                                newClient.Id = newId;
+
+                                                bool saved = await iODataHandler.AddClientAsync(newClient);
+
+                                                if (saved)
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                                else
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                            }
+                                            else
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        }
 
                                         break;
                                     case PacketType.DoctorAddClientHistory:
                                         Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // Packet opstelling: "Doctor/AddClientHistory\r\n"[CLIENT_ID]\r\n[SHORT_DATE]\r\n[JSON_DATA]
+                                        // EG: Doctor/AddClientHistory\r\nCLIENT_ID\r\nDATETIME\r\nHEARTRATE_BYTES\r\nBIKE_BYTES
+                                        string[] saveData = Regex.Split(packetBundle.Item1, "\r\n");
+
+                                        if (saveData.Length == 4)
+                                        {
+                                            int idParseResult = 0;
+                                            if (int.TryParse(saveData[0], out idParseResult))
+                                            {
+                                                Client client = await iODataHandler.GetClientAsync(idParseResult);
+                                                if (client != null)
+                                                {
+                                                    ClientData newClientDataEntry = new ClientData();
+                                                    newClientDataEntry.clientId = client.Id;
+
+                                                    DateTime dateParseResult;
+                                                    if (DateTime.TryParse(saveData[1], out dateParseResult))
+                                                    {
+                                                        newClientDataEntry.Date = dateParseResult;
+
+                                                        string[] heartRateDataLines = Regex.Split(saveData[2], "//");
+                                                        if (heartRateDataLines.Length > 0)
+                                                        {
+                                                            for (int i = 0; i < heartRateDataLines.Length; i++)
+                                                            {
+                                                                newClientDataEntry.heartRateData.Add(heartRateDataLines[i]);
+                                                            }
+                                                        }
+
+                                                        string[] bikeDataLines = Regex.Split(saveData[3], "//");
+                                                        if (bikeDataLines.Length > 0)
+                                                        {
+                                                            for (int i = 0; i < bikeDataLines.Length; i++)
+                                                            {
+                                                                newClientDataEntry.bikeData.Add(bikeDataLines[i]);
+                                                            }
+                                                        }
+
+                                                        bool saved = await iODataHandler.AddClientDataAsync(newClientDataEntry);
+                                                        if (saved)
+                                                            SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                                        else
+                                                            SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                                    }
+                                                    else
+                                                        SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                                }
+                                                else
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                            }
+                                            else
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        }
+                                        else
+                                            SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+
+                                        break;
+                                    case PacketType.DoctorGetClientHistory:
+                                        Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // EG: Doctor/GetClientHistory\r\nCLIENT_ID\r\nDATE
+                                        string[] getData = Regex.Split(packetBundle.Item1, "\r\n");
+
+                                        if (getData.Length == 2)
+                                        {
+                                            int idParseResult = 0;
+                                            if (int.TryParse(getData[0], out idParseResult))
+                                            {
+                                                DateTime dateParseResult;
+                                                if (DateTime.TryParse(getData[1], out dateParseResult))
+                                                {
+                                                    // Filter based on year, month and day (TODO possible time check implemented later)
+                                                    ClientData clientData = await iODataHandler.GetClientDataAsync(idParseResult, dateParseResult);
+
+                                                    string heartRateBytesRaw = "";
+                                                    for (int i = 0; i < clientData.heartRateData.Count; i++)
+                                                        heartRateBytesRaw += clientData.heartRateData[i] + "//";
+
+                                                    string bikeBytesRaw = "";
+                                                    for (int i = 0; i < clientData.bikeData.Count; i++)
+                                                        bikeBytesRaw += clientData.bikeData[i] + "//";
+
+                                                    // EG: Server/GetClientHistory\r\nDATETIME\r\nHEARTRATE_BYTES\r\nBIKE_BYTES
+                                                    string packet = $"Server/GetClientHistory\r\n{clientData.Date.ToString()}\r\n{heartRateBytesRaw}\r\n{bikeBytesRaw}";
+                                                    SendWithNoResponse(clientInThread, packet);
+                                                }
+
+                                            }
+                                            else
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        }
+                                        else
+                                            SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
 
                                         break;
                                     case PacketType.DoctorBroadcast:
                                         Console.WriteLine($"\t> Doctor Broadcast packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
                                         connectedClients.ForEach(x =>
                                         {
-                                            string responseFromClient = SendWithResponse(x, $"broadcast\r\n{packetBundle.Item1}", 3000);
-                                            if (responseFromClient != null)
-                                            {
-                                                Tuple<string, PacketType> responseFromClientPacketBundle = packetHandler.HandlePacket(responseFromClient);
-                                                if (responseFromClientPacketBundle.Item2 == PacketType.DoctorStatus)
-                                                {
-                                                    if (!packetHandler.IsStatusOk(responseFromClientPacketBundle.Item1))
-                                                        Console.WriteLine("\t> Doctor did not respond with status ok!");
-                                                }
-                                            }
-                                            else
-                                                Console.WriteLine("\t> Doctor did not send a response");
+                                            // No real responses from the clients are required
+                                            SendWithNoResponse(x, $"broadcast\r\n{packetBundle.Item1}");
                                         });
+                                        break;
+                                    case PacketType.DoctorMessage:
+                                        Console.WriteLine($"\t> Doctor Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        // TODO Realtime message tunneling to connected Client
+
                                         break;
                                     case PacketType.UnknownPacket:
                                         Console.WriteLine($"\t> Unknown packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
