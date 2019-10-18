@@ -14,6 +14,11 @@ namespace Doctor
         private TcpClient client;
         private SslStream sslStream;
 
+        public bool Connected
+        {
+            get => client.Connected;
+        }
+
         public ServerConnection()
         {
             client = new TcpClient();

@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms; 
 
@@ -16,7 +17,6 @@ namespace Doctor
     {
         private LoginScreen loginScreen;
         private ServerConnection serverConnection;
-        private bool serverConnected;
         private PacketHandler packetHandler;
 
         private FlowLayoutPanel panel;
@@ -28,20 +28,52 @@ namespace Doctor
             InitializeComponent();
 
             loginScreen = new LoginScreen();
+            this.packetHandler = new PacketHandler();
+
+            this.selectedPatients = new List<Patient>();
+            this.availablePatients = new List<Patient>();
 
             loginScreen.LoggedIn += LoginScreen_LoggedIn;
             loginScreen.FalseLogin += LoginScreen_FalseLogin;
             loginScreen.ShowDialog();
+
+            this.FormClosing += (s, e) =>
+            {
+                this.serverConnection.SendWithNoResponse($"Doctor/LogOut\r\n");
+                System.Threading.Thread.Sleep(1000);
+            };
         }
 
-        private void LoginScreen_LoggedIn()
+        private async void InitializeClientList()
         {
+            //send: Doctor/DataGet\r\nALL_CLIENTS
+            //response: Server/DataGet\r\nNAME//ID//NAME//ID//NAME//ID//NAME//ID//NAME//ID//...
+            string responsePacket = await this.serverConnection.SendWithResponse($"Doctor/DataGet\r\nALL_CLIENTS");
+            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+
+            if (handledPacket.Item2 == PacketType.DataGet)
+            {
+                string[] clientsRaw = Regex.Split(handledPacket.Item1, "//").Where(x => x != "").ToArray();
+
+                for (int i = 0; i < clientsRaw.Length; i += 4)
+                {
+                    availablePatients.Add(new Patient(clientsRaw[i], clientsRaw[i + 1], clientsRaw[i + 2], clientsRaw[i + 3]));
+                    availableListBox.Items.Add(clientsRaw[i]);
+                }
+            }
+        }
+
+        private void LoginScreen_LoggedIn(LogInArgs args)
+        {
+            this.serverConnection = args.ServerConnection;
+            InitializeClientList();
             loginScreen.Close();
         }
 
         private void LoginScreen_FalseLogin()
         {
             MessageBox.Show("False login credentials");
+            Application.Exit();
         }
 
         private void SelectBtn_Click(object sender, EventArgs e)
@@ -127,15 +159,19 @@ namespace Doctor
             btn.TextAlign = ContentAlignment.TopLeft;
             btn.BackColor = Color.White;
             panel.Controls.Add(btn);
+            btn.Tag = p;
             btn.Click += new EventHandler(button_click);
-
         }
 
-        private void button_click(object sender, EventArgs e)
+        private async void button_click(object sender, EventArgs e)
         {
             //send selected patient back to server
             //open detailed information form
-            DetailDoctorForm detail = new DetailDoctorForm();
+
+
+
+            Button b = sender as Button;
+            DetailDoctorForm detail = new DetailDoctorForm((Patient)b.Tag, this.serverConnection);
             detail.Show();
 
             BroadcastTextBox.Text = "WELLOE DIT WERKT";
@@ -155,12 +191,12 @@ namespace Doctor
 
         private void testDataAvailablePatients()
         {
-            availablePatients.Add(new Patient("Pascal", 20, "Man"));
-            availablePatients.Add(new Patient("Maarten", 20, "Man"));
-            availablePatients.Add(new Patient("Thijs", 21, "Man"));
-            availablePatients.Add(new Patient("Joelle", 20, "Vrouw"));
-            availablePatients.Add(new Patient("Marleen", 20, "Vrouw"));
-            availablePatients.Add(new Patient("Kirsten", 20, "Vrouw"));
+            //availablePatients.Add(new Patient("Pascal", "1", 20, "Man"));
+            //availablePatients.Add(new Patient("Maarten", "2", 20, "Man"));
+            //availablePatients.Add(new Patient("Thijs", "3", 21, "Man"));
+            //availablePatients.Add(new Patient("Joelle", "4", 20, "Vrouw"));
+            //availablePatients.Add(new Patient("Marleen", "5", 20, "Vrouw"));
+            //availablePatients.Add(new Patient("Kirsten", "6", 20, "Vrouw"));
         }
     } 
 }

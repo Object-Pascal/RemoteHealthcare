@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Doctor
 {
-    class Patient
+    public class Patient
     {
-        public Patient(string name, int age, string gender)
+        public Patient(string name, string id, string age, string gender)
         {
             Name = name;
+            Id = id;
             Age = age;
             Gender = gender;
             Bpm = 0;
@@ -18,7 +19,8 @@ namespace Doctor
 
         public String Name { get; private set; }
 
-        public int Age { get; set; }
+        public string Age { get; set; }
+        public string Id { get; set; }
 
         public String Gender { get; set; }
 

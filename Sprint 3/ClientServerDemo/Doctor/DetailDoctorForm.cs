@@ -12,20 +12,22 @@ namespace Doctor
 {
     public partial class DetailDoctorForm : Form
     {
-        //private ServerConnection serverConnection;
+        private ServerConnection serverConnection;
         //private bool serverConnected;
         //private PacketHandler packetHandler;
 
         private Patient patient;
-        public DetailDoctorForm()
+        public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();
-            SetDefaultValues();
-            //InitializeServerConnection();
+            SetDefaultValues(patient, serverConnection);
         }
 
-        public void SetDefaultValues()
-        {  
+        public void SetDefaultValues(Patient patient, ServerConnection serverConnection)
+        {
+            this.patient = patient;
+            this.serverConnection = serverConnection;
+
             //lblName.Text = patient.Name;
             //lblBirthDate.Text = patient.Age + "";     
             //lblGender.Text = patient.Gender;

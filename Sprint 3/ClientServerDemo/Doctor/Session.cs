@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Doctor
 {
-    class Session
+    public class Session
     {
         private List<String> heartrate { get; set; }
         private List<String> distance { get; set; }
