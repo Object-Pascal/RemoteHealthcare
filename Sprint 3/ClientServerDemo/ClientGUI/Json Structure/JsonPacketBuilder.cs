@@ -61,6 +61,20 @@ namespace Client.Json_Structure
             return new Tuple<string, DeleteNode>(json, obj);
         }
 
+        public Tuple<string, FindNode> BuildFindNodePacket(string name)
+        {
+            FindNode obj = new FindNode()
+            {
+                id = "scene/node/find",
+                data = new Data13()
+                {
+                    name = name
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, FindNode>(json, obj);
+        }
+
         public Tuple<string, Panel> BuildPanelPacket(string id, string text, int x, int y, double size)
         {
             Panel obj = new Panel()
