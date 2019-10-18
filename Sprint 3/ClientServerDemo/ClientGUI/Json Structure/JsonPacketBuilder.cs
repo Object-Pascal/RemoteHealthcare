@@ -171,7 +171,7 @@ namespace Client.Json_Structure
             return new Tuple<string, ClientGUI.Json_Structure.Serializables.Terrain>(json, obj);
         }
 
-        public Tuple<string, TerrainNode> BuildTerrainNodePacket(string name, int x, int y, int z, int scale, bool smoothnormals)
+        public Tuple<string, TerrainNode> BuildTerrainNodePacket(string name, double x, double y, double z, int scale, bool smoothnormals)
         {
             TerrainNode obj = new TerrainNode()
             {
@@ -183,7 +183,7 @@ namespace Client.Json_Structure
                     {
                         transform = new Transform()
                         {
-                            position = new int[] { x, y, x },
+                            position = new double[] { x, y, x },
                             scale = scale,
                             rotation = new int[] { 0, 0, 0, }
                         },
@@ -248,7 +248,7 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteFollow>(json, obj);
         }
 
-        public Tuple<string, ModelLoad> BuildModelLoadPacket(string name, string file, int x, int y, int z, double scale, bool cullbackfaces, bool animated, string animation)
+        public Tuple<string, ModelLoad> BuildModelLoadPacket(string name, string file, double x, double y, double z, double scale, bool cullbackfaces, bool animated, string animation)
         {
             ModelLoad obj = new ModelLoad()
             {
@@ -260,7 +260,7 @@ namespace Client.Json_Structure
                     {
                         transform = new Transform()
                         {
-                            position = new int[] { x, y, z },
+                            position = new double[] { x, y, z },
                             scale = scale,
                             rotation = new int[] { 0, 0, 0 }
                         },
@@ -354,7 +354,7 @@ namespace Client.Json_Structure
             return new Tuple<string, StopData>(json, obj);
         }
 
-        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, int x, int y, int z)
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, double x, double y, double z)
         {
             UpdateNode obj = new UpdateNode()
             {
@@ -365,7 +365,7 @@ namespace Client.Json_Structure
                     parent = idParent,
                     transform = new Transform()
                     {
-                        position = new int[] { x, y, z},
+                        position = new double[] { x, y, z},
                         scale = scale,
                         rotation = new int[] { 0, 0, 0, }
                     }
