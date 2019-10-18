@@ -20,7 +20,7 @@ namespace Server
                 CreateCertificate("80.115.121.54");
             }
 
-            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "192.168.1.22", 30000);
+            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "192.168.1.2", 25545);
             server.Start();
 
             Console.ReadKey();
