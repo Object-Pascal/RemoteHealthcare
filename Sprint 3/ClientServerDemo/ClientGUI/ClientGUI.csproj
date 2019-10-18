@@ -57,17 +57,33 @@
     <Compile Include="ConnectServer.cs" />
     <Compile Include="Connection\ServerConnection.cs" />
     <Compile Include="Conversion\PageConversion.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Json Structure\JsonPacketBuilder.cs" />
+    <Compile Include="Json Structure\Serializables\FindNode.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data13.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data14.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\StopData.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\StopDataBody.cs" />
+    <Compile Include="Json Structure\Serializables\SwapPanel.cs" />
     <Compile Include="Json Structure\Serializables\DeleteNode.cs" />
+    <Compile Include="Json Structure\Serializables\ModelLoad.cs" />
     <Compile Include="Json Structure\Serializables\Panel.cs" />
     <Compile Include="Json Structure\Serializables\PanelAdd.cs" />
+    <Compile Include="Json Structure\Serializables\RoadAdd.cs" />
     <Compile Include="Json Structure\Serializables\RouteAdd.cs" />
     <Compile Include="Json Structure\Serializables\RouteFollow.cs" />
     <Compile Include="Json Structure\Serializables\RouteShow.cs" />
+    <Compile Include="Json Structure\Serializables\SceneReset.cs" />
     <Compile Include="Json Structure\Serializables\Session.cs" />
     <Compile Include="Json Structure\Serializables\SkyBoxTime.cs" />
     <Compile Include="Json Structure\Serializables\SkyBoxUpdate.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Data12.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\DataRoad.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Panel1.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Components1.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Components2.cs" />
@@ -89,8 +105,8 @@
     <Compile Include="Json Structure\Serializables\Sub Objects\Terrain.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Transform.cs" />
     <Compile Include="Json Structure\Serializables\Terrain.cs" />
+    <Compile Include="Json Structure\Serializables\TerrainAdd.cs" />
     <Compile Include="Json Structure\Serializables\TerrainNode.cs" />
-    <Compile Include="Json Structure\Serializables\Treeload.cs" />
     <Compile Include="Json Structure\Serializables\Tunnel.cs" />
     <Compile Include="Json Structure\Serializables\Update.cs" />
     <Compile Include="LoginScreen.cs">
@@ -100,6 +116,7 @@
       <DependentUpon>LoginScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Patient.cs" />
+    <Compile Include="Json Structure\Serializables\UpdateNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulator\Simulator.cs" />
@@ -116,6 +133,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Bike\Mountain_Bike\Material\Mountain_Bike.blend" />
+    <None Include="Bike\Mountain_Bike\Material\Mountain_Bike.blend1" />
+    <None Include="Bike\Mountain_Bike\OBJ\Mountain_Bike.mtl" />
+    <None Include="Bike\Mountain_Bike\OBJ\Mountain_Bike.obj" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -129,6 +150,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Bike\Mountain_Bike\Textur\0029.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\Lake.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\tex_tanah.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_ban_belakang.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_ban_depan.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_bn_depan.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_rangka.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

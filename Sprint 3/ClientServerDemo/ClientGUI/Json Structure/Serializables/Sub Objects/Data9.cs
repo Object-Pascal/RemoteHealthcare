@@ -4,7 +4,7 @@
     {
         public string route { get; set; }
         public string node { get; set; }
-        public string speed { get; set; }
+        public float speed { get; set; }
         public float offset { get; set; }
         public string rotate { get; set; }
         public float smoothing { get; set; }
