@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,52 +10,53 @@ namespace Server.Listener
 {
     public class PacketHandler
     {
-        public Tuple<string, PacketType> HandlePacket(string packet)
+        public Tuple<string[], PacketType> HandlePacket(string packet)
         {
             string[] lines = Regex.Split(packet, "\r\n");
+
             if (lines.Length > 1)
             {
                 switch (lines[0])
                 {
                     case "Client/Status":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientStatus);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientStatus);
                     case "Client/LogIn":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientLogin);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientLogin);
                     case "Client/LogOut":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientLogout);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientLogout);
                     case "Client/VR":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientVr);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientVr);
                     case "Client/Bike":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientBike);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientBike);
                     case "Client/Message":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.ClientMessage);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientMessage);
 
                     case "Doctor/Status":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorStatus);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorStatus);
                     case "Doctor/LogIn":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
                     case "Doctor/LogOut":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogout);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogout);
                     case "Doctor/DataGet":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataGet);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorDataGet);
                     case "Doctor/DataSave":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorDataSave);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorDataSave);
                     case "Doctor/AddNewClient":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddNewClient);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorAddNewClient);
                     case "Doctor/AddClientHistory":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorAddClientHistory);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorAddClientHistory);
                     case "Doctor/GetClientHistory":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorGetClientHistory);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorGetClientHistory);
                     case "Doctor/Broadcast":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogin);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
                     case "Doctor/Message":
-                        return new Tuple<string, PacketType>(lines[1], PacketType.DoctorLogout);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogout);
                     default:
-                        return new Tuple<string, PacketType>(lines[1], PacketType.UnknownPacket);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.UnknownPacket);
                 }
             }
             else
-                return new Tuple<string, PacketType>(string.Empty, PacketType.EmptyPacket);
+                return new Tuple<string[], PacketType>(new string[] { string.Empty }, PacketType.EmptyPacket);
         }
 
         public bool IsStatusOk(string packet)

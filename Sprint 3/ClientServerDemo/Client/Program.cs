@@ -62,12 +62,12 @@ namespace Client
             string name = Console.ReadLine();
             Console.WriteLine("your password");
             string wachtwoord = Console.ReadLine();
-            Console.WriteLine("Select your bike: ");
+          //  Console.WriteLine("Select your bike: ");
 
-            bikedata.getBikes();
+           // bikedata.getBikes();
 
 
-            Console.ReadKey(); 
+           // Console.ReadKey(); 
 
             Write("login\r\n" + name + "\r\n" + wachtwoord + "\r\n\r\n");
 

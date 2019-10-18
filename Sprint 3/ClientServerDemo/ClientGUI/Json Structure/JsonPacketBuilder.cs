@@ -1,4 +1,5 @@
 ﻿using ClientGUI.Json_Structure.Serializables;
+using ClientGUI.Json_Structure.Serializables.Sub_Objects;
 using ClientGUI.Sub_Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -60,6 +61,20 @@ namespace Client.Json_Structure
             return new Tuple<string, DeleteNode>(json, obj);
         }
 
+        public Tuple<string, FindNode> BuildFindNodePacket(string name)
+        {
+            FindNode obj = new FindNode()
+            {
+                id = "scene/node/find",
+                data = new Data13()
+                {
+                    name = name
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, FindNode>(json, obj);
+        }
+
         public Tuple<string, Panel> BuildPanelPacket(string id, string text, int x, int y, double size)
         {
             Panel obj = new Panel()
@@ -70,11 +85,28 @@ namespace Client.Json_Structure
                     id = id,
                     text = text,
                     position = new int[] { x, y },
-                    size = size
+                    size = size,
+                  
                 }
             };
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, Panel>(json, obj);
+        }
+
+        public Tuple<string, SwapPanel> BuildSwapPanelPacket(string id)
+        {
+            SwapPanel obj = new SwapPanel()
+            {
+                id = "scene/panel/swap",
+                data = new Data10()
+                {
+                    id = id,
+                   
+
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, SwapPanel>(json, obj);
         }
 
         public Tuple<string, SkyBoxTime> BuildSkyboxTimePacket(string time)
@@ -139,7 +171,7 @@ namespace Client.Json_Structure
             return new Tuple<string, ClientGUI.Json_Structure.Serializables.Terrain>(json, obj);
         }
 
-        public Tuple<string, TerrainNode> BuildTerrainNodePacket(string name, int x, int y, int z, int scale, bool smoothnormals)
+        public Tuple<string, TerrainNode> BuildTerrainNodePacket(string name, double x, double y, double z, int scale, bool smoothnormals)
         {
             TerrainNode obj = new TerrainNode()
             {
@@ -151,9 +183,9 @@ namespace Client.Json_Structure
                     {
                         transform = new Transform()
                         {
-                            position = new int[] { x, y, x },
+                            position = new double[] { x, y, x },
                             scale = scale,
-                            rotation = new int[] { 0, 0, 0, }
+                            rotation = new double[] { 0, 0, 0, }
                         },
                         terrain = new ClientGUI.Sub_Objects.Terrain()
                         {
@@ -194,7 +226,7 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteShow>(json, obj);
         }
 
-        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, int speed)
+        public Tuple<string, RouteFollow> BuildRouteFollowPacket(string routeID, string nodeID, float speed, float offset, string rotate, float smoothing)
         {
             RouteFollow obj = new RouteFollow()
             {
@@ -203,10 +235,10 @@ namespace Client.Json_Structure
                 {
                     route = routeID,
                     node = nodeID,
-                    speed = speed.ToString(),
-                    //offset = offset,
-                    //rotate = rotate,
-                    //smoothing = smoothing,
+                    speed = speed,
+                    offset = offset,
+                    rotate = rotate,
+                    smoothing = smoothing,
                     followHeight = true,
                     rotateOffset = new int[] { 0, 0, 0 },
                     positionOffset = new int[] { 0, 0, 0 }
@@ -216,9 +248,9 @@ namespace Client.Json_Structure
             return new Tuple<string, RouteFollow>(json, obj);
         }
 
-        public Tuple<string, Treeload> BuildTreeloadPacket(string name, string file, int x, int y, int z, int scale, bool cullbackfaces, bool animated, string animation)
+        public Tuple<string, ModelLoad> BuildModelLoadPacket(string name, string file, double x, double y, double z, double scale, bool cullbackfaces, bool animated, string animation)
         {
-            Treeload obj = new Treeload()
+            ModelLoad obj = new ModelLoad()
             {
                 id = "scene/node/add",
                 data = new Data2()
@@ -228,22 +260,23 @@ namespace Client.Json_Structure
                     {
                         transform = new Transform()
                         {
-                            position = new int[] { x, y, z },
+                            position = new double[] { x, y, z },
                             scale = scale,
-                            rotation = new int[] { 0, 0, 0 }
+                            rotation = new double[] { 0, 0, 0 }
+                        },
+                        model = new Model()
+                        {
+                            file = file,
+                            cullbackfaces = cullbackfaces,
+                            animated = animated,
+                            animation = animation
                         }
-                    },
-                    model = new Model()
-                    {
-                        file = file,
-                        cullbackfaces = cullbackfaces,
-                        animated = animated,
-                        animation = animation
                     }
+
                 }
             };
             string json = JsonConvert.SerializeObject(obj);
-            return new Tuple<string, Treeload>(json, obj);
+            return new Tuple<string, ModelLoad>(json, obj);
         }
 
         public Tuple<string, PanelAdd> BuildPanelAddPacket(string name,  int[] size, int[] resolution, int[] background)
@@ -269,5 +302,79 @@ namespace Client.Json_Structure
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, PanelAdd>(json, obj);
         }
+
+        public Tuple<string, SceneReset> BuildSceneResetPacket()
+        {
+            SceneReset obj = new SceneReset()
+            {
+                id = "scene/reset",
+                data = new Data10()
+                {
+                }
+            };
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, SceneReset>(json, obj);
+
+        }
+
+        public Tuple<string, RoadAdd> BuildRoadAddPacket(string routeId)
+        {
+            RoadAdd obj = new RoadAdd()
+            {
+                id = "scene/road/add",
+                data = new DataRoad()
+                {
+                    route = routeId,
+                    diffuse = "data/NetworkEngine/textures/tarmac_diffuse.png",
+                    normal = "data/NetworkEngine/textures/tarmac_normale.png",
+                    specular = "data/NetworkEngine/textures/tarmac_specular.png",
+                    heightoffset = 0.01f
+                    //hier wordt de weg aangemaakt
+                }
+
+            };
+
+            
+
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, RoadAdd>(json, obj);
+        }
+
+        public Tuple<string, StopData> BuildStopPacket()
+        {
+            StopData obj = new StopData()
+            {
+                id = "pause",
+                data =
+                {
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, StopData>(json, obj);
+        }
+
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, double x, double y, double z, double rotationX, double rotationY, double rotationZ)
+        {
+            UpdateNode obj = new UpdateNode()
+            {
+                id = "scene/node/update",
+                data = new Data14()
+                {
+                    id = id,
+                    parent = idParent,
+                    transform = new Transform()
+                    {
+                        position = new double[] { x, y, z},
+                        scale = scale,
+                        rotation = new double[] { rotationX, rotationY, rotationZ }
+                    }
+                    
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, UpdateNode>(json, obj);
+        }  
     }
 }

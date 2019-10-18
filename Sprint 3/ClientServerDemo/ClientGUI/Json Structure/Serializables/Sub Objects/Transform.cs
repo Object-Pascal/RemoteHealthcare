@@ -2,8 +2,8 @@
 {
     public class Transform
     {
-        public int[] position { get; set; }
-        public int scale { get; set; }
-        public int[] rotation { get; set; }
+        public double[] position { get; set; }
+        public double scale { get; set; }
+        public double[] rotation { get; set; }
     }
 }

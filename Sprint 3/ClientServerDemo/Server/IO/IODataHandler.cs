@@ -9,26 +9,31 @@ namespace Server.IO
 {
     public class IODataHandler
     {
-        public static async Task<ClientCollection> LoadClients()
+        public static ClientCollection LoadClients()
         {
-            return await JsonHandler.LoadObject<ClientCollection>("clientData.json");
+            return JsonHandler.LoadObject<ClientCollection>("clientData.json");
+        }
+
+        public static async Task<ClientCollection> LoadClientsAsync()
+        {
+            return await JsonHandler.LoadObjectAsync<ClientCollection>("clientData.json");
         }
 
         public static async Task<ClientDataCollection> LoadClientData()
         {
-            return await JsonHandler.LoadObject<ClientDataCollection>("clientHistoryData.json");
+            return await JsonHandler.LoadObjectAsync<ClientDataCollection>("clientHistoryData.json");
         }
 
         public static async Task<DoctorCollection> LoadDoctors()
         {
-            return await JsonHandler.LoadObject<DoctorCollection>("doctorData.json");
+            return await JsonHandler.LoadObjectAsync<DoctorCollection>("doctorData.json");
         }
 
         public async Task<Client> GetClientAsync(int id)
         {
             try
             {
-                ClientCollection clientCollection = await LoadClients();
+                ClientCollection clientCollection = await LoadClientsAsync();
                 IEnumerable<Client> possibleMatches = clientCollection.clients.Where(x => x.Id == id);
 
                 if (possibleMatches != null)
@@ -100,7 +105,7 @@ namespace Server.IO
         {
             try
             {
-                ClientCollection clientCollection = await LoadClients();
+                ClientCollection clientCollection = await LoadClientsAsync();
                 clientCollection.clients.Add(client);
 
                 bool saved = await JsonHandler.SaveObject("clientData.json", clientCollection);
@@ -140,7 +145,7 @@ namespace Server.IO
         {
             try
             {
-                ClientCollection clientCollection = await LoadClients();
+                ClientCollection clientCollection = await LoadClientsAsync();
                 return clientCollection.clients.Last().Id + 1;
             }
             catch
@@ -153,7 +158,7 @@ namespace Server.IO
         {
             try
             {
-                ClientCollection clientCollection = await LoadClients();
+                ClientCollection clientCollection = await LoadClientsAsync();
                 clientCollection.clients.Remove(clientCollection.clients.Where(x => x.Id == client.Id).First());
 
                 bool saved = await JsonHandler.SaveObject("clientData.json", clientCollection);
@@ -173,7 +178,7 @@ namespace Server.IO
         {
             try
             {
-                ClientCollection clientCollection = await LoadClients();
+                ClientCollection clientCollection = await LoadClientsAsync();
                 Client selectedClient = clientCollection.clients.Where(x => x.Id == id).First();
 
                 // Wat je wilt veranderen

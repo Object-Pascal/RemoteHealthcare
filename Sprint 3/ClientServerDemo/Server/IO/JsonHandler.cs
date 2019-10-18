@@ -6,7 +6,18 @@ namespace Server.IO
 {
     public static class JsonHandler
     {
-        public static async Task<T> LoadObject<T>(string filename)
+        public static T LoadObject<T>(string filename)
+        {
+            string saveFolder = Directory.GetCurrentDirectory();
+            string savePath = Path.Combine(saveFolder, filename);
+
+            if (!File.Exists(savePath))
+                File.Create(savePath);
+
+            return JsonConvert.DeserializeObject<T>(File.ReadAllText(filename));
+        }
+
+        public static async Task<T> LoadObjectAsync<T>(string filename)
         {
             string saveFolder = Directory.GetCurrentDirectory();
             string savePath = Path.Combine(saveFolder, filename);

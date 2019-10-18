@@ -102,7 +102,7 @@ namespace Server.Listener
                                 byte[] packetData = ReadFromStream(clientInThread, packetLength);
                                 string responsepacket = Encoding.UTF8.GetString(packetData);
 
-                                Tuple<string, PacketType> packetBundle = packetHandler.HandlePacket(responsepacket);
+                                Tuple<string[], PacketType> packetBundle = packetHandler.HandlePacket(responsepacket);
 
                                 switch (packetBundle.Item2)
                                 {
@@ -148,7 +148,7 @@ namespace Server.Listener
                                     case PacketType.DoctorLogin:
                                         Console.WriteLine($"\t> Doctor Login packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        string[] loginData = Regex.Split(packetBundle.Item1, "\r\n");
+                                        string[] loginData = packetBundle.Item1;
 
                                         if (loginData.Length == 2)
                                         {
@@ -160,28 +160,28 @@ namespace Server.Listener
                                             else
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
                                         }
-                                        SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
                                         break;
                                     case PacketType.DoctorLogout:
                                         Console.WriteLine($"\t> Doctor Logout packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        clientInThread.Close();
                                         connectedClients.Remove(clientInThread);
+                                        clientInThread.Close();
 
                                         Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
+                                        running = false;
 
                                         break;
                                     case PacketType.DoctorDataGet:
                                         Console.WriteLine($"\t> Doctor DataGet packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        if (packetBundle.Item1 == "ALL_CLIENTS")
+                                        if (packetBundle.Item1[0] == "ALL_CLIENTS")
                                         {
-                                            ClientCollection clientCollection = await IODataHandler.LoadClients();
+                                            ClientCollection clientCollection = IODataHandler.LoadClients();
                                             string packet = "Server/DataGet\r\n";
 
                                             for (int i = 0; i < clientCollection.clients.Count; i++)
                                             {
-                                                packet += clientCollection.clients[i].Name + "//" + clientCollection.clients[i].Id;
+                                                packet += clientCollection.clients[i].Name + "//" + clientCollection.clients[i].Id + "//" + clientCollection.clients[i].Birthdate + "//" + clientCollection.clients[i].Gender + "//";
                                             }
 
                                             SendWithNoResponse(clientInThread, packet);
@@ -199,9 +199,9 @@ namespace Server.Listener
                                         Console.WriteLine($"\t> Doctor AddNewClient packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         // EG: Doctor/AddNewClient\r\nNAME
-                                        string[] newClientData = Regex.Split(packetBundle.Item1, "\r\n");
+                                        string[] newClientData = packetBundle.Item1;
 
-                                        if (newClientData.Length == 0)
+                                        if (newClientData.Length == 1)
                                         {
                                             int newId = await iODataHandler.ProvideNewClientId();                                 
                                             if (newId > -1)
@@ -226,7 +226,7 @@ namespace Server.Listener
                                         Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         // EG: Doctor/AddClientHistory\r\nCLIENT_ID\r\nDATETIME\r\nHEARTRATE_BYTES\r\nBIKE_BYTES
-                                        string[] saveData = Regex.Split(packetBundle.Item1, "\r\n");
+                                        string[] saveData = packetBundle.Item1;
 
                                         if (saveData.Length == 4)
                                         {
@@ -285,7 +285,7 @@ namespace Server.Listener
                                         Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
                                         // EG: Doctor/GetClientHistory\r\nCLIENT_ID\r\nDATE
-                                        string[] getData = Regex.Split(packetBundle.Item1, "\r\n");
+                                        string[] getData = packetBundle.Item1;
 
                                         if (getData.Length == 2)
                                         {
@@ -351,12 +351,19 @@ namespace Server.Listener
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"\t> Error ocurred from connecting client: {clientConnected.Client.RemoteEndPoint.ToString()}\n" + ex.InnerException + "\n" + ex.Message + "\n" + ex.StackTrace);
+                            try
+                            {
+                                Console.WriteLine($"\t> Error ocurred from connecting client: {clientConnected.Client.RemoteEndPoint.ToString()}\n" + ex.InnerException + "\n" + ex.Message + "\n" + ex.StackTrace);
 
-                            if (clientInThread != null)
-                                clientStreams.Remove(clientInThread);
+                                if (clientInThread != null)
+                                    clientStreams.Remove(clientInThread);
 
-                            running = false;
+                                running = false;
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                // client cleared
+                            }
                         }
                     }
                 });
