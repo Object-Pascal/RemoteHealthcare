@@ -101,7 +101,7 @@
             this.LayoutPanelClient.Location = new System.Drawing.Point(28, 220);
             this.LayoutPanelClient.Name = "LayoutPanelClient";
             this.LayoutPanelClient.Padding = new System.Windows.Forms.Padding(2);
-            this.LayoutPanelClient.Size = new System.Drawing.Size(787, 269);
+            this.LayoutPanelClient.Size = new System.Drawing.Size(775, 269);
             this.LayoutPanelClient.TabIndex = 6;
             // 
             // PatientLabel

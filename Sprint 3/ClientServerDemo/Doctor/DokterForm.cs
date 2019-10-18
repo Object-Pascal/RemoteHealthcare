@@ -128,12 +128,15 @@ namespace Doctor
             btn.BackColor = Color.White;
             panel.Controls.Add(btn);
             btn.Click += new EventHandler(button_click);
+
         }
 
         private void button_click(object sender, EventArgs e)
         {
             //send selected patient back to server
             //open detailed information form
+            DetailDoctorForm detail = new DetailDoctorForm();
+            detail.Show();
 
             BroadcastTextBox.Text = "WELLOE DIT WERKT";
         }
@@ -152,12 +155,12 @@ namespace Doctor
 
         private void testDataAvailablePatients()
         {
-            availablePatients.Add(new Patient("Pascal", 20, "Man", "0000"));
-            availablePatients.Add(new Patient("Maarten", 20, "Man", "0000"));
-            availablePatients.Add(new Patient("Thijs", 21, "Man", "0000"));
-            availablePatients.Add(new Patient("Joelle", 20, "Vrouw", "0000"));
-            availablePatients.Add(new Patient("Marleen", 20, "Vrouw", "0000"));
-            availablePatients.Add(new Patient("Kirsten", 20, "Vrouw", "0000"));
+            availablePatients.Add(new Patient("Pascal", 20, "Man"));
+            availablePatients.Add(new Patient("Maarten", 20, "Man"));
+            availablePatients.Add(new Patient("Thijs", 21, "Man"));
+            availablePatients.Add(new Patient("Joelle", 20, "Vrouw"));
+            availablePatients.Add(new Patient("Marleen", 20, "Vrouw"));
+            availablePatients.Add(new Patient("Kirsten", 20, "Vrouw"));
         }
     } 
 }
