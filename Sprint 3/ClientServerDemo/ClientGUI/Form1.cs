@@ -253,7 +253,7 @@ namespace ClientGUI
         string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["joelle"], "banaantje").Item1);
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["marle"], "banaantje").Item1);
             destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
 
@@ -495,7 +495,7 @@ namespace ClientGUI
 
         private void Button1_Click_2(object sender, EventArgs e)
         {
-
+            Tuple<string, JObject> stop = SendToTunnel(jsonPacketBuilder.BuildStopPacket().Item1);
         }
 
         private void Addpanels_Click(object sender, EventArgs e)

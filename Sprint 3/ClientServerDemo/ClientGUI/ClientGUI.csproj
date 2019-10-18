@@ -65,6 +65,8 @@
     <Compile Include="Json Structure\JsonPacketBuilder.cs" />
     <Compile Include="Json Structure\Serializables\FindNode.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Data13.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\StopData.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\StopDataBody.cs" />
     <Compile Include="Json Structure\Serializables\SwapPanel.cs" />
     <Compile Include="Json Structure\Serializables\DeleteNode.cs" />
     <Compile Include="Json Structure\Serializables\ModelLoad.cs" />
