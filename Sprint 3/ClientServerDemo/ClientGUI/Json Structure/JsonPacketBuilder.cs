@@ -95,8 +95,6 @@ namespace Client.Json_Structure
             return new Tuple<string, SwapPanel>(json, obj);
         }
 
-
-
         public Tuple<string, SkyBoxTime> BuildSkyboxTimePacket(string time)
         {
             SkyBoxTime obj = new SkyBoxTime()
@@ -327,6 +325,21 @@ namespace Client.Json_Structure
             string json = JsonConvert.SerializeObject(obj);
             return new Tuple<string, RoadAdd>(json, obj);
         }
+
+        public Tuple<string, StopData> BuildStopPacket()
+        {
+            StopData obj = new StopData()
+            {
+                id = "pause",
+                data =
+                {
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, StopData>(json, obj);
+        }
+
 
       
     }
