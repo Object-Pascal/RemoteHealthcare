@@ -185,7 +185,7 @@ namespace Client.Json_Structure
                         {
                             position = new double[] { x, y, x },
                             scale = scale,
-                            rotation = new int[] { 0, 0, 0, }
+                            rotation = new double[] { 0, 0, 0, }
                         },
                         terrain = new ClientGUI.Sub_Objects.Terrain()
                         {
@@ -262,7 +262,7 @@ namespace Client.Json_Structure
                         {
                             position = new double[] { x, y, z },
                             scale = scale,
-                            rotation = new int[] { 0, 0, 0 }
+                            rotation = new double[] { 0, 0, 0 }
                         },
                         model = new Model()
                         {
@@ -354,7 +354,7 @@ namespace Client.Json_Structure
             return new Tuple<string, StopData>(json, obj);
         }
 
-        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, double x, double y, double z)
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, double x, double y, double z, double rotationX, double rotationY, double rotationZ)
         {
             UpdateNode obj = new UpdateNode()
             {
@@ -367,7 +367,7 @@ namespace Client.Json_Structure
                     {
                         position = new double[] { x, y, z},
                         scale = scale,
-                        rotation = new int[] { 0, 0, 0, }
+                        rotation = new double[] { rotationX, rotationY, rotationZ }
                     }
                     
                 }

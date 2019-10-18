@@ -7,5 +7,7 @@ namespace ClientGUI.Json_Structure.Serializables.Sub_Objects
         public string id { get; set; }
         public string parent { get; set; }
         public Transform transform { get; set; }
+
+       
     }
 }
