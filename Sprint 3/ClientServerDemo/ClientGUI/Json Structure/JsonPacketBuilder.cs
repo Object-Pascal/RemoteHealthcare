@@ -354,7 +354,27 @@ namespace Client.Json_Structure
             return new Tuple<string, StopData>(json, obj);
         }
 
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent)
+        {
+            UpdateNode obj = new UpdateNode()
+            {
+                id = "scene/node/update",
+                data = new Data14()
+                {
+                    id = id,
+                    parent = idParent,
+                    transform = new Transform()
+                    {
+                        position = new int[] { 0, 0, 0 },
+                        scale = 100,
+                        rotation = new int[] { 0, 0, 0, }
+                    }
+                    
+                }
+            };
 
-      
+            string json = JsonConvert.SerializeObject(obj);
+            return new Tuple<string, UpdateNode>(json, obj);
+        }  
     }
 }

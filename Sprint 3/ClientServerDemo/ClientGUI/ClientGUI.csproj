@@ -65,6 +65,7 @@
     <Compile Include="Json Structure\JsonPacketBuilder.cs" />
     <Compile Include="Json Structure\Serializables\FindNode.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\Data13.cs" />
+    <Compile Include="Json Structure\Serializables\Sub Objects\Data14.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\StopData.cs" />
     <Compile Include="Json Structure\Serializables\Sub Objects\StopDataBody.cs" />
     <Compile Include="Json Structure\Serializables\SwapPanel.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Json Structure\Serializables\TerrainNode.cs" />
     <Compile Include="Json Structure\Serializables\Tunnel.cs" />
     <Compile Include="Json Structure\Serializables\Update.cs" />
+    <Compile Include="Json Structure\Serializables\UpdateNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulator\Simulator.cs" />

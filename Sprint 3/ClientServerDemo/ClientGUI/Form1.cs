@@ -359,10 +359,13 @@ namespace ClientGUI
             string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 7.0f, 1f, "XYZ",1.0f).Item1);
+            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 1f, "XYZ",1.0f).Item1);
             roadAdd(routeId);
 
             Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
+
+            string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
+            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(cameraId, addBike.Item2.SelectToken("data.data.data.uuid").ToString()).Item1);
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
         private void resetVRScene()
