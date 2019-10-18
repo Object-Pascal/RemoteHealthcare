@@ -274,7 +274,7 @@ namespace ClientGUI
             //Zorgt dat het Panel in beeld blijft staan:
             Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
             string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(panelAddId, cameraId, 0.5, 0.3 , 1 ,-0.7, -40, 0, 0).Item1);
+            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(panelAddId, cameraId, 0.5, 0.3 , 1.2 ,-0.5, -40, 0, 0).Item1);
 
             // ff wat simuleren
            // Thread.Sleep(3000);
