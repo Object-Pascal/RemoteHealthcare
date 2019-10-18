@@ -125,6 +125,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Bike\Mountain_Bike\Material\Mountain_Bike.blend" />
+    <None Include="Bike\Mountain_Bike\Material\Mountain_Bike.blend1" />
+    <None Include="Bike\Mountain_Bike\OBJ\Mountain_Bike.mtl" />
+    <None Include="Bike\Mountain_Bike\OBJ\Mountain_Bike.obj" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -138,6 +142,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Bike\Mountain_Bike\Textur\0029.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\Lake.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\tex_tanah.jpg" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_ban_belakang.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_ban_depan.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_bn_depan.png" />
+    <Content Include="Bike\Mountain_Bike\Textur\uv_rangka.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

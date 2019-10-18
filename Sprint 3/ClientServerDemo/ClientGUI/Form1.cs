@@ -15,6 +15,7 @@ using Client.Json_Structure;
 using ClientGUI.Bluetooth;
 using ClientGUI.Sub_Objects;
 using System.Threading;
+using System.IO;
 
 namespace ClientGUI
 {
@@ -253,7 +254,7 @@ namespace ClientGUI
         string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["marle"], "banaantje").Item1);
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["joelle"], "banaantje").Item1);
             destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
 
@@ -295,9 +296,16 @@ namespace ClientGUI
             //resetVRScene();
             // addAndShowAndFollowRoute1("data/NetworkEngine/models/cars/white/car_white.obj");
             loadTerrainAndDeleteGroundPlane(256,256);
-            addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
+            // addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
+            //string path = @"C:\Users\joelle\Desktop\meeeeee3\RemoteHealthcare\Sprint 3\ClientServerDemo\ClientGUI\Bike\Mountain_Bike\OBJ\Mountain_Bike.obj";
+            //                C:\Users\joelle\Desktop\meeeeee3\RemoteHealthcare\Sprint 3\ClientServerDemo\ClientGUI\Bike\Mountain_Bike\OBJ\Mountain_Bike.obj
+
+            string[] segments = new Uri(Directory.GetCurrentDirectory()).Segments;
+            string folderPath = segments.SubArray(0, segments.Length - 2).ToFullString() + @"Bike\Mountain_Bike\OBJ";
+            string path = folderPath.Replace("%20", " ").Replace("/", @"\").Remove(0, 1) + @"\Mountain_Bike.obj";
+            addAndShowAndFollowRoute2(path);
             //TODO: bike IPV auto 
-          
+
             addObjectsInSurroundings();
 
         }
@@ -318,7 +326,7 @@ namespace ClientGUI
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
             Console.WriteLine(addroute);
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 1, true, false, "animationname").Item1);
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 0.0f).Item1);
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden
@@ -364,7 +372,7 @@ namespace ClientGUI
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
             string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.01, true, false, "animationname").Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.5, true, false, "animationname").Item1);
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 1f, "XYZ",1.0f).Item1);
             roadAdd(routeId);
 
