@@ -354,7 +354,7 @@ namespace Client.Json_Structure
             return new Tuple<string, StopData>(json, obj);
         }
 
-        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, int scale)
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, int scale, int x, int y, int z)
         {
             UpdateNode obj = new UpdateNode()
             {
@@ -365,7 +365,7 @@ namespace Client.Json_Structure
                     parent = idParent,
                     transform = new Transform()
                     {
-                        position = new int[] { 0, 0, 0 },
+                        position = new int[] { x, y, z},
                         scale = scale,
                         rotation = new int[] { 0, 0, 0, }
                     }
