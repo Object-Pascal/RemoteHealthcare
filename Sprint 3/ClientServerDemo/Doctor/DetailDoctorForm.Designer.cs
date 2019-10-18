@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chBikeSpeed = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btnStartSesion = new System.Windows.Forms.Button();
             this.btnEmergencyBreak = new System.Windows.Forms.Button();
@@ -53,21 +53,20 @@
             // 
             // chBikeSpeed
             // 
-            chartArea5.Name = "ChartArea1";
-            this.chBikeSpeed.ChartAreas.Add(chartArea5);
-            legend5.Name = "Legend1";
-            this.chBikeSpeed.Legends.Add(legend5);
+            chartArea3.Name = "ChartArea1";
+            this.chBikeSpeed.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chBikeSpeed.Legends.Add(legend3);
             this.chBikeSpeed.Location = new System.Drawing.Point(418, 80);
             this.chBikeSpeed.Name = "chBikeSpeed";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.chBikeSpeed.Series.Add(series5);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chBikeSpeed.Series.Add(series3);
             this.chBikeSpeed.Size = new System.Drawing.Size(400, 300);
             this.chBikeSpeed.TabIndex = 3;
             this.chBikeSpeed.Text = "chart1";
-            this.chBikeSpeed.Click += new System.EventHandler(this.BikeSpeed_Click);
             // 
             // btnStartSesion
             // 
@@ -91,21 +90,20 @@
             // 
             // chHeartRate
             // 
-            chartArea6.Name = "ChartArea1";
-            this.chHeartRate.ChartAreas.Add(chartArea6);
-            legend6.Name = "Legend1";
-            this.chHeartRate.Legends.Add(legend6);
+            chartArea4.Name = "ChartArea1";
+            this.chHeartRate.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.chHeartRate.Legends.Add(legend4);
             this.chHeartRate.Location = new System.Drawing.Point(12, 80);
             this.chHeartRate.Name = "chHeartRate";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Legend = "Legend1";
-            series6.Name = "Series1";
-            this.chHeartRate.Series.Add(series6);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chHeartRate.Series.Add(series4);
             this.chHeartRate.Size = new System.Drawing.Size(400, 300);
             this.chHeartRate.TabIndex = 6;
             this.chHeartRate.Text = "chart2";
-            this.chHeartRate.Click += new System.EventHandler(this.HeartRate_Click);
             // 
             // btnSendPrivateMessage
             // 
@@ -140,7 +138,6 @@
             this.lblName.Size = new System.Drawing.Size(48, 17);
             this.lblName.TabIndex = 12;
             this.lblName.Text = "Form2";
-            this.lblName.Click += new System.EventHandler(this.Name_Click);
             // 
             // btnStopSesion
             // 
@@ -160,7 +157,7 @@
             this.lblBirthDate.Size = new System.Drawing.Size(67, 17);
             this.lblBirthDate.TabIndex = 14;
             this.lblBirthDate.Text = "BirthDate";
-            this.lblBirthDate.Click += new System.EventHandler(this.BirthDate_Click);
+
             // 
             // lblPantiëntKey
             // 
@@ -170,7 +167,7 @@
             this.lblPantiëntKey.Size = new System.Drawing.Size(84, 17);
             this.lblPantiëntKey.TabIndex = 15;
             this.lblPantiëntKey.Text = "PantiëntKey";
-            this.lblPantiëntKey.Click += new System.EventHandler(this.PantiëntKey_Click);
+
             // 
             // lblGender
             // 
@@ -180,7 +177,7 @@
             this.lblGender.Size = new System.Drawing.Size(56, 17);
             this.lblGender.TabIndex = 16;
             this.lblGender.Text = "Gender";
-            this.lblGender.Click += new System.EventHandler(this.Gender_Click);
+
             // 
             // btnHistory
             // 
@@ -202,7 +199,7 @@
             this.tbMessageHistory.Size = new System.Drawing.Size(400, 108);
             this.tbMessageHistory.TabIndex = 18;
             // 
-            // Form2
+            // DetailDoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -221,8 +218,9 @@
             this.Controls.Add(this.btnStartSesion);
             this.Controls.Add(this.chBikeSpeed);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Name = "Form2";
+            this.Name = "DetailDoctorForm";
             this.Text = "Form2";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
             this.Load += new System.EventHandler(this.Form2_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chBikeSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chHeartRate)).EndInit();

@@ -12,18 +12,24 @@ namespace Doctor
 {
     public partial class DetailDoctorForm : Form
     {
+        //private ServerConnection serverConnection;
+        //private bool serverConnected;
+        //private PacketHandler packetHandler;
+
+        private Patient patient;
         public DetailDoctorForm()
         {
             InitializeComponent();
             SetDefaultValues();
+            //InitializeServerConnection();
         }
 
         public void SetDefaultValues()
-        {
-            lblName.Text =          "Name:              Thijs van der Velden";
-            lblBirthDate.Text =     "Birthdate:         16-05-1998";
-            lblGender.Text =        "Gender:            Male";
-            lblPantiëntKey.Text =   "PantiëntKey:    2131200";
+        {  
+            //lblName.Text = patient.Name;
+            //lblBirthDate.Text = patient.Age + "";     
+            //lblGender.Text = patient.Gender;
+            //lblPantiëntKey.Text = patient.pantientkey;
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -31,47 +37,35 @@ namespace Doctor
 
         }
 
-        private void Name_Click(object sender, EventArgs e)
+        private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //lblName.Text = Name;
+            if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten."+ "\r\n" + "Weet je zeker dat je de sessie stoppen?",
+                               "Stop Sessie",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information) == DialogResult.No)
+            {
+                e.Cancel = true;
+            }
         }
 
-        private void BirthDate_Click(object sender, EventArgs e)
-        {
-            //lblBirthDate.Text = BirthDate;
-        }
-        private void Gender_Click(object sender, EventArgs e)
-        {
-            //lblGender.Text = Gender;
-        }
-        private void PantiëntKey_Click(object sender, EventArgs e)
-        {
-            //lblPantiëntKey.Text = PantiëntKey;
-        }
-
-        private void HeartRate_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BikeSpeed_Click(object sender, EventArgs e)
-        {
-
-        }
-      
         private void StartSesion_Click(object sender, EventArgs e)
         {
 
         }
         private void StopSession_Click(object sender, EventArgs e)
         {
-
+            if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten." + "\r\n" + "Weet je zeker dat je de sessie stoppen?",
+                               "Stop Sessie",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                this.Close();
+            }
         }
         private void EmergencyBreak_Click(object sender, EventArgs e)
         {
 
         }
-
       
         private void TextBoxSendMessage_Enter(object sender, EventArgs e)
         {
@@ -81,7 +75,6 @@ namespace Doctor
 
                 tbTextBoxSendMessage.ForeColor = Color.Black;
             }
-
         }
 
         private void TextBoxSendMessage_Leave(object sender, EventArgs e)
@@ -115,5 +108,23 @@ namespace Doctor
             clientHistoryForm.ShowDialog();
         }
 
+        /*private void writechHearthRate(Patient patient)
+        {
+            int i = 0;
+            foreach (double hearbeat in patient.heartbeat)
+            {
+                chHeartRate.Series["VO2Now"].Points.AddXY(i, patient.heartrate);
+                i++;
+            }
+        }
+        private void writechBikeSpeed(Patient patient)
+        {
+            int i = 0;
+            foreach (double hearbeat in patient.heartbeat)
+            {
+                chBikeSpeed.Series["VO2Now"].Points.AddXY(i, Bikespeed);
+                i++;
+            }
+        }*/
     }
 }
