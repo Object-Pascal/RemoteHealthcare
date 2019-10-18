@@ -254,7 +254,7 @@ namespace ClientGUI
         string destination;
         private void Button1_Click_1(object sender, EventArgs e)
         {
-            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["joelle"], "banaantje").Item1);
+            Tuple<string, JObject> openTunnelResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(users["marle"], "banaantje").Item1);
             destination = openTunnelResponse.Item2.SelectToken("data.id").ToString();
 
 
@@ -274,7 +274,7 @@ namespace ClientGUI
             //Zorgt dat het Panel in beeld blijft staan:
             Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
             string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(panelAddId, cameraId, 1, 0,0,0).Item1);
+            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(panelAddId, cameraId, 1, 0,1,0).Item1);
 
             // ff wat simuleren
            // Thread.Sleep(3000);
@@ -304,7 +304,7 @@ namespace ClientGUI
             string folderPath = segments.SubArray(0, segments.Length - 2).ToFullString() + @"Bike\Mountain_Bike\OBJ";
             string path = folderPath.Replace("%20", " ").Replace("/", @"\").Remove(0, 1) + @"\Mountain_Bike.obj";
             addAndShowAndFollowRoute2(path);
-            //TODO: bike IPV auto 
+          
 
             addObjectsInSurroundings();
 
@@ -372,7 +372,7 @@ namespace ClientGUI
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
             string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.5, true, false, "animationname").Item1);
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.1, true, false, "animationname").Item1);
             Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 1f, "XYZ",1.0f).Item1);
             roadAdd(routeId);
 
@@ -380,7 +380,7 @@ namespace ClientGUI
             Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
 
             string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(cameraId, addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 35, 0, 0, -50).Item1);
+            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(cameraId, addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1, 0, 0, 0).Item1);
         }
         //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
         private void resetVRScene()
@@ -484,7 +484,7 @@ namespace ClientGUI
 
         private void addObject(string objectPath, int x, int y, int z)
         {
-            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 2, true, false, "animationname").Item1);
+            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
         }
 
         private void addAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)

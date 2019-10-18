@@ -354,7 +354,7 @@ namespace Client.Json_Structure
             return new Tuple<string, StopData>(json, obj);
         }
 
-        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, int scale, int x, int y, int z)
+        public Tuple<string, UpdateNode> BuildUpdateNodePacket(string id, string idParent, double scale, int x, int y, int z)
         {
             UpdateNode obj = new UpdateNode()
             {
