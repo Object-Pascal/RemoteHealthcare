@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.login = new System.Windows.Forms.Button();
-            this.name = new System.Windows.Forms.TextBox();
+            this.tbName = new System.Windows.Forms.TextBox();
             this.patientNumber = new System.Windows.Forms.TextBox();
             this.unknownNumber = new System.Windows.Forms.Label();
             this.selectBike = new System.Windows.Forms.ComboBox();
@@ -40,27 +40,29 @@
             this.login.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.login.Location = new System.Drawing.Point(299, 260);
+            this.login.Location = new System.Drawing.Point(266, 208);
+            this.login.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.login.Name = "login";
-            this.login.Size = new System.Drawing.Size(161, 46);
+            this.login.Size = new System.Drawing.Size(143, 37);
             this.login.TabIndex = 0;
             this.login.Text = "Log-in";
             this.login.UseVisualStyleBackColor = true;
             this.login.Click += new System.EventHandler(this.Login_Click);
             // 
-            // name
+            // tbName
             // 
-            this.name.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tbName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.name.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.name.Location = new System.Drawing.Point(299, 164);
-            this.name.Name = "name";
-            this.name.Size = new System.Drawing.Size(161, 26);
-            this.name.TabIndex = 1;
-            this.name.Text = "Naam";
-            this.name.Enter += new System.EventHandler(this.Name_Enter);
-            this.name.Leave += new System.EventHandler(this.Name_Leave);
+            this.tbName.ForeColor = System.Drawing.SystemColors.InactiveCaption;
+            this.tbName.Location = new System.Drawing.Point(266, 131);
+            this.tbName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbName.Name = "tbName";
+            this.tbName.Size = new System.Drawing.Size(144, 22);
+            this.tbName.TabIndex = 1;
+            this.tbName.Text = "Naam";
+            this.tbName.Enter += new System.EventHandler(this.Name_Enter);
+            this.tbName.Leave += new System.EventHandler(this.Name_Leave);
             // 
             // patientNumber
             // 
@@ -68,9 +70,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.patientNumber.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.patientNumber.Location = new System.Drawing.Point(299, 196);
+            this.patientNumber.Location = new System.Drawing.Point(266, 157);
+            this.patientNumber.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.patientNumber.Name = "patientNumber";
-            this.patientNumber.Size = new System.Drawing.Size(161, 26);
+            this.patientNumber.Size = new System.Drawing.Size(144, 22);
             this.patientNumber.TabIndex = 2;
             this.patientNumber.Text = "Patiëntnummer";
             this.patientNumber.Enter += new System.EventHandler(this.PatientNumber_Enter);
@@ -83,9 +86,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.unknownNumber.AutoSize = true;
             this.unknownNumber.ForeColor = System.Drawing.Color.Red;
-            this.unknownNumber.Location = new System.Drawing.Point(271, 309);
+            this.unknownNumber.Location = new System.Drawing.Point(241, 247);
             this.unknownNumber.Name = "unknownNumber";
-            this.unknownNumber.Size = new System.Drawing.Size(209, 20);
+            this.unknownNumber.Size = new System.Drawing.Size(184, 17);
             this.unknownNumber.TabIndex = 3;
             this.unknownNumber.Text = "Patiëntnummer bestaat niet!";
             this.unknownNumber.Visible = false;
@@ -97,22 +100,24 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.selectBike.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.selectBike.FormattingEnabled = true;
-            this.selectBike.Location = new System.Drawing.Point(299, 228);
+            this.selectBike.Location = new System.Drawing.Point(266, 182);
+            this.selectBike.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.selectBike.Name = "selectBike";
-            this.selectBike.Size = new System.Drawing.Size(161, 25);
+            this.selectBike.Size = new System.Drawing.Size(144, 23);
             this.selectBike.TabIndex = 6;
             this.selectBike.Text = "Selecteer een fiets";
             // 
             // LoginScreen
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(711, 360);
             this.Controls.Add(this.selectBike);
             this.Controls.Add(this.unknownNumber);
             this.Controls.Add(this.patientNumber);
-            this.Controls.Add(this.name);
+            this.Controls.Add(this.tbName);
             this.Controls.Add(this.login);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "LoginScreen";
             this.Text = "LoginScreen";
             this.ResumeLayout(false);
@@ -123,7 +128,7 @@
         #endregion
 
         private System.Windows.Forms.Button login;
-        private System.Windows.Forms.TextBox name;
+        private System.Windows.Forms.TextBox tbName;
         private System.Windows.Forms.TextBox patientNumber;
         private System.Windows.Forms.Label unknownNumber;
         private System.Windows.Forms.ComboBox selectBike;

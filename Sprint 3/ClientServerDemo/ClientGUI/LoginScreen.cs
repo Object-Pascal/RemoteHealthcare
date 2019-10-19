@@ -19,24 +19,25 @@ namespace ClientGUI
     {
 
         private static PageConversion pageConversion;
-        private BleBikeHandler bleBikeHandler;
-        private BleHeartHandler bleHeartHandler;
+
+        public BleBikeHandler bleBikeHandler;
+        public BleHeartHandler bleHeartHandler;
+
         private BLE bleBike;
         private BLE bleHeart;
 
         private List<string> bleBikeList;
         private List<string> bleHeartList;
-        private ConnectServer connect;
         private bool started;
-        private System.Timers.Timer timer;
+
+        public event LoggedInHandler LoggedIn;
+        public delegate void LoggedInHandler(LogInArgs args);
 
         public LoginScreen()
         {
-            connect = new ConnectServer();
             InitializeComponent();
             InitializeDeclarations();
             LoadBikes();
-            timer = new System.Timers.Timer();
         }
 
         private void InitializeDeclarations()
@@ -56,24 +57,23 @@ namespace ClientGUI
         }
 
 
-
         private void Login_Click(object sender, EventArgs e)
         {
-            if (selectBike.SelectedItem != null)
+            //if (selectBike.SelectedItem != null)
+            if (true)
             {
                 if (PatientExist(patientNumber.Text))
                 {
-                    bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
-                    bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-                    // connect.Connect();
-                    //connect.sendPatient(new Patient(name.Text, patientNumber.Text));
+                    //bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
+                    //bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
 
+                    this.LoggedIn?.Invoke(new LogInArgs(tbName.Text));
+                    this.Close();
                 }
                 else
                 {
                     this.unknownNumber.Text = "Patiëntnummer bestaat niet!";
-                    this.unknownNumber.Visible = true;
-                    
+                    this.unknownNumber.Visible = true;                    
             }
             }
             else
@@ -85,21 +85,21 @@ namespace ClientGUI
 
         private void Name_Enter(object sender, EventArgs e)
         {
-            if (name.Text == "Naam")
+            if (tbName.Text == "Naam")
             {
-                name.Text = "";
+                tbName.Text = "";
 
-                name.ForeColor = Color.Black;
+                tbName.ForeColor = Color.Black;
             }
 
         }
 
         private void Name_Leave(object sender, EventArgs e)
         {
-            if (name.Text == "")
+            if (tbName.Text == "")
             {
-                name.Text = "Naam";
-                name.ForeColor = Color.Silver;
+                tbName.Text = "Naam";
+                tbName.ForeColor = Color.Silver;
             }
         }
 
@@ -123,5 +123,15 @@ namespace ClientGUI
             }
         }
 
+    }
+
+    public class LogInArgs : EventArgs
+    {
+        public string Name;
+
+        public LogInArgs(string name)
+        {
+            this.Name = name;
+        }
     }
 }

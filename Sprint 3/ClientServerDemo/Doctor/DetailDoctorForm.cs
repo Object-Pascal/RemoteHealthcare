@@ -28,10 +28,10 @@ namespace Doctor
             this.patient = patient;
             this.serverConnection = serverConnection;
 
-            //lblName.Text = patient.Name;
-            //lblBirthDate.Text = patient.Age + "";     
-            //lblGender.Text = patient.Gender;
-            //lblPantiëntKey.Text = patient.pantientkey;
+            lblName.Text = patient.Name;
+            lblBirthDate.Text = patient.Age + "";     
+            lblGender.Text = patient.Gender;
+            lblPantiëntKey.Text = patient.Id;
         }
 
         private void Form2_Load(object sender, EventArgs e)
