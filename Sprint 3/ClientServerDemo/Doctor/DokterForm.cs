@@ -139,7 +139,9 @@ namespace Doctor
         private void BroadcastBtn_Click(object sender, EventArgs e)
         {
             //Send message to server for broadcasting
+
             string broadcastmessage = BroadcastTextBox.Text;
+            this.serverConnection.SendWithNoResponse($"Doctor/Broadcast\r\n{broadcastmessage}\r\n");
 
             //Clears textbox
             BroadcastTextBox.Clear();
@@ -168,13 +170,10 @@ namespace Doctor
             //send selected patient back to server
             //open detailed information form
 
-
-
             Button b = sender as Button;
             DetailDoctorForm detail = new DetailDoctorForm((Patient)b.Tag, this.serverConnection);
             detail.Show();
 
-            BroadcastTextBox.Text = "WELLOE DIT WERKT";
         }
 
         private void removeBtnFromFlowpanel(Patient p)
@@ -189,14 +188,26 @@ namespace Doctor
             }
         }
 
-        private void testDataAvailablePatients()
+        private async void RefreshBttn_Click(object sender, EventArgs e)
         {
-            //availablePatients.Add(new Patient("Pascal", "1", 20, "Man"));
-            //availablePatients.Add(new Patient("Maarten", "2", 20, "Man"));
-            //availablePatients.Add(new Patient("Thijs", "3", 21, "Man"));
-            //availablePatients.Add(new Patient("Joelle", "4", 20, "Vrouw"));
-            //availablePatients.Add(new Patient("Marleen", "5", 20, "Vrouw"));
-            //availablePatients.Add(new Patient("Kirsten", "6", 20, "Vrouw"));
+            //same as setup methods only clears the lists first.
+            string responsePacket = await this.serverConnection.SendWithResponse($"Doctor/DataGet\r\nALL_CLIENTS");
+            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+
+            if (handledPacket.Item2 == PacketType.DataGet)
+            {
+                string[] clientsRaw = Regex.Split(handledPacket.Item1, "//").Where(x => x != "").ToArray();
+
+                availablePatients.Clear();
+                availableListBox.Items.Clear();
+
+                for (int i = 0; i < clientsRaw.Length; i += 4)
+                {
+                    availablePatients.Add(new Patient(clientsRaw[i], clientsRaw[i + 1], clientsRaw[i + 2], clientsRaw[i + 3]));
+                    availableListBox.Items.Add(clientsRaw[i]);
+                }
+            }
+
         }
     } 
 }
