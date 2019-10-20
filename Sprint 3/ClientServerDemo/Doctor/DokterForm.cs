@@ -203,8 +203,13 @@ namespace Doctor
 
                 for (int i = 0; i < clientsRaw.Length; i += 4)
                 {
-                    availablePatients.Add(new Patient(clientsRaw[i], clientsRaw[i + 1], clientsRaw[i + 2], clientsRaw[i + 3]));
-                    availableListBox.Items.Add(clientsRaw[i]);
+                    Patient patient = new Patient(clientsRaw[i], clientsRaw[i + 1], clientsRaw[i + 2], clientsRaw[i + 3]);
+
+                    if ( ! selectedPatients.Contains(patient) && !availablePatients.Contains(patient))
+                    {
+                        availableListBox.Items.Add(clientsRaw[i]);
+                        availablePatients.Add(patient);
+                    }
                 }
             }
 
