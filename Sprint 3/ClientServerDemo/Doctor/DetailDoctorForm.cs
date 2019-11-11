@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClientGUI.Bluetooth;
 
 namespace Doctor
 {
@@ -17,6 +18,7 @@ namespace Doctor
         //private PacketHandler packetHandler;
 
         private Patient patient;
+        
         public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();
@@ -66,7 +68,7 @@ namespace Doctor
         }
         private void EmergencyBreak_Click(object sender, EventArgs e)
         {
-
+            //Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
         }
       
         private void TextBoxSendMessage_Enter(object sender, EventArgs e)
@@ -108,6 +110,15 @@ namespace Doctor
         {
             ClientHistoryForm clientHistoryForm = new ClientHistoryForm();
             clientHistoryForm.ShowDialog();
+        }
+
+        private void buttonResistance_Click(object sender, EventArgs e)
+        {
+            DetailDoctorForm detailDoctorForm = new DetailDoctorForm(patient, serverConnection);
+            int resistanceValue = detailDoctorForm.trackBarResistance.Value;
+            BleBikeHandler ble = new BleBikeHandler();
+            ble.ChangeResistance(resistanceValue);
+
         }
 
         /*private void writechHearthRate(Patient patient)

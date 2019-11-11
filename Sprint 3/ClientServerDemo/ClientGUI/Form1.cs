@@ -521,9 +521,6 @@ namespace ClientGUI
             
         }
 
-        private void changeResistance(int resistance) 
-        { 
-            
-        }
+     
     }
 }

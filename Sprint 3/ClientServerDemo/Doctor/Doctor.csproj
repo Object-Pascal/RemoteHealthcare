@@ -123,5 +123,11 @@
   <ItemGroup>
     <None Include="Resources\refreshBttn.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClientGUI\ClientGUI.csproj">
+      <Project>{dcd99af6-637a-4c39-923b-6086ff84e12d}</Project>
+      <Name>ClientGUI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

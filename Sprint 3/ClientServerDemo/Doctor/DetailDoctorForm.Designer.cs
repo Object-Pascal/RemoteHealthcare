@@ -48,6 +48,7 @@
             this.btnHistory = new System.Windows.Forms.Button();
             this.tbMessageHistory = new System.Windows.Forms.TextBox();
             this.trackBarResistance = new System.Windows.Forms.TrackBar();
+            this.buttonResistance = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chBikeSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chHeartRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarResistance)).BeginInit();
@@ -198,18 +199,29 @@
             this.tbMessageHistory.Size = new System.Drawing.Size(400, 108);
             this.tbMessageHistory.TabIndex = 18;
             // 
-            // trackBar1
+            // trackBarResistance
             // 
             this.trackBarResistance.Location = new System.Drawing.Point(419, 387);
             this.trackBarResistance.Name = "trackBarResistance";
             this.trackBarResistance.Size = new System.Drawing.Size(399, 56);
             this.trackBarResistance.TabIndex = 100;
             // 
+            // buttonResistance
+            // 
+            this.buttonResistance.Location = new System.Drawing.Point(419, 419);
+            this.buttonResistance.Name = "buttonResistance";
+            this.buttonResistance.Size = new System.Drawing.Size(160, 25);
+            this.buttonResistance.TabIndex = 101;
+            this.buttonResistance.Text = "Change Resistance";
+            this.buttonResistance.UseVisualStyleBackColor = true;
+            this.buttonResistance.Click += new System.EventHandler(this.buttonResistance_Click);
+            // 
             // DetailDoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(832, 563);
+            this.Controls.Add(this.buttonResistance);
             this.Controls.Add(this.trackBarResistance);
             this.Controls.Add(this.tbMessageHistory);
             this.Controls.Add(this.btnHistory);
@@ -252,5 +264,6 @@
         private System.Windows.Forms.Button btnHistory;
         private System.Windows.Forms.TextBox tbMessageHistory;
         private System.Windows.Forms.TrackBar trackBarResistance;
+        private System.Windows.Forms.Button buttonResistance;
     }
 }
