@@ -1,25 +1,14 @@
-﻿using System;
-using Avans.TI.BLE;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using Avans.TI.BLE;
 using ClientGUI.Bluetooth;
-using ClientGUI.Conversion;
-using ClientGUI.Utils;
-using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace ClientGUI
 {
     public partial class LoginScreen : Form
     {
-
-        private static PageConversion pageConversion;
-
         public BleBikeHandler bleBikeHandler;
         public BleHeartHandler bleHeartHandler;
 
@@ -28,7 +17,6 @@ namespace ClientGUI
 
         private List<string> bleBikeList;
         private List<string> bleHeartList;
-        private bool started;
 
         public event LoggedInHandler LoggedIn;
         public delegate void LoggedInHandler(LogInArgs args);
@@ -37,6 +25,7 @@ namespace ClientGUI
         {
             InitializeComponent();
             InitializeDeclarations();
+
             LoadBikes();
         }
 
@@ -51,16 +40,18 @@ namespace ClientGUI
             this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
             this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
         }
+
         private bool PatientExist(string patientID)
         {
             return true;
-        }
 
+            // TODO Patient Login
+        }
 
         private void Login_Click(object sender, EventArgs e)
         {
-            //if (selectBike.SelectedItem != null)
             if (true)
+            //if (selectBike.SelectedItem != null)
             {
                 if (PatientExist(patientNumber.Text))
                 {
@@ -74,7 +65,7 @@ namespace ClientGUI
                 {
                     this.unknownNumber.Text = "Patiëntnummer bestaat niet!";
                     this.unknownNumber.Visible = true;                    
-            }
+                }
             }
             else
             {

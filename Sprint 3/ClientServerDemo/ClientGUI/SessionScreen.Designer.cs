@@ -1,6 +1,6 @@
 ﻿namespace ClientGUI
 {
-    partial class Form2
+    partial class SessionScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -34,9 +34,10 @@
             // 
             // btnSelectSession
             // 
-            this.btnSelectSession.Location = new System.Drawing.Point(12, 198);
+            this.btnSelectSession.Location = new System.Drawing.Point(9, 161);
+            this.btnSelectSession.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSelectSession.Name = "btnSelectSession";
-            this.btnSelectSession.Size = new System.Drawing.Size(438, 103);
+            this.btnSelectSession.Size = new System.Drawing.Size(328, 84);
             this.btnSelectSession.TabIndex = 0;
             this.btnSelectSession.Text = "Selecteer Sessie";
             this.btnSelectSession.UseVisualStyleBackColor = true;
@@ -48,22 +49,23 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstbSessions.FormattingEnabled = true;
-            this.lstbSessions.ItemHeight = 16;
-            this.lstbSessions.Location = new System.Drawing.Point(12, 12);
+            this.lstbSessions.Location = new System.Drawing.Point(9, 10);
+            this.lstbSessions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lstbSessions.Name = "lstbSessions";
-            this.lstbSessions.Size = new System.Drawing.Size(438, 180);
+            this.lstbSessions.Size = new System.Drawing.Size(330, 147);
             this.lstbSessions.TabIndex = 1;
             // 
-            // Form2
+            // SessionScreen
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 313);
+            this.ClientSize = new System.Drawing.Size(346, 254);
             this.Controls.Add(this.lstbSessions);
             this.Controls.Add(this.btnSelectSession);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
-            this.Name = "Form2";
+            this.Name = "SessionScreen";
             this.Text = "Sessies";
             this.ResumeLayout(false);
 
