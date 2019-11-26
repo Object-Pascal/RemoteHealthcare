@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClientGUI.Connection
 {
-    class ServerConnection
+    public class ServerConnection
     {
         private TcpClient client;
 

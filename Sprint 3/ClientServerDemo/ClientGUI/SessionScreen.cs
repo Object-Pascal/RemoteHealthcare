@@ -1,29 +1,24 @@
-﻿using System;
+﻿using Client.Json_Structure;
+using ClientGUI.Bluetooth;
+using ClientGUI.Connection;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Client.Json_Structure;
-using ClientGUI.Bluetooth;
-using ClientGUI.Connection;
-using ClientGUI.Sub_Objects;
-using Newtonsoft.Json.Linq;
 
 namespace ClientGUI
 {
-    public partial class Form2 : Form
+    public partial class SessionScreen : Form
     {
         private JsonPacketBuilder jsonPacketBuilder;
         private ServerConnection serverConnection;       
 
         private Dictionary<string, string> users;
 
-        public Form2()
+        public SessionScreen()
         {
             InitializeComponent();
 
@@ -70,6 +65,9 @@ namespace ClientGUI
                     }
                 }
                 btnSelectSession.Enabled = true;
+
+                // Temp
+                btnSelectSession.PerformClick();
             }
             else
             {
@@ -80,10 +78,16 @@ namespace ClientGUI
 
         private void BtnSelectSession_Click(object sender, EventArgs e)
         {
-            if (lstbSessions.SelectedItem != null)
+            if (true)
+            //if (lstbSessions.SelectedItem != null)
             {
-                string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
-                // Form starten die jouw snelheid, bpm enz laat zien en die ook verbonden is met de VR
+                string selectedSessionId = "temp";
+                //string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
+
+                ClientScreen clientScreen = new ClientScreen(serverConnection, selectedSessionId);
+                clientScreen.Show();
+
+                this.WindowState = FormWindowState.Minimized;
             }
         }
     }
