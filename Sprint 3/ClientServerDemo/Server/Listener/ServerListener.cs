@@ -119,6 +119,7 @@ namespace Server.Listener
                                     case PacketType.ClientLogin:
                                         Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        //Client/Login\r\n123
                                         if (packetBundle.Item1.Length == 1)
                                         {
                                             string clientId = packetBundle.Item1[0];
@@ -358,7 +359,18 @@ namespace Server.Listener
                                     case PacketType.DoctorMessage:
                                         Console.WriteLine($"\t> Doctor Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // TODO Realtime message tunneling to connected Client
+                                        //Doctor/Message\r\n123\r\nHoi
+                                        if (packetBundle.Item1.Length == 2)
+                                        {
+                                            string id = packetBundle.Item1[0];
+                                            string message = packetBundle.Item1[1];
+
+                                            if (clientForClientId.ContainsKey(id))
+                                            {
+                                                TcpClient clientFromId = clientForClientId[id];
+                                                SendWithNoResponse(clientFromId, $"Server/Message\r\n{message}");
+                                            }
+                                        }
 
                                         break;
                                     case PacketType.UnknownPacket:
