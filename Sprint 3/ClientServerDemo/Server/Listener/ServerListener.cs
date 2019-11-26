@@ -1,6 +1,7 @@
 ﻿using Server.IO;
 using Server.IO.Data;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Security;
@@ -25,6 +26,8 @@ namespace Server.Listener
         private X509Certificate2 serverCertificate;
         private Dictionary<TcpClient, SslStream> clientStreams;
 
+        private Dictionary<string, TcpClient> clientForClientId;
+
         public ServerListener(string certificatePath, string ipv4, int port)
         {
             this.tcpListener = new TcpListener(new IPEndPoint(IPAddress.Parse(ipv4), port));
@@ -34,6 +37,7 @@ namespace Server.Listener
             this.iODataHandler = new IODataHandler();
             this.connectedClients = new List<TcpClient>();
             this.clientThreads = new Dictionary<TcpClient, Thread>();
+            this.clientForClientId = new Dictionary<string, TcpClient>();
 
             this.clientStreams = new Dictionary<TcpClient, SslStream>();
             this.serverCertificate = new X509Certificate2(certificatePath, "banaantje");
@@ -115,7 +119,30 @@ namespace Server.Listener
                                     case PacketType.ClientLogin:
                                         Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // TODO Client login logic 
+                                        if (packetBundle.Item1.Length == 1)
+                                        {
+                                            string clientId = packetBundle.Item1[0];
+
+                                            if (!clientForClientId.ContainsKey(clientId) && !clientForClientId.ContainsValue(clientInThread))
+                                            {
+                                                int id;
+                                                if (int.TryParse(clientId, out id))
+                                                {
+                                                    ClientCollection clientCollection = IODataHandler.LoadClients();
+                                                    if (clientCollection.clients.Any(x => x.Id == id))
+                                                    {
+                                                        clientForClientId.Add(clientId, clientInThread);
+                                                        SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                                    }
+                                                    else
+                                                        SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                                }
+                                                else
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                            }
+                                            else
+                                                SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
+                                        }
 
                                         break;
                                     case PacketType.ClientLogout:
