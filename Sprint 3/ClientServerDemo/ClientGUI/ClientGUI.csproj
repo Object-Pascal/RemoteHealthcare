@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Connection\ClientServerWorker.cs" />
     <Compile Include="Connection\ServerConnection.cs" />
+    <Compile Include="Connection\ServerConnectionVR.cs" />
     <Compile Include="Conversion\PageConversion.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -69,6 +70,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="PacketHandling\PacketHandler.cs" />
+    <Compile Include="PacketHandling\PacketType.cs" />
     <Compile Include="SessionScreen.cs">
       <SubType>Form</SubType>
     </Compile>

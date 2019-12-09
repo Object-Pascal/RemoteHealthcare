@@ -14,7 +14,9 @@ namespace ClientGUI
     public partial class SessionScreen : Form
     {
         private JsonPacketBuilder jsonPacketBuilder;
+
         private ServerConnection serverConnection;       
+        private ServerConnectionVR serverConnectionVR;       
 
         private Dictionary<string, string> users;
 
@@ -24,7 +26,8 @@ namespace ClientGUI
 
             users = new Dictionary<string, string>();
             jsonPacketBuilder = new JsonPacketBuilder();
-            serverConnection = new ServerConnection();
+
+            serverConnectionVR = new ServerConnectionVR();
             
             InitializeLogin();
         }
@@ -34,6 +37,7 @@ namespace ClientGUI
             LoginScreen loginScreen = new LoginScreen();            
             loginScreen.LoggedIn += (e) =>
             {
+                this.serverConnection = e.ServerConnection;
                 BleHeartHandler bleHeart = loginScreen.bleHeartHandler;
                 BleBikeHandler bleBike = loginScreen.bleBikeHandler;
                 
@@ -45,7 +49,7 @@ namespace ClientGUI
         private async Task<bool> InitializeConnection()
         {
             btnSelectSession.Enabled = false;            
-            return await serverConnection.Connect("145.48.6.10", 6666);
+            return await serverConnectionVR.Connect("145.48.6.10", 6666);
         }
 
         private async void InitializeSessions()
@@ -53,7 +57,7 @@ namespace ClientGUI
             bool connected = await InitializeConnection();
             if (connected)
             {
-                Tuple<string, JObject> sessionResponse = serverConnection.TransferSendableResponse(jsonPacketBuilder.BuildSessionPacket().Item1);
+                Tuple<string, JObject> sessionResponse = serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSessionPacket().Item1);
 
                 JArray data = sessionResponse.Item2.SelectToken("data") as JArray;
                 foreach (JObject j in data)
@@ -65,9 +69,6 @@ namespace ClientGUI
                     }
                 }
                 btnSelectSession.Enabled = true;
-
-                // Temp
-                btnSelectSession.PerformClick();
             }
             else
             {
@@ -78,16 +79,15 @@ namespace ClientGUI
 
         private void BtnSelectSession_Click(object sender, EventArgs e)
         {
-            if (true)
-            //if (lstbSessions.SelectedItem != null)
+            if (lstbSessions.SelectedItem != null)
             {
-                string selectedSessionId = "temp";
-                //string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
+                string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
 
-                ClientScreen clientScreen = new ClientScreen(serverConnection, selectedSessionId);
-                clientScreen.Show();
+                ClientScreen clientScreen = new ClientScreen(this.serverConnectionVR, this.serverConnection, selectedSessionId);
+                clientScreen.FormClosing += (s, a) => this.Show();
 
-                this.WindowState = FormWindowState.Minimized;
+                this.Hide();
+                clientScreen.ShowDialog();
             }
         }
     }

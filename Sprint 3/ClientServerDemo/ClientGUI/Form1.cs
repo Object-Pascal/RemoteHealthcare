@@ -22,7 +22,7 @@ namespace ClientGUI
     public partial class Form1 : Form
     {
         private JsonPacketBuilder jsonPacketBuilder;
-        private ServerConnection serverConnection;
+        private ServerConnectionVR serverConnection;
         private bool connected;
 
         private NetworkStream stream;
@@ -48,7 +48,7 @@ namespace ClientGUI
             InitializeComponent();
             users = new Dictionary<string, string>();
             jsonPacketBuilder = new JsonPacketBuilder();
-            serverConnection = new ServerConnection();
+            serverConnection = new ServerConnectionVR();
             connected = false;
             Connect();
 

@@ -30,7 +30,7 @@
         {
             this.login = new System.Windows.Forms.Button();
             this.tbName = new System.Windows.Forms.TextBox();
-            this.patientNumber = new System.Windows.Forms.TextBox();
+            this.tbPatientNumber = new System.Windows.Forms.TextBox();
             this.unknownNumber = new System.Windows.Forms.Label();
             this.selectBike = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
@@ -64,20 +64,20 @@
             this.tbName.Enter += new System.EventHandler(this.Name_Enter);
             this.tbName.Leave += new System.EventHandler(this.Name_Leave);
             // 
-            // patientNumber
+            // tbPatientNumber
             // 
-            this.patientNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tbPatientNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.patientNumber.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.patientNumber.Location = new System.Drawing.Point(208, 104);
-            this.patientNumber.Margin = new System.Windows.Forms.Padding(2);
-            this.patientNumber.Name = "patientNumber";
-            this.patientNumber.Size = new System.Drawing.Size(109, 20);
-            this.patientNumber.TabIndex = 2;
-            this.patientNumber.Text = "Patiëntnummer";
-            this.patientNumber.Enter += new System.EventHandler(this.PatientNumber_Enter);
-            this.patientNumber.Leave += new System.EventHandler(this.PatientNumber_Leave);
+            this.tbPatientNumber.ForeColor = System.Drawing.SystemColors.InactiveCaption;
+            this.tbPatientNumber.Location = new System.Drawing.Point(208, 104);
+            this.tbPatientNumber.Margin = new System.Windows.Forms.Padding(2);
+            this.tbPatientNumber.Name = "tbPatientNumber";
+            this.tbPatientNumber.Size = new System.Drawing.Size(109, 20);
+            this.tbPatientNumber.TabIndex = 2;
+            this.tbPatientNumber.Text = "Patiëntnummer";
+            this.tbPatientNumber.Enter += new System.EventHandler(this.PatientNumber_Enter);
+            this.tbPatientNumber.Leave += new System.EventHandler(this.PatientNumber_Leave);
             // 
             // unknownNumber
             // 
@@ -115,7 +115,7 @@
             this.ClientSize = new System.Drawing.Size(533, 292);
             this.Controls.Add(this.selectBike);
             this.Controls.Add(this.unknownNumber);
-            this.Controls.Add(this.patientNumber);
+            this.Controls.Add(this.tbPatientNumber);
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.login);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -132,7 +132,7 @@
 
         private System.Windows.Forms.Button login;
         private System.Windows.Forms.TextBox tbName;
-        private System.Windows.Forms.TextBox patientNumber;
+        private System.Windows.Forms.TextBox tbPatientNumber;
         private System.Windows.Forms.Label unknownNumber;
         private System.Windows.Forms.ComboBox selectBike;
     }

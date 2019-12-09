@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +12,12 @@ namespace ClientGUI.Connection
     public class ServerConnection
     {
         private TcpClient client;
+        private SslStream sslStream;
+
+        public bool Connected
+        {
+            get => client.Connected;
+        }
 
         public ServerConnection()
         {
@@ -20,52 +29,85 @@ namespace ClientGUI.Connection
             try
             {
                 await client.ConnectAsync(ip, port);
+                sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate));
+
+                try
+                {
+                    sslStream.AuthenticateAsClient(ip);
+                }
+                catch (AuthenticationException)
+                {
+                    Console.WriteLine("Authentication failed - closing the connection.");
+                    client.Close();
+                    return false;
+                }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Error while starting the connection:\n" + ex.Message + "\n" + ex.StackTrace);
                 return false;
             }
         }
 
-        /// <summary>
-        /// Sends JSON data and returns the response from the server
-        /// </summary>
-        public Tuple<string, JObject> TransferSendableResponse(string sendableRaw)
+        public void Disconnect()
         {
-            byte[] prefix = BitConverter.GetBytes(sendableRaw.Length);
-            byte[] dataBytes = Encoding.UTF8.GetBytes(sendableRaw);
+            try
+            {
+                client.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error while closing the connection:\n" + ex.Message + "\n" + ex.StackTrace);
+            }
+        }
 
-            Send(prefix); 
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            return false;
+        }
+
+        public async Task<string> SendWithResponse(string packet)
+        {
+            byte[] length = BitConverter.GetBytes(packet.Length);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
+
+            Send(length);  
             Send(dataBytes);
 
-            byte[] jsonPacketLengthData = ReceiveResponse(4);
-            int jsonPacketLength = BitConverter.ToInt32(jsonPacketLengthData, 0);
+            byte[] packetLengthData = await ReceiveResponse(4);
+            int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-            byte[] jsonData = ReceiveResponse(jsonPacketLength);
-            string jsonRaw = Encoding.UTF8.GetString(jsonData);
+            byte[] responseData = await ReceiveResponse(packetLength);
+            string response = Encoding.UTF8.GetString(responseData);
 
-            return new Tuple<string, JObject>(jsonRaw, JObject.Parse(jsonRaw));
+            return response;
         }
 
-        /// <summary>
-        /// Sends JSON data and doesn't wait for a response
-        /// </summary>
-        public void TransferSendableNoResponse(string sendableRaw)
+        public void SendWithNoResponse(string packet)
         {
-            byte[] prefix = BitConverter.GetBytes(sendableRaw.Length);
-            byte[] dataBytes = Encoding.UTF8.GetBytes(sendableRaw);
+            byte[] length = BitConverter.GetBytes(packet.Length);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
-            Send(prefix);
+            Send(length);
             Send(dataBytes);
         }
 
-        public Tuple<string, JObject> TransferToTunnel(string tunnelSendableRaw, string tunnelDataSendableRaw)
+        public async Task<string> WaitForResponse()
         {
-            return TransferSendableResponse(tunnelSendableRaw);
+            byte[] packetLengthData = await ReceiveResponse(4);
+            int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+
+            byte[] responseData = await ReceiveResponse(packetLength);
+            string response = Encoding.UTF8.GetString(responseData);
+
+            return response;
         }
 
-        private byte[] ReceiveResponse(int packetLength)
+        private async Task<byte[]> ReceiveResponse(int packetLength)
         {
             try
             {
@@ -74,28 +116,27 @@ namespace ClientGUI.Connection
 
                 while (readPosition < packetLength)
                 {
-                    readPosition += client.GetStream().Read(receivedBuff, readPosition, packetLength - readPosition);
+                    readPosition += await sslStream.ReadAsync(receivedBuff, readPosition, packetLength - readPosition);
                 }
 
                 return receivedBuff;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error!\n" + ex.Message + "\n" + ex.StackTrace);
+                Console.WriteLine("Error while reading from stream:\n" + ex.Message + "\n" + ex.StackTrace);
                 return null;
             }
-
         }
 
-        private void Send(byte[] message)
+        private async void Send(byte[] message)
         {
             try
             {
-                client.GetStream().Write(message, 0, message.Length);
+                await sslStream.WriteAsync(message, 0, message.Length);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error!\n" + ex.Message + "\n" + ex.StackTrace);
+                Console.WriteLine("Error while reading writing to stream:\n" + ex.Message + "\n" + ex.StackTrace);
             }
         }
     }

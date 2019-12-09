@@ -9,64 +9,61 @@ namespace ClientGUI
 {
     public partial class ClientScreen : Form
     {
-        private ServerConnection serverConnectionVR;
+        private ServerConnectionVR serverConnectionVR;
+        private ServerConnection serverConnection;
         private ClientServerWorker clientServerWorker;
 
         private string currentSessionId;
 
-        public ClientScreen(ServerConnection serverConnectionVR, string currentSessionId)
+        public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId)
         {
             InitializeComponent();
 
             this.serverConnectionVR = serverConnectionVR;
+            this.serverConnection = serverConnection;
             this.currentSessionId = currentSessionId;
+
+            lblWait.Left = (this.ClientSize.Width - lblWait.Width) / 2;
+            lblWait.Top = (this.ClientSize.Height - lblWait.Height) / 2;
 
             StartWorker();
         }
 
-        private async void StartWorker()
+        private void StartWorker()
         {
-            bool checkCert = await CheckCertificate();
-            if (checkCert)
+            if (this.serverConnection.Connected)
             {
-                ServerConnection sc = new ServerConnection();
-
-                bool connected = await sc.Connect("80.115.121.54", 25545);
-                if (connected)
-                {
-                    this.clientServerWorker = new ClientServerWorker(sc);
-                }
+                this.clientServerWorker = new ClientServerWorker(this.serverConnection);
+                this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+                this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
+                this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
+                this.clientServerWorker.StopReceived += ClientServerWorker_StopReceived;
             }
         }
 
-        private async Task<bool> CheckCertificate()
+        private void ClientServerWorker_StatusReceived(StatusArgs args)
         {
-            return await Task.Run(() =>
+            if (args.Status == "ready")
             {
-                try
-                {
-                    string certFile = Directory.GetCurrentDirectory() + "\\certificate.cer";
-                    if (File.Exists(certFile))
-                    {
-                        X509Certificate2 cert = new X509Certificate2(certFile);
-                        using (X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
-                        {
-                            store.Open(OpenFlags.ReadWrite);
+                // VR Starten
+                // Bike Starten
+                // Etc.
+            }
+        }
 
-                            if (!store.Certificates.Contains(cert))
-                            {
-                                store.Add(cert);
-                            }                        
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            });
+        private void ClientServerWorker_MessageReceived(MessageArgs args)
+        {
+            
+        }
+
+        private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
+        {
+            
+        }
+
+        private void ClientServerWorker_StopReceived(EventArgs args)
+        {
+
         }
     }
 }

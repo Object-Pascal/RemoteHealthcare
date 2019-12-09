@@ -21,6 +21,7 @@
         DoctorLogin,
         DoctorLogout,
         DoctorBroadcast,
-        DoctorMessage
+        DoctorMessage,
+        DoctorConnectToClient
     }
 }
