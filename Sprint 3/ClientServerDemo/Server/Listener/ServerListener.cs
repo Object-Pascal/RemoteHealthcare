@@ -207,6 +207,21 @@ namespace Server.Listener
                                         running = false;
 
                                         break;
+                                    case PacketType.DoctorResistance:
+                                        Console.WriteLine($"\t> Doctor Resistance packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        //Doctor/Resistance\r\nresistance
+                                        if (packetBundle.Item1.Length == 1)
+                                        {
+                                            if (clientForDoctor.Values.Contains(clientInThread))
+                                            {
+                                                string resistance = packetBundle.Item1[0];
+
+                                                TcpClient targetPatientClient = clientForDoctor[clientForDoctor.Where(x => x.Value == clientInThread).First().Key];
+                                                SendWithNoResponse(targetPatientClient, $"Server/Resistance\r\n{resistance}");
+                                            }
+                                        }
+                                        break;
                                     case PacketType.DoctorDataGet:
                                         Console.WriteLine($"\t> Doctor DataGet packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 

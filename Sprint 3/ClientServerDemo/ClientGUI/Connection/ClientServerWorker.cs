@@ -12,6 +12,9 @@ namespace ClientGUI.Connection
         public event StatusHandler StatusReceived;
         public delegate void StatusHandler(StatusArgs args);
 
+        public event ResistanceHandler ResistanceReceived;
+        public delegate void ResistanceHandler(ResistanceArgs args);
+
         public event BroadcastHandler BroadcastReceived;
         public delegate void BroadcastHandler(BroadcastArgs args);
 
@@ -44,6 +47,9 @@ namespace ClientGUI.Connection
                             case PacketType.Status:
                                 StatusReceived?.Invoke(new StatusArgs(packet.Item1[1]));
                                 break;
+                            case PacketType.Resistance:
+                                ResistanceReceived?.Invoke(new ResistanceArgs(packet.Item1[1]));
+                                break;
                             case PacketType.Broadcast:
                                 BroadcastReceived?.Invoke(new BroadcastArgs(packet.Item1[1]));
                                 break;
@@ -71,6 +77,16 @@ namespace ClientGUI.Connection
         public StatusArgs(string status)
         {
             this.Status = status;
+        }
+    }
+
+    public class ResistanceArgs : EventArgs
+    {
+        public string Resistance;
+
+        public ResistanceArgs(string resistance)
+        {
+            this.Resistance = resistance;
         }
     }
 

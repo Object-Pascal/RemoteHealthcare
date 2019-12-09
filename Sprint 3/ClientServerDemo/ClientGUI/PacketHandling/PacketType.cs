@@ -3,6 +3,7 @@
     public enum PacketType
     {
         Status,
+        Resistance,
         Broadcast,
         Message,
         StopVR,

@@ -1,8 +1,5 @@
 ﻿using ClientGUI.Connection;
 using System;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ClientGUI
@@ -35,6 +32,7 @@ namespace ClientGUI
             {
                 this.clientServerWorker = new ClientServerWorker(this.serverConnection);
                 this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+                this.clientServerWorker.ResistanceReceived += ClientServerWorker_ResistanceReceived;
                 this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
                 this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
                 this.clientServerWorker.StopReceived += ClientServerWorker_StopReceived;
@@ -54,6 +52,15 @@ namespace ClientGUI
         private void ClientServerWorker_MessageReceived(MessageArgs args)
         {
             
+        }
+
+        private void ClientServerWorker_ResistanceReceived(ResistanceArgs args)
+        {
+            byte resistance;
+            if (byte.TryParse(args.Resistance, out resistance))
+            {
+                // Resistance veranderen
+            }
         }
 
         private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)

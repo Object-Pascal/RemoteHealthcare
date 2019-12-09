@@ -13,6 +13,7 @@
         ClientMessage,
 
         DoctorStatus,
+        DoctorResistance,
         DoctorDataGet,
         DoctorDataSave,
         DoctorAddNewClient,
