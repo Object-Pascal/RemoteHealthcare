@@ -136,6 +136,9 @@
     <EmbeddedResource Include="ClientScreen.resx">
       <DependentUpon>ClientScreen.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SessionScreen.resx">
       <DependentUpon>SessionScreen.cs</DependentUpon>
     </EmbeddedResource>

@@ -51,6 +51,8 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
                     case "Doctor/Message":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogout);
+                    case "Doctor/ConnectToClient":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorConnectToClient);
                     default:
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.UnknownPacket);
                 }
