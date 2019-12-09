@@ -101,6 +101,8 @@ namespace Doctor
 
         private void SendPrivateMessage_Click(object sender, EventArgs e)
         {
+            serverConnection.SendWithNoResponse(tbTextBoxSendMessage.Text);
+             
             tbMessageHistory.SelectedText += "Doctor: " + tbTextBoxSendMessage.Text + "\r\n";
             tbTextBoxSendMessage.Text = "Stuur bericht ...";
             tbTextBoxSendMessage.ForeColor = Color.Silver;

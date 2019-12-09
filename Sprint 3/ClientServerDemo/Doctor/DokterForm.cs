@@ -37,6 +37,8 @@ namespace Doctor
             loginScreen.FalseLogin += LoginScreen_FalseLogin;
             loginScreen.ShowDialog();
 
+            //this.availablePatients.Add(new Patient("chiem","123","25","neutral"));
+            
             this.FormClosing += (s, e) =>
             {
                 this.serverConnection.SendWithNoResponse($"Doctor/LogOut\r\n");

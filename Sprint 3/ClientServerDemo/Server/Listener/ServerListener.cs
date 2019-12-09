@@ -173,7 +173,6 @@ namespace Server.Listener
                                     case PacketType.ClientMessage:
                                         Console.WriteLine($"\t> Client Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // Client/Message\r\ntext
                                         if (clientForDoctor.ContainsKey(clientInThread))
                                         {
                                             string clientMessage = packetBundle.Item1[0];
@@ -181,9 +180,7 @@ namespace Server.Listener
                                             TcpClient doctorFromClient = clientForDoctor[clientInThread];
                                             SendWithNoResponse(doctorFromClient, $"Server/Message\r\n{clientMessage}");
                                         }
-
                                         break;
-
                                     case PacketType.DoctorLogin:
                                         Console.WriteLine($"\t> Doctor Login packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
@@ -361,32 +358,31 @@ namespace Server.Listener
                                     case PacketType.DoctorBroadcast:
                                         Console.WriteLine($"\t> Doctor Broadcast packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        connectedClients.ForEach(x =>
+                                        TcpClient[] clColl = clientForClientId.Values.ToArray();
+                                        for (int i = 0; i < clColl.Length; i++)
                                         {
-                                            // No real responses from the clients are required
-                                            SendWithNoResponse(x, $"Server/Broadcast\r\n{packetBundle.Item1}");
-                                        });
+                                            SendWithNoResponse(clColl[i], $"Server/Broadcast\r\n{packetBundle.Item1}");
+                                        }
                                         break;
                                     case PacketType.DoctorMessage:
                                         Console.WriteLine($"\t> Doctor Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //Doctor/Message\r\n123\r\nHoi
+                                        //Doctor/Message\r\n123\r\ntext
                                         if (packetBundle.Item1.Length == 2)
                                         {
                                             string id = packetBundle.Item1[0];
-                                            string message = packetBundle.Item1[1];
+                                            string doctorMessage = packetBundle.Item1[1];
 
                                             if (clientForClientId.ContainsKey(id))
                                             {
                                                 TcpClient clientFromId = clientForClientId[id];
-                                                SendWithNoResponse(clientFromId, $"Server/Message\r\n{message}");
+                                                SendWithNoResponse(clientFromId, $"Server/Message\r\n{doctorMessage}");
                                             }
                                         }
-
                                         break;
                                     case PacketType.DoctorConnectToClient:
                                         Console.WriteLine($"\t> Doctor ConnectToClient packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-                                        
+
                                         //Doctor/ConnectToClient\r\n123
                                         if (packetBundle.Item1.Length == 1)
                                         {
@@ -404,7 +400,6 @@ namespace Server.Listener
                                         break;
                                     case PacketType.UnknownPacket:
                                         Console.WriteLine($"\t> Unknown packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-
                                         break;
                                     case PacketType.EmptyPacket:
                                         Console.WriteLine($"\t> Empty packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");

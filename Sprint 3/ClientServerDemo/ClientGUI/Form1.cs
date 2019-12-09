@@ -521,6 +521,14 @@ namespace ClientGUI
             
         }
 
-     
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tbRecieveMessage_TextChanged(object sender, EventArgs e)
+        {
+            //hier moet de message komen vanuit de doctor
+        }
     }
 }
