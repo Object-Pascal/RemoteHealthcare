@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ClientGUI.Connection
+namespace Doctor.Connection
 {
     public class ServerConnection
     {
@@ -73,27 +72,36 @@ namespace ClientGUI.Connection
 
         public async Task<string> SendWithResponse(string packet)
         {
-            Thread.Sleep(500);
+            try
+            {
+                byte[] length = BitConverter.GetBytes(packet.Length);
+                byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
-            byte[] length = BitConverter.GetBytes(packet.Length);
-            byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
+                Send(length);
+                Send(dataBytes);
 
-            Send(length);  
-            Send(dataBytes);
+                byte[] packetLengthData = await ReceiveResponse(4);
+                int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-            byte[] packetLengthData = await ReceiveResponse(4);
-            int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+                Console.WriteLine("Read length");
 
-            byte[] responseData = await ReceiveResponse(packetLength);
-            string response = Encoding.UTF8.GetString(responseData);
+                Thread.Sleep(200);
 
-            return response;
+                byte[] responseData = await ReceiveResponse(packetLength);
+                string response = Encoding.UTF8.GetString(responseData);
+
+                Console.WriteLine("Read data");
+
+                return response;
+            }
+            catch (ArgumentNullException)
+            {
+                return string.Empty;
+            }
         }
 
         public void SendWithNoResponse(string packet)
         {
-            Thread.Sleep(500);
-
             byte[] length = BitConverter.GetBytes(packet.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
@@ -103,21 +111,27 @@ namespace ClientGUI.Connection
 
         public async Task<string> WaitForResponse()
         {
-            Thread.Sleep(500);
+            try
+            {
+                byte[] packetLengthData = await ReceiveResponse(4);
+                int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-            byte[] packetLengthData = await ReceiveResponse(4);
-            int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+                byte[] responseData = await ReceiveResponse(packetLength);
+                string response = Encoding.UTF8.GetString(responseData);
 
-            byte[] responseData = await ReceiveResponse(packetLength);
-            string response = Encoding.UTF8.GetString(responseData);
-
-            return response;
+                return response;
+            }
+            catch (ArgumentNullException)
+            {
+                return string.Empty;
+            }
         }
 
-        private async Task<byte[]> ReceiveResponse(int packetLength)
+        private async Task<byte[]> ReceiveResponse(int packetLength, int readTimeOut = 5000)
         {
             try
             {
+                this.sslStream.ReadTimeout = readTimeOut;
                 byte[] receivedBuff = new byte[packetLength];
                 int readPosition = 0;
 

@@ -29,5 +29,18 @@ namespace ClientGUI.PacketHandling
             else
                 return new Tuple<string[], PacketType>(new string[] { }, PacketType.EmptyPacket);
         }
+
+        public bool IsStatusOk(Tuple<string[], PacketType> packet)
+        {
+            if (packet.Item2 == PacketType.Status)
+            {
+                if (packet.Item1.Length == 2)
+                {
+                    if (packet.Item1[1] == "ok")
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

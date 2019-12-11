@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
+﻿using Doctor.Connection;
 using Doctor.PacketHandling;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Doctor
 {
@@ -80,11 +74,11 @@ namespace Doctor
                 string responsePacket = await this.serverConnection.SendWithResponse($"Doctor/LogIn\r\n{txtDoctorName.Text}\r\n{txtDoctorPassword.Text}");
                 if (responsePacket != null)
                 {
-                    Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+                    Tuple<string[], PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
 
                     if (handledPacket.Item2 == PacketType.Status)
                     {
-                        if (handledPacket.Item1 == "ok")
+                        if (packetHandler.IsStatusOk(handledPacket))
                         {
                             lblUnknownLogin.Visible = false;
                             this.LoggedIn?.Invoke(new LogInArgs(serverConnection));

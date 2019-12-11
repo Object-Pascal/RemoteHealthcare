@@ -1,4 +1,5 @@
-﻿using Doctor.PacketHandling;
+﻿using Doctor.Connection;
+using Doctor.PacketHandling;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +20,6 @@ namespace Doctor
         private ServerConnection serverConnection;
         private PacketHandler packetHandler;
 
-        private FlowLayoutPanel panel;
         private List<Patient> selectedPatients;
         private List<Patient> availablePatients;
 
@@ -51,11 +51,11 @@ namespace Doctor
             //send: Doctor/DataGet\r\nALL_CLIENTS
             //response: Server/DataGet\r\nNAME//ID//NAME//ID//NAME//ID//NAME//ID//NAME//ID//...
             string responsePacket = await this.serverConnection.SendWithResponse($"Doctor/DataGet\r\nALL_CLIENTS");
-            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+            Tuple<string[], PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
 
             if (handledPacket.Item2 == PacketType.DataGet)
             {
-                string[] clientsRaw = Regex.Split(handledPacket.Item1, "//").Where(x => x != "").ToArray();
+                string[] clientsRaw = Regex.Split(handledPacket.Item1[1], "//").Where(x => x != "").ToArray();
 
                 for (int i = 0; i < clientsRaw.Length; i += 4)
                 {
@@ -75,7 +75,7 @@ namespace Doctor
         private void LoginScreen_FalseLogin()
         {
             MessageBox.Show("False login credentials");
-            Application.Exit();
+            //Application.Exit();
         }
 
         private void SelectBtn_Click(object sender, EventArgs e)
@@ -94,7 +94,7 @@ namespace Doctor
                 availableListBox.Items.Remove(availablePatients[i].toString());
             }
 
-            selectedPatients.ForEach(x => availablePatients.Remove(x));
+            //selectedPatients.ForEach(x => availablePatients.Remove(x));
         }
 
         private void DeselectBtn_Click(object sender, EventArgs e) 
@@ -113,7 +113,7 @@ namespace Doctor
                 selectedListBox.Items.Remove(selectedPatients[i].toString());
             }
 
-            availablePatients.ForEach(x => selectedPatients.Remove(x));
+            //availablePatients.ForEach(x => selectedPatients.Remove(x));
         }
 
         private void BroadcastTextBox_Enter(object sender, EventArgs e)
@@ -162,9 +162,9 @@ namespace Doctor
             btn.FlatStyle = FlatStyle.Popup;
             btn.TextAlign = ContentAlignment.TopLeft;
             btn.BackColor = Color.White;
-            panel.Controls.Add(btn);
             btn.Tag = p;
             btn.Click += new EventHandler(button_click);
+            LayoutPanelClient.Controls.Add(btn);
         }
 
         private async void button_click(object sender, EventArgs e)
@@ -180,8 +180,7 @@ namespace Doctor
 
         private void removeBtnFromFlowpanel(Patient p)
         {
-
-            foreach (Button b in panel.Controls)
+            foreach (Button b in LayoutPanelClient.Controls)
             {
                 if (b.Text.Contains(p.Name))
                 {
@@ -194,11 +193,11 @@ namespace Doctor
         {
             //same as setup methods only clears the lists first.
             string responsePacket = await this.serverConnection.SendWithResponse($"Doctor/DataGet\r\nALL_CLIENTS");
-            Tuple<string, PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
+            Tuple<string[], PacketType> handledPacket = packetHandler.HandlePacket(responsePacket);
 
             if (handledPacket.Item2 == PacketType.DataGet)
             {
-                string[] clientsRaw = Regex.Split(handledPacket.Item1, "//").Where(x => x != "").ToArray();
+                string[] clientsRaw = Regex.Split(handledPacket.Item1[1], "//").Where(x => x != "").ToArray();
 
                 availablePatients.Clear();
                 availableListBox.Items.Clear();

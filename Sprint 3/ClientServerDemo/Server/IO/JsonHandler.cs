@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Server.Crypto;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,7 +15,8 @@ namespace Server.IO
             if (!File.Exists(savePath))
                 File.Create(savePath);
 
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(filename));
+            string rawData = CryptoHandler.DecryptContent(File.ReadAllBytes(savePath));
+            return JsonConvert.DeserializeObject<T>(rawData);
         }
 
         public static async Task<T> LoadObjectAsync<T>(string filename)
@@ -25,11 +27,8 @@ namespace Server.IO
             if (!File.Exists(savePath))
                 File.Create(savePath);
 
-            using (StreamReader reader = File.OpenText(savePath))
-            {
-                string rawData = await reader.ReadToEndAsync();
-                return await Task.Run(() => JsonConvert.DeserializeObject<T>(rawData));
-            }
+            string rawData = CryptoHandler.DecryptContent(File.ReadAllBytes(savePath));
+            return await Task.Run(() => JsonConvert.DeserializeObject<T>(rawData));
         }
 
         public static async Task<bool> SaveObject<T>(string filename, T classObject)
@@ -40,7 +39,7 @@ namespace Server.IO
                 string savePath = Path.Combine(saveFolder, filename);
 
                 string rawData = await Task.Run(() => JsonConvert.SerializeObject(classObject));
-                await Task.Run(() => File.WriteAllText(savePath, rawData));
+                await Task.Run(() => File.WriteAllBytes(savePath, CryptoHandler.EncryptContent(rawData)));
 
                 return true;
             }
@@ -50,11 +49,34 @@ namespace Server.IO
             }
         }
 
+        #region obsolete stuff
+        public static void SaveTestEncryptedData()
+        {
+            byte[] c = Crypto.CryptoHandler.EncryptContent(JsonHandler.GetFileRaw("doctorData_old.json"));
+            string data = System.Text.Encoding.UTF8.GetString(c);
+
+            JsonHandler.SaveFile("doctorData.json", c);
+        }
+
+        public static string GetFileRaw(string filename)
+        {
+            string saveFolder = Directory.GetCurrentDirectory();
+            string savePath = Path.Combine(saveFolder, filename);
+            return File.ReadAllText(filename);
+        }
+
         public static async void SaveFile(string filename, string content)
         {
             string saveFolder = Directory.GetCurrentDirectory();
             string savePath = Path.Combine(saveFolder, filename);
             await Task.Run(() => File.WriteAllText(savePath, content));
+        }
+
+        public static void SaveFile(string filename, byte[] content)
+        {
+            string saveFolder = Directory.GetCurrentDirectory();
+            string savePath = Path.Combine(saveFolder, filename);
+            File.WriteAllBytes(savePath, content);
         }
 
         public static async void DeleteFile(string filename)
@@ -70,5 +92,6 @@ namespace Server.IO
             string savePath = Path.Combine(saveFolder, filename);
             return File.Exists(savePath);
         }
+        #endregion
     }
 }

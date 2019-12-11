@@ -79,11 +79,10 @@ namespace ClientGUI
             Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
             if (responsePacket.Item2 == PacketType.Status)
             {
-                if (responsePacket.Item1[1] == "ok")
+                if (packetHandler.IsStatusOk(responsePacket))
                 {
                     return true;
                 }
-                return false;
             }
             return false;
         }

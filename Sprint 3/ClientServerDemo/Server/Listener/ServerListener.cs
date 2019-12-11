@@ -122,6 +122,8 @@ namespace Server.Listener
                                     case PacketType.ClientLogin:
                                         Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        //IODataHandler.SaveTestEncryptedData();
+
                                         //Client/Login\r\n123\r\nname
                                         if (packetBundle.Item1.Length == 2)
                                         {
@@ -176,8 +178,9 @@ namespace Server.Listener
                                         if (clientForDoctor.ContainsKey(clientInThread))
                                         {
                                             string clientMessage = packetBundle.Item1[0];
-
                                             TcpClient doctorFromClient = clientForDoctor[clientInThread];
+
+                                            Console.WriteLine($"\t\t> Send message to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
                                             SendWithNoResponse(doctorFromClient, $"Server/Message\r\n{clientMessage}");
                                         }
                                         break;
@@ -234,7 +237,6 @@ namespace Server.Listener
                                             {
                                                 packet += clientCollection.clients[i].Name + "//" + clientCollection.clients[i].Id + "//" + clientCollection.clients[i].Birthdate + "//" + clientCollection.clients[i].Gender + "//";
                                             }
-
                                             SendWithNoResponse(clientInThread, packet);
                                         }
                                         else
@@ -407,7 +409,7 @@ namespace Server.Listener
                                                 clientForDoctor.Add(selectedPatientClient, clientInThread);
 
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nok");
-                                                SendWithNoResponse(selectedPatientClient, "Server/Status\r\ready");
+                                                SendWithNoResponse(selectedPatientClient, "Server/Status\r\nready");
                                             }
                                             else
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
@@ -484,7 +486,9 @@ namespace Server.Listener
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
             WriteToStream(client, packetLengthBytes);
+            Console.WriteLine("Length");
             WriteToStream(client, dataBytes);
+            Console.WriteLine("Data");
         }
 
         public byte[] ReadFromStream(TcpClient client, int packetLength, int readTimeout = Timeout.Infinite)

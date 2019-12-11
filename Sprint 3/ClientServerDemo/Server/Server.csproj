@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crypto\CryptoHandler.cs" />
     <Compile Include="IO\Data\Client.cs" />
     <Compile Include="IO\Data\ClientCollection.cs" />
     <Compile Include="IO\Data\ClientData.cs" />

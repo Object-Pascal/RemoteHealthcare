@@ -1,39 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Doctor.Connection;
+using Doctor.PacketHandling;
+using System;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClientGUI.Bluetooth;
 
 namespace Doctor
 {
     public partial class DetailDoctorForm : Form
     {
         private ServerConnection serverConnection;
-        //private bool serverConnected;
-        //private PacketHandler packetHandler;
+
+        private ClientServerWorker clientServerWorker;
+        private PacketHandler packetHandler;
 
         private Patient patient;
         
         public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();
-            SetDefaultValues(patient, serverConnection);
-        }
 
-        public void SetDefaultValues(Patient patient, ServerConnection serverConnection)
-        {
             this.patient = patient;
             this.serverConnection = serverConnection;
+            this.packetHandler = new PacketHandler();
 
+            SetDefaultValues();
+
+            ConnectToClient();
+            StartWorker();
+        }
+
+        public void SetDefaultValues()
+        {
             lblName.Text = patient.Name;
             lblBirthDate.Text = patient.Age + "";     
             lblGender.Text = patient.Gender;
             lblPantiëntKey.Text = patient.Id;
+        }
+
+        private async void ConnectToClient()
+        {
+            for (int i = 0; i < this.Controls.Count; i++)
+                this.Controls[i].Enabled = false;
+
+            string responseRaw = await this.serverConnection.SendWithResponse($"Doctor/ConnectToClient\r\n{patient.Id}");
+            Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
+            if (responsePacket.Item2 == PacketType.Status)
+            {
+                if (packetHandler.IsStatusOk(responsePacket))
+                {
+                    for (int i = 0; i < this.Controls.Count; i++)
+                        this.Controls[i].Enabled = true;
+                }
+            }
+        }
+
+        private void StartWorker()
+        {
+            this.clientServerWorker = new ClientServerWorker(this.serverConnection);
+            this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+            this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
+            this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
+            this.clientServerWorker.Run();
+        }
+
+        private void ClientServerWorker_MessageReceived(MessageArgs args)
+        {
+            //StringBuilder sb = new StringBuilder(tbMessageHistory.Text.Trim());
+            //tbMessageHistory.Clear();
+            //sb.AppendLine($"[{DateTime.Now.ToShortTimeString()}] {patient.Name}: ");
+            //tbMessageHistory.Text = sb.ToString();
+
+            tbMessageHistory.Text += "\n";
+            tbMessageHistory.Text += $"[{DateTime.Now.ToShortTimeString()}] {patient.Name}: {args.Message}";
+        }
+
+        private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
+        {
+
+        }
+
+        private void ClientServerWorker_StatusReceived(StatusArgs args)
+        {
+
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -56,6 +105,7 @@ namespace Doctor
         {
 
         }
+
         private void StopSession_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten." + "\r\n" + "Weet je zeker dat je de sessie stoppen?",
@@ -68,7 +118,7 @@ namespace Doctor
         }
         private void EmergencyBreak_Click(object sender, EventArgs e)
         {
-            //Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
+            // Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
         }
       
         private void TextBoxSendMessage_Enter(object sender, EventArgs e)
@@ -118,8 +168,12 @@ namespace Doctor
         {
             DetailDoctorForm detailDoctorForm = new DetailDoctorForm(patient, serverConnection);
             int resistanceValue = detailDoctorForm.trackBarResistance.Value;
-            BleBikeHandler ble = new BleBikeHandler();
-            ble.ChangeResistance(resistanceValue);
+
+            // Moet via het sturen naar de server die het dan weer stuurt naar de client
+            // Je hebt als doctor geen directe connectie met de bike
+            //
+            //BleBikeHandler ble = new BleBikeHandler();
+            //ble.ChangeResistance(resistanceValue);
 
         }
 

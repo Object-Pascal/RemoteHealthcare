@@ -36,6 +36,7 @@ namespace ClientGUI
                 this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
                 this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
                 this.clientServerWorker.StopReceived += ClientServerWorker_StopReceived;
+                this.clientServerWorker.Run();
             }
         }
 
@@ -43,6 +44,13 @@ namespace ClientGUI
         {
             if (args.Status == "ready")
             {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lblWait.Text = "Doctor connected";
+                }));
+
+                //this.serverConnection.SendWithNoResponse($"Client/Message\r\nyeet");
+
                 // VR Starten
                 // Bike Starten
                 // Etc.
