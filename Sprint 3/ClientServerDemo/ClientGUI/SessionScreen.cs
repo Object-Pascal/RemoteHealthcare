@@ -15,7 +15,9 @@ namespace ClientGUI
     {
         private JsonPacketBuilder jsonPacketBuilder;
 
-        private ServerConnection serverConnection;       
+        private ServerConnection serverConnection;
+
+        private bool vrConnected;
         private ServerConnectionVR serverConnectionVR;       
 
         private Dictionary<string, string> users;
@@ -24,17 +26,55 @@ namespace ClientGUI
         {
             InitializeComponent();
 
-            users = new Dictionary<string, string>();
-            jsonPacketBuilder = new JsonPacketBuilder();
-
-            serverConnectionVR = new ServerConnectionVR();
-            
+            InitializeDefaultValues();
+            InitializeDefaultEvents();
+            InitializeSessionContext();
             InitializeLogin();
+        }
+
+        private void InitializeDefaultValues()
+        {
+            this.users = new Dictionary<string, string>();
+            this.vrConnected = false;
+            this.jsonPacketBuilder = new JsonPacketBuilder();
+            this.serverConnectionVR = new ServerConnectionVR();
+        }
+
+        private void InitializeDefaultEvents()
+        {
+            this.FormClosing += (s, e) =>
+            {
+                if (this.serverConnection != null)
+                {
+                    this.serverConnection.SendWithNoResponse($"Client/Logout\r\n");
+                    System.Threading.Thread.Sleep(1000);
+                }
+            };
+        }
+
+        private void InitializeSessionContext()
+        {
+            lstbSessions.ContextMenu = new ContextMenu(new MenuItem[]
+            {
+                new MenuItem("Refresh", (s, e) => RefreshSessions())
+            });
         }
 
         private void InitializeLogin()
         {
-            LoginScreen loginScreen = new LoginScreen();            
+            LoginScreen loginScreen = new LoginScreen();
+            loginScreen.FormClosing += (s, e) =>
+            {
+                if (!loginScreen.IsLoggedIn)
+                {
+                    if (this.serverConnection != null)
+                    {
+                        this.serverConnection.SendWithNoResponse($"Client/Logout\r\n");
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                }
+            };
+
             loginScreen.LoggedIn += (e) =>
             {
                 this.serverConnection = e.ServerConnection;
@@ -54,9 +94,35 @@ namespace ClientGUI
 
         private async void InitializeSessions()
         {
-            bool connected = await InitializeConnection();
-            if (connected)
+            this.vrConnected = await InitializeConnection();
+            if (this.vrConnected)
             {
+                Tuple<string, JObject> sessionResponse = serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSessionPacket().Item1);
+
+                JArray data = sessionResponse.Item2.SelectToken("data") as JArray;
+                foreach (JObject j in data)
+                {
+                    if (!users.Keys.Contains(j.SelectToken("clientinfo.user").ToString()))
+                    {
+                        users.Add(j.SelectToken("clientinfo.user").ToString(), j.SelectToken("id").ToString());
+                        lstbSessions.Items.Add($"{j.SelectToken("id").ToString()}: {j.SelectToken("clientinfo.user").ToString()}");
+                    }
+                }
+                btnSelectSession.Enabled = true;
+            }
+            else
+            {
+                if (MessageBox.Show("Kan niet verbinden met de VR server", "Waarschuwing", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) == DialogResult.Retry)
+                    InitializeSessions();
+            }
+        }
+
+        private void RefreshSessions()
+        {
+            if (this.vrConnected)
+            {
+                lstbSessions.Items.Clear();
+
                 Tuple<string, JObject> sessionResponse = serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSessionPacket().Item1);
 
                 JArray data = sessionResponse.Item2.SelectToken("data") as JArray;

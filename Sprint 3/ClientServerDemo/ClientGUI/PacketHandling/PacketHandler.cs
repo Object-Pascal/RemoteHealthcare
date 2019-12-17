@@ -14,6 +14,8 @@ namespace ClientGUI.PacketHandling
                 {
                     case "Server/Status":
                         return new Tuple<string[], PacketType>(lines, PacketType.Status);
+                    case "Server/DoctorDisconnect":
+                        return new Tuple<string[], PacketType>(lines, PacketType.DoctorDisconnect);
                     case "Server/Resistance":
                         return new Tuple<string[], PacketType>(lines, PacketType.Resistance);
                     case "Server/Broadcast":

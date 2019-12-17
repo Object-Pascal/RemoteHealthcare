@@ -59,9 +59,20 @@ namespace Doctor
         {
             this.clientServerWorker = new ClientServerWorker(this.serverConnection);
             this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+            this.clientServerWorker.ClientDisconnectReceived += ClientServerWorker_ClientDisconnectReceived;
             this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
             this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
             this.clientServerWorker.Run();
+        }
+
+        private void ClientServerWorker_StatusReceived(StatusArgs args)
+        {
+
+        }
+
+        private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)
+        {
+            
         }
 
         private void ClientServerWorker_MessageReceived(MessageArgs args)
@@ -76,11 +87,6 @@ namespace Doctor
         }
 
         private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
-        {
-
-        }
-
-        private void ClientServerWorker_StatusReceived(StatusArgs args)
         {
 
         }

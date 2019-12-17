@@ -32,6 +32,7 @@ namespace ClientGUI
             {
                 this.clientServerWorker = new ClientServerWorker(this.serverConnection);
                 this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+                this.clientServerWorker.DoctorDisconnectReceived += ClientServerWorker_DoctorDisconnectReceived;
                 this.clientServerWorker.ResistanceReceived += ClientServerWorker_ResistanceReceived;
                 this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
                 this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
@@ -55,6 +56,11 @@ namespace ClientGUI
                 // Bike Starten
                 // Etc.
             }
+        }
+
+        private void ClientServerWorker_DoctorDisconnectReceived(EventArgs args)
+        {
+            
         }
 
         private void ClientServerWorker_MessageReceived(MessageArgs args)

@@ -18,6 +18,9 @@ namespace Doctor.Connection
         public event MessageHandler MessageReceived;
         public delegate void MessageHandler(MessageArgs args);
 
+        public event ClientDisconnectHandler ClientDisconnectReceived;
+        public delegate void ClientDisconnectHandler(EventArgs args);
+
         public ClientServerWorker(ServerConnection conn)
         {
             this.conn = conn;
@@ -40,6 +43,9 @@ namespace Doctor.Connection
                         {
                             case PacketType.Status:
                                 StatusReceived?.Invoke(new StatusArgs(packet.Item1[1]));
+                                break;
+                            case PacketType.ClientDisconnect:
+                                ClientDisconnectReceived?.Invoke(new EventArgs());
                                 break;
                             case PacketType.Broadcast:
                                 BroadcastReceived?.Invoke(new BroadcastArgs(packet.Item1[1]));

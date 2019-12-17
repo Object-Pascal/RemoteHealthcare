@@ -14,6 +14,8 @@ namespace Doctor.PacketHandling
                 {
                     case "Server/Status":
                         return new Tuple<string[], PacketType>(lines, PacketType.Status);
+                    case "Server/ClientDisconnect":
+                        return new Tuple<string[], PacketType>(lines, PacketType.ClientDisconnect);
                     case "Server/Broadcast":
                         return new Tuple<string[], PacketType>(lines, PacketType.Broadcast);
                     case "Server/Message":

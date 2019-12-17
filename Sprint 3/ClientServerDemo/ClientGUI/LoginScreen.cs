@@ -27,23 +27,25 @@ namespace ClientGUI
         private ServerConnection serverConnection;
         private PacketHandler packetHandler;
 
+        public bool IsLoggedIn { get; private set; }
         public event LoggedInHandler LoggedIn;
         public delegate void LoggedInHandler(LogInArgs args);
 
         public LoginScreen()
         {
             InitializeComponent();
-            InitializeDeclarations();
+            InitializeDefaultValues();
 
             StartServer();
             LoadBikes();
         }
 
-        private void InitializeDeclarations()
+        private void InitializeDefaultValues()
         {
             this.bleBikeHandler = new BleBikeHandler();
             this.bleHeartHandler = new BleHeartHandler();
 
+            this.IsLoggedIn = false;
             this.packetHandler = new PacketHandler();
             this.serverConnection = new ServerConnection();
         }
@@ -75,16 +77,23 @@ namespace ClientGUI
 
         private async Task<bool> PatientExist(string patientName, string patientID)
         {
-            string responseRaw = await this.serverConnection.SendWithResponse($"Client/Login\r\n{patientID}\r\n{patientName}");
-            Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
-            if (responsePacket.Item2 == PacketType.Status)
+            try
             {
-                if (packetHandler.IsStatusOk(responsePacket))
+                string responseRaw = await this.serverConnection.SendWithResponse($"Client/Login\r\n{patientID}\r\n{patientName}");
+                Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
+                if (responsePacket.Item2 == PacketType.Status)
                 {
-                    return true;
+                    if (packetHandler.IsStatusOk(responsePacket))
+                    {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
+            catch (ArgumentNullException)
+            {
+                return false;
+            }
         }
 
         private async void Login_Click(object sender, EventArgs e)
@@ -94,8 +103,8 @@ namespace ClientGUI
             {
                 if (!string.IsNullOrEmpty(tbName.Text) && !string.IsNullOrEmpty(tbPatientNumber.Text))
                 {
-                    bool loggedIn = await PatientExist(tbName.Text.Trim(), tbPatientNumber.Text.Trim());
-                    if (loggedIn)
+                    this.IsLoggedIn = await PatientExist(tbName.Text.Trim(), tbPatientNumber.Text.Trim());
+                    if (this.IsLoggedIn)
                     {
                         //bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
                         //bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
@@ -105,7 +114,7 @@ namespace ClientGUI
                     }
                     else
                     {
-                        this.unknownNumber.Text = "Patiëntnummer bestaat niet!";
+                        this.unknownNumber.Text = "Kan niet inloggen met de ingevoerde gegevens!";
                         this.unknownNumber.Visible = true;
                     }
                 }

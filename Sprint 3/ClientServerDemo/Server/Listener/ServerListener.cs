@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Server.Listener
 {
@@ -150,15 +151,25 @@ namespace Server.Listener
                                             else
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
                                         }
-
                                         break;
                                     case PacketType.ClientLogout:
                                         Console.WriteLine($"\t> Client LogOut packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        clientInThread.Close();
+                                        if (clientForDoctor.ContainsKey(clientInThread))
+                                        {
+                                            TcpClient doctorFromClient = clientForDoctor[clientInThread];
+
+                                            Console.WriteLine($"\t\t> Send client disconnect to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
+                                            SendWithNoResponse(doctorFromClient, $"Server/ClientDisconnect\r\n");
+
+                                            clientForDoctor.Remove(clientInThread);
+                                            clientForClientId.Remove(clientForClientId.First(x => x.Value == clientInThread).Key);
+                                        }
                                         connectedClients.Remove(clientInThread);
+                                        clientInThread.Close();
 
                                         Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
+                                        running = false;
                                         break;
                                     case PacketType.ClientVr:
                                         Console.WriteLine($"\t> Client VR packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
@@ -203,12 +214,20 @@ namespace Server.Listener
                                     case PacketType.DoctorLogout:
                                         Console.WriteLine($"\t> Doctor Logout packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
+                                        if (clientForDoctor.Values.Contains(clientInThread))
+                                        {
+                                            TcpClient targetPatientClient = clientForDoctor[clientForDoctor.First(x => x.Value == clientInThread).Key];
+
+                                            Console.WriteLine($"\t\t> Send doctor disconnect to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
+                                            SendWithNoResponse(targetPatientClient, $"Server/DoctorDisconnect\r\n");
+
+                                            clientForDoctor.Remove(targetPatientClient);
+                                        }
                                         connectedClients.Remove(clientInThread);
                                         clientInThread.Close();
 
                                         Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
                                         running = false;
-
                                         break;
                                     case PacketType.DoctorResistance:
                                         Console.WriteLine($"\t> Doctor Resistance packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
@@ -220,7 +239,7 @@ namespace Server.Listener
                                             {
                                                 string resistance = packetBundle.Item1[0];
 
-                                                TcpClient targetPatientClient = clientForDoctor[clientForDoctor.Where(x => x.Value == clientInThread).First().Key];
+                                                TcpClient targetPatientClient = clientForDoctor[clientForDoctor.First(x => x.Value == clientInThread).Key];
                                                 SendWithNoResponse(targetPatientClient, $"Server/Resistance\r\n{resistance}");
                                             }
                                         }
@@ -409,6 +428,7 @@ namespace Server.Listener
                                                 clientForDoctor.Add(selectedPatientClient, clientInThread);
 
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                                Thread.Sleep(500);
                                                 SendWithNoResponse(selectedPatientClient, "Server/Status\r\nready");
                                             }
                                             else
@@ -463,32 +483,46 @@ namespace Server.Listener
             }
         }
 
-        public string SendWithResponse(TcpClient client, string packet, int readTimeout = Timeout.Infinite)
+        public async Task<string> SendWithResponse(TcpClient client, string packet, int readTimeout = Timeout.Infinite)
         {
             byte[] packetLengthBytes = BitConverter.GetBytes(packet.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
-            WriteToStream(client, packetLengthBytes);
-            WriteToStream(client, dataBytes);
+            bool sendLength = await WriteToStream(client, packetLengthBytes);
+            if (sendLength)
+            {
+                bool sendContent = await WriteToStream(client, dataBytes);
+                if (sendContent)
+                {
+                    byte[] packetLengthData = ReadFromStream(client, 4, readTimeout);
+                    int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-            byte[] packetLengthData = ReadFromStream(client, 4, readTimeout);
-            int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+                    byte[] data = ReadFromStream(client, packetLength, readTimeout);
+                    string responseDataRaw = Encoding.UTF8.GetString(data);
 
-            byte[] data = ReadFromStream(client, packetLength, readTimeout);
-            string responseDataRaw = Encoding.UTF8.GetString(data);
-
-            return responseDataRaw;
+                    return responseDataRaw;
+                }
+                return "Error sending packet content";
+            }
+            return "Error sending length";
         }
 
-        public void SendWithNoResponse(TcpClient client, string packet)
+        public async void SendWithNoResponse(TcpClient client, string packet)
         {
             byte[] packetLengthBytes = BitConverter.GetBytes(packet.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
-            WriteToStream(client, packetLengthBytes);
-            Console.WriteLine("Length");
-            WriteToStream(client, dataBytes);
-            Console.WriteLine("Data");
+            bool sendLength = await WriteToStream(client, packetLengthBytes);
+            if (sendLength)
+            {
+                bool sendContent = await WriteToStream(client, dataBytes);
+                if (!sendContent)
+                    Console.WriteLine("\t>\t> Error sending packet content");
+            }
+            else
+            {
+                Console.WriteLine("\t>\t> Error sending length");
+            }
         }
 
         public byte[] ReadFromStream(TcpClient client, int packetLength, int readTimeout = Timeout.Infinite)
@@ -524,7 +558,7 @@ namespace Server.Listener
             }
         }
 
-        private async void WriteToStream(TcpClient client, byte[] value)
+        private async Task<bool> WriteToStream(TcpClient client, byte[] value)
         {
             try
             {
@@ -532,8 +566,13 @@ namespace Server.Listener
 
                 await stream.WriteAsync(value, 0, value.Length);
                 await stream.FlushAsync();
+
+                return true;
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

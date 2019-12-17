@@ -123,7 +123,7 @@ namespace Doctor.Connection
             }
             catch (ArgumentNullException)
             {
-                return string.Empty;
+                return "Err";
             }
         }
 

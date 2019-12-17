@@ -2,14 +2,11 @@
 using Doctor.PacketHandling;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms; 
+using System.Windows.Forms;
 
 
 namespace Doctor
@@ -36,13 +33,14 @@ namespace Doctor
             loginScreen.LoggedIn += LoginScreen_LoggedIn;
             loginScreen.FalseLogin += LoginScreen_FalseLogin;
             loginScreen.ShowDialog();
-
-            //this.availablePatients.Add(new Patient("chiem","123","25","neutral"));
             
             this.FormClosing += (s, e) =>
             {
-                this.serverConnection.SendWithNoResponse($"Doctor/LogOut\r\n");
-                System.Threading.Thread.Sleep(1000);
+                if (this.serverConnection != null)
+                {
+                    this.serverConnection.SendWithNoResponse($"Doctor/LogOut\r\n");
+                    System.Threading.Thread.Sleep(1000);
+                }
             };
         }
 
@@ -75,7 +73,6 @@ namespace Doctor
         private void LoginScreen_FalseLogin()
         {
             MessageBox.Show("False login credentials");
-            //Application.Exit();
         }
 
         private void SelectBtn_Click(object sender, EventArgs e)

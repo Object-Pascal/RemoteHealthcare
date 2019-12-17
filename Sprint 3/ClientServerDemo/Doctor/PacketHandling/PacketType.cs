@@ -3,6 +3,7 @@
     public enum PacketType
     {
         Status,
+        ClientDisconnect,
         Broadcast,
         Message,
         DataGet,

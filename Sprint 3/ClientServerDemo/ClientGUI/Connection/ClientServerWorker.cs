@@ -24,6 +24,9 @@ namespace ClientGUI.Connection
         public event StopHandler StopReceived;
         public delegate void StopHandler(EventArgs args);
 
+        public event DoctorDisconnectHandler DoctorDisconnectReceived;
+        public delegate void DoctorDisconnectHandler(EventArgs args);
+
         public ClientServerWorker(ServerConnection conn)
         {
             this.conn = conn;
@@ -46,6 +49,9 @@ namespace ClientGUI.Connection
                         {
                             case PacketType.Status:
                                 StatusReceived?.Invoke(new StatusArgs(packet.Item1[1]));
+                                break;
+                            case PacketType.DoctorDisconnect:
+                                DoctorDisconnectReceived?.Invoke(new EventArgs());
                                 break;
                             case PacketType.Resistance:
                                 ResistanceReceived?.Invoke(new ResistanceArgs(packet.Item1[1]));
