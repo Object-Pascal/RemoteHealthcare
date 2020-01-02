@@ -8,6 +8,7 @@
         Message,
         DataGet,
         UnknownPacket,
-        EmptyPacket
+        EmptyPacket,
+        Bike
     }
 }

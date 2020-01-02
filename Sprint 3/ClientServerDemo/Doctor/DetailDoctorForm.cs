@@ -100,7 +100,7 @@ namespace Doctor
 
         private void ClientServerWorker_StatusReceived(StatusArgs args)
         {
-
+            // Obsolute until further notice
         }
 
         private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)
@@ -122,12 +122,10 @@ namespace Doctor
 
         private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
         {
-
-        }
-
-        private void Form2_Load(object sender, EventArgs e)
-        {
-
+            this.Invoke((MethodInvoker)delegate
+            {
+                AppendMessage($"Broadcast: {args.Message}");
+            });
         }
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
@@ -159,6 +157,13 @@ namespace Doctor
         private void EmergencyBreak_Click(object sender, EventArgs e)
         {
             // Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
+            // Doctor/Stop
+
+            if (this.serverConnection.Connected)
+            {
+                this.serverConnection.SendWithNoResponse($"Doctor/StopVR\r\n");
+                AppendMessage("Systeem: De VR is gestopt");
+            }
         }
 
         private void AppendMessage(string message)

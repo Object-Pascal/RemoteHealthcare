@@ -39,6 +39,8 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
                     case "Doctor/LogOut":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogout);
+                    case "Doctor/StopVR":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorStopVR);
                     case "Doctor/Resistance":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorResistance);
                     case "Doctor/DataGet":

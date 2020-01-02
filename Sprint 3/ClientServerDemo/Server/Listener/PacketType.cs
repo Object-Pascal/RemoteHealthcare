@@ -11,6 +11,7 @@
         ClientVr,
         ClientBike,
         ClientMessage,
+        ClientClose,
 
         DoctorStatus,
         DoctorResistance,
@@ -24,7 +25,7 @@
         DoctorBroadcast,
         DoctorMessage,
         DoctorConnectToClient,
-        ClientClose,
-        DoctorClose
+        DoctorClose,
+        DoctorStopVR
     }
 }

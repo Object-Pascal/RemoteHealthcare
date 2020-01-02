@@ -22,7 +22,7 @@ namespace ClientGUI.PacketHandling
                         return new Tuple<string[], PacketType>(lines, PacketType.Broadcast);
                     case "Server/Message":
                         return new Tuple<string[], PacketType>(lines, PacketType.Message);
-                    case "Server/Stop":
+                    case "Server/StopVR":
                         return new Tuple<string[], PacketType>(lines, PacketType.StopVR);
                     default:
                         return new Tuple<string[], PacketType>(lines, PacketType.UnknownPacket);

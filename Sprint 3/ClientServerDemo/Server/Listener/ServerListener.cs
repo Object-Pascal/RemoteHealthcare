@@ -179,18 +179,16 @@ namespace Server.Listener
                                     case PacketType.ClientBike:
                                         Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // EG: Client/Bike\r\nCLIENT_ID\r\nBIKE_BYTES
+                                        // EG: Client/Bike\r\nBIKE_BYTES
                                         string[] bikeData = packetBundle.Item1;
 
-                                        if (bikeData.Length == 2)
+                                        if (bikeData.Length == 1)
                                         {
                                             if (clientForClientId.ContainsKey(bikeData[0]))
                                             {
                                                 TcpClient clientForId = clientForClientId[bikeData[0]];
                                                 if (doctorForClient.ContainsKey(clientForId))
                                                 {
-                                                    // De ontvangen data tunnelen naar de connecte doctor
-
                                                     TcpClient connectedDoctor = doctorForClient[clientForId];
                                                     SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData}");
                                                 }
@@ -442,7 +440,6 @@ namespace Server.Listener
                                             if (doctorForClient.Values.Contains(clientInThread))
                                             {
                                                 TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
-
                                                 if (doctorForClient.ContainsKey(targetPatientClient))
                                                 {
                                                     doctorForClient.Remove(targetPatientClient);
@@ -451,6 +448,21 @@ namespace Server.Listener
                                                     SendWithNoResponse(targetPatientClient, $"Server/DoctorDisconnect\r\n");
                                                     Console.WriteLine($"\t\t> Send close to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
                                                 }
+                                            }
+                                        }
+                                        break;
+                                    case PacketType.DoctorStopVR:
+                                        Console.WriteLine($"\t> Doctor Stop VR packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        //Doctor/StopVR
+                                        if (packetBundle.Item1.Length == 1)
+                                        {
+                                            if (doctorForClient.Values.Contains(clientInThread))
+                                            {
+                                                TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
+                                                SendWithNoResponse(targetPatientClient, $"Server/StopVR\r\n");
+
+                                                Console.WriteLine($"\t\t> Send stop VR to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
                                             }
                                         }
                                         break;

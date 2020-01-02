@@ -1,4 +1,6 @@
-﻿using ClientGUI.Connection;
+﻿using Client.Json_Structure;
+using ClientGUI.Connection;
+using ClientGUI.Json_Structure.Serializables.Sub_Objects;
 using System;
 using System.Drawing;
 using System.Text;
@@ -11,6 +13,8 @@ namespace ClientGUI
     public partial class ClientScreen : Form
     {
         private ServerConnectionVR serverConnectionVR;
+        private JsonPacketBuilder jsonPacketBuilder;
+
         private ServerConnection serverConnection;
         private ClientServerWorker clientServerWorker;
 
@@ -21,6 +25,7 @@ namespace ClientGUI
             InitializeComponent();
 
             this.serverConnectionVR = serverConnectionVR;
+            this.jsonPacketBuilder = new JsonPacketBuilder();
             this.serverConnection = serverConnection;
             this.currentSessionId = currentSessionId;
 
@@ -85,6 +90,9 @@ namespace ClientGUI
                     ToggleControls(true);
                 }));
 
+                // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
+                // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
+
                 // VR Starten
                 // Bike Starten
                 // Etc.
@@ -121,12 +129,20 @@ namespace ClientGUI
 
         private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
         {
-            
+            this.Invoke((MethodInvoker)delegate
+            {
+                AppendMessage($"Broadcast: {args.Message}");
+            });
         }
 
         private void ClientServerWorker_StopReceived(EventArgs args)
         {
-
+            // VR Stop uitvoeren
+            this.Invoke((MethodInvoker)delegate
+            {
+                Tuple<string, StopData> stopVRResponse = jsonPacketBuilder.BuildStopPacket();
+                AppendMessage("Systeem: De doctor heeft de VR gestopt");
+            });
         }
 
         private void AppendMessage(string message)

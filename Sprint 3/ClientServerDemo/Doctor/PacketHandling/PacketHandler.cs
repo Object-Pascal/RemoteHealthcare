@@ -20,6 +20,8 @@ namespace Doctor.PacketHandling
                         return new Tuple<string[], PacketType>(lines, PacketType.Broadcast);
                     case "Server/Message":
                         return new Tuple<string[], PacketType>(lines, PacketType.Message);
+                    case "Server/Bike":
+                        return new Tuple<string[], PacketType>(lines, PacketType.Bike);
                     case "Server/DataGet":
                         return new Tuple<string[], PacketType>(lines, PacketType.DataGet);
                     default:
