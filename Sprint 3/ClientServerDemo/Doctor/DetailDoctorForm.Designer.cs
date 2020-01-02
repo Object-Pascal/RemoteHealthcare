@@ -28,17 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chBikeSpeed = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btnStartSesion = new System.Windows.Forms.Button();
             this.btnEmergencyBreak = new System.Windows.Forms.Button();
             this.chHeartRate = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.btnSendPrivateMessage = new System.Windows.Forms.Button();
             this.tbTextBoxSendMessage = new System.Windows.Forms.TextBox();
             this.lblName = new System.Windows.Forms.Label();
             this.btnStopSesion = new System.Windows.Forms.Button();
@@ -56,18 +55,18 @@
             // 
             // chBikeSpeed
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chBikeSpeed.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chBikeSpeed.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.chBikeSpeed.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chBikeSpeed.Legends.Add(legend3);
             this.chBikeSpeed.Location = new System.Drawing.Point(314, 65);
-            this.chBikeSpeed.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chBikeSpeed.Margin = new System.Windows.Forms.Padding(2);
             this.chBikeSpeed.Name = "chBikeSpeed";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chBikeSpeed.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chBikeSpeed.Series.Add(series3);
             this.chBikeSpeed.Size = new System.Drawing.Size(300, 244);
             this.chBikeSpeed.TabIndex = 3;
             this.chBikeSpeed.Text = "chart1";
@@ -75,7 +74,7 @@
             // btnStartSesion
             // 
             this.btnStartSesion.Location = new System.Drawing.Point(9, 432);
-            this.btnStartSesion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnStartSesion.Margin = new System.Windows.Forms.Padding(2);
             this.btnStartSesion.Name = "btnStartSesion";
             this.btnStartSesion.Size = new System.Drawing.Size(98, 20);
             this.btnStartSesion.TabIndex = 4;
@@ -86,7 +85,7 @@
             // btnEmergencyBreak
             // 
             this.btnEmergencyBreak.Location = new System.Drawing.Point(212, 432);
-            this.btnEmergencyBreak.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnEmergencyBreak.Margin = new System.Windows.Forms.Padding(2);
             this.btnEmergencyBreak.Name = "btnEmergencyBreak";
             this.btnEmergencyBreak.Size = new System.Drawing.Size(98, 20);
             this.btnEmergencyBreak.TabIndex = 5;
@@ -96,45 +95,34 @@
             // 
             // chHeartRate
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chHeartRate.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chHeartRate.Legends.Add(legend2);
+            chartArea4.Name = "ChartArea1";
+            this.chHeartRate.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.chHeartRate.Legends.Add(legend4);
             this.chHeartRate.Location = new System.Drawing.Point(9, 65);
-            this.chHeartRate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chHeartRate.Margin = new System.Windows.Forms.Padding(2);
             this.chHeartRate.Name = "chHeartRate";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chHeartRate.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chHeartRate.Series.Add(series4);
             this.chHeartRate.Size = new System.Drawing.Size(300, 244);
             this.chHeartRate.TabIndex = 6;
             this.chHeartRate.Text = "chart2";
-            // 
-            // btnSendPrivateMessage
-            // 
-            this.btnSendPrivateMessage.Location = new System.Drawing.Point(314, 406);
-            this.btnSendPrivateMessage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.btnSendPrivateMessage.Name = "btnSendPrivateMessage";
-            this.btnSendPrivateMessage.Size = new System.Drawing.Size(98, 20);
-            this.btnSendPrivateMessage.TabIndex = 10;
-            this.btnSendPrivateMessage.Text = "Stuur bericht";
-            this.btnSendPrivateMessage.UseVisualStyleBackColor = true;
-            this.btnSendPrivateMessage.Click += new System.EventHandler(this.SendPrivateMessage_Click);
             // 
             // tbTextBoxSendMessage
             // 
             this.tbTextBoxSendMessage.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.tbTextBoxSendMessage.Location = new System.Drawing.Point(9, 407);
-            this.tbTextBoxSendMessage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbTextBoxSendMessage.Margin = new System.Windows.Forms.Padding(2);
             this.tbTextBoxSendMessage.Name = "tbTextBoxSendMessage";
             this.tbTextBoxSendMessage.Size = new System.Drawing.Size(301, 20);
             this.tbTextBoxSendMessage.TabIndex = 11;
             this.tbTextBoxSendMessage.Text = "Stuur bericht ...";
             this.tbTextBoxSendMessage.Enter += new System.EventHandler(this.TextBoxSendMessage_Enter);
-            this.tbTextBoxSendMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxSendMessage_KeyDown);
-            this.tbTextBoxSendMessage.Leave += new System.EventHandler(this.TextBoxSendMessage_Leave);
+            this.tbTextBoxSendMessage.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TbTextBoxSendMessage_KeyUp);
+            this.tbTextBoxSendMessage.Leave += new System.EventHandler(this.TbTextBoxSendMessage_Leave);
             // 
             // lblName
             // 
@@ -152,7 +140,7 @@
             // btnStopSesion
             // 
             this.btnStopSesion.Location = new System.Drawing.Point(111, 432);
-            this.btnStopSesion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnStopSesion.Margin = new System.Windows.Forms.Padding(2);
             this.btnStopSesion.Name = "btnStopSesion";
             this.btnStopSesion.Size = new System.Drawing.Size(98, 20);
             this.btnStopSesion.TabIndex = 13;
@@ -193,7 +181,7 @@
             // btnHistory
             // 
             this.btnHistory.Location = new System.Drawing.Point(516, 10);
-            this.btnHistory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnHistory.Margin = new System.Windows.Forms.Padding(2);
             this.btnHistory.Name = "btnHistory";
             this.btnHistory.Size = new System.Drawing.Size(98, 20);
             this.btnHistory.TabIndex = 17;
@@ -204,7 +192,7 @@
             // tbMessageHistory
             // 
             this.tbMessageHistory.Location = new System.Drawing.Point(9, 314);
-            this.tbMessageHistory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbMessageHistory.Margin = new System.Windows.Forms.Padding(2);
             this.tbMessageHistory.Multiline = true;
             this.tbMessageHistory.Name = "tbMessageHistory";
             this.tbMessageHistory.ReadOnly = true;
@@ -215,7 +203,7 @@
             // trackBarResistance
             // 
             this.trackBarResistance.Location = new System.Drawing.Point(314, 314);
-            this.trackBarResistance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.trackBarResistance.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarResistance.Name = "trackBarResistance";
             this.trackBarResistance.Size = new System.Drawing.Size(299, 45);
             this.trackBarResistance.TabIndex = 100;
@@ -223,7 +211,7 @@
             // buttonResistance
             // 
             this.buttonResistance.Location = new System.Drawing.Point(314, 340);
-            this.buttonResistance.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonResistance.Margin = new System.Windows.Forms.Padding(2);
             this.buttonResistance.Name = "buttonResistance";
             this.buttonResistance.Size = new System.Drawing.Size(120, 20);
             this.buttonResistance.TabIndex = 101;
@@ -246,13 +234,12 @@
             this.Controls.Add(this.btnStopSesion);
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.tbTextBoxSendMessage);
-            this.Controls.Add(this.btnSendPrivateMessage);
             this.Controls.Add(this.chHeartRate);
             this.Controls.Add(this.btnEmergencyBreak);
             this.Controls.Add(this.btnStartSesion);
             this.Controls.Add(this.chBikeSpeed);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DetailDoctorForm";
             this.Text = "Form2";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
@@ -270,7 +257,6 @@
         private System.Windows.Forms.Button btnStartSesion;
         private System.Windows.Forms.Button btnEmergencyBreak;
         private System.Windows.Forms.DataVisualization.Charting.Chart chHeartRate;
-        private System.Windows.Forms.Button btnSendPrivateMessage;
         private System.Windows.Forms.TextBox tbTextBoxSendMessage;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.Button btnStopSesion;

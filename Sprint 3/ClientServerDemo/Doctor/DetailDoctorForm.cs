@@ -3,6 +3,7 @@ using Doctor.PacketHandling;
 using System;
 using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Doctor
@@ -24,34 +25,66 @@ namespace Doctor
             this.serverConnection = serverConnection;
             this.packetHandler = new PacketHandler();
 
+            InitializeDefaultEvents();
             SetDefaultValues();
+            SetupDoctorSync();
+        }
 
-            ConnectToClient();
-            StartWorker();
+        private void InitializeDefaultEvents()
+        {
+            this.FormClosing += (s, e) =>
+            {
+                if (this.serverConnection.Connected)
+                {
+                    clientServerWorker.Stop();
+                    this.serverConnection.SendWithNoResponse($"Doctor/Close\r\n");
+                }
+            };
         }
 
         public void SetDefaultValues()
         {
             lblName.Text = patient.Name;
-            lblBirthDate.Text = patient.Age + "";     
+            lblBirthDate.Text = patient.Age + "";
             lblGender.Text = patient.Gender;
             lblPantiëntKey.Text = patient.Id;
         }
 
-        private async void ConnectToClient()
+        private async void SetupDoctorSync()
+        {
+            bool connectToClient = await ConnectToClient();
+            if (connectToClient)
+                StartWorker();
+        }
+
+        private void ToggleControls(bool value)
         {
             for (int i = 0; i < this.Controls.Count; i++)
-                this.Controls[i].Enabled = false;
+                this.Controls[i].Enabled = value;
+        }
 
-            string responseRaw = await this.serverConnection.SendWithResponse($"Doctor/ConnectToClient\r\n{patient.Id}");
-            Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
-            if (responsePacket.Item2 == PacketType.Status)
+        private async Task<bool> ConnectToClient()
+        {
+            try
             {
-                if (packetHandler.IsStatusOk(responsePacket))
+                ToggleControls(false);
+
+                string responseRaw = await this.serverConnection.SendWithResponse($"Doctor/ConnectToClient\r\n{patient.Id}");
+                Tuple<string[], PacketType> responsePacket = packetHandler.HandlePacket(responseRaw);
+                if (responsePacket.Item2 == PacketType.Status)
                 {
-                    for (int i = 0; i < this.Controls.Count; i++)
-                        this.Controls[i].Enabled = true;
+                    if (packetHandler.IsStatusOk(responsePacket))
+                    {
+                        ToggleControls(true);
+
+                        return true;
+                    }
                 }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -72,18 +105,19 @@ namespace Doctor
 
         private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)
         {
-            
+            this.Invoke((MethodInvoker)delegate
+            {
+                AppendMessage("Systeem: De patient heeft de verbinding gesloten");
+                clientServerWorker.Stop();
+            });
         }
 
         private void ClientServerWorker_MessageReceived(MessageArgs args)
         {
-            //StringBuilder sb = new StringBuilder(tbMessageHistory.Text.Trim());
-            //tbMessageHistory.Clear();
-            //sb.AppendLine($"[{DateTime.Now.ToShortTimeString()}] {patient.Name}: ");
-            //tbMessageHistory.Text = sb.ToString();
-
-            tbMessageHistory.Text += "\n";
-            tbMessageHistory.Text += $"[{DateTime.Now.ToShortTimeString()}] {patient.Name}: {args.Message}";
+            this.Invoke((MethodInvoker)delegate 
+            {
+                AppendMessage($"{patient.Name}: {args.Message}");
+            });
         }
 
         private void ClientServerWorker_BroadcastReceived(BroadcastArgs args)
@@ -126,18 +160,23 @@ namespace Doctor
         {
             // Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
         }
-      
+
+        private void AppendMessage(string message)
+        {
+            tbMessageHistory.AppendText($"[{DateTime.Now.ToShortTimeString()}] {message}\n");
+            tbMessageHistory.AppendText(Environment.NewLine);
+        }
+
         private void TextBoxSendMessage_Enter(object sender, EventArgs e)
         {
             if (tbTextBoxSendMessage.Text == "Stuur bericht ...")
             {
                 tbTextBoxSendMessage.Text = "";
-
                 tbTextBoxSendMessage.ForeColor = Color.Black;
             }
         }
 
-        private void TextBoxSendMessage_Leave(object sender, EventArgs e)
+        private void TbTextBoxSendMessage_Leave(object sender, EventArgs e)
         {
             if (tbTextBoxSendMessage.Text == "")
             {
@@ -146,22 +185,17 @@ namespace Doctor
             }
         }
 
-        private void TextBoxSendMessage_KeyDown(object sender, KeyEventArgs e)
+        private void TbTextBoxSendMessage_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                tbMessageHistory.SelectedText += "Doctor: " + tbTextBoxSendMessage.Text + "\r\n";
-                tbTextBoxSendMessage.Text = "";
+                if (!string.IsNullOrEmpty(tbTextBoxSendMessage.Text))
+                {
+                    AppendMessage($"Doctor: {tbTextBoxSendMessage.Text}");
+                    this.serverConnection.SendWithNoResponse($"Doctor/Message\r\n{tbTextBoxSendMessage.Text.Trim()}");
+                    tbTextBoxSendMessage.Text = "";
+                }
             }
-        }
-
-        private void SendPrivateMessage_Click(object sender, EventArgs e)
-        {
-            serverConnection.SendWithNoResponse(tbTextBoxSendMessage.Text);
-             
-            tbMessageHistory.SelectedText += "Doctor: " + tbTextBoxSendMessage.Text + "\r\n";
-            tbTextBoxSendMessage.Text = "Stuur bericht ...";
-            tbTextBoxSendMessage.ForeColor = Color.Silver;
         }
 
         private void BtnHistory_Click(object sender, EventArgs e)

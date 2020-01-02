@@ -28,7 +28,7 @@ namespace Server.Listener
         private Dictionary<TcpClient, SslStream> clientStreams;
 
         private Dictionary<string, TcpClient> clientForClientId;
-        private Dictionary<TcpClient, TcpClient> clientForDoctor;
+        private Dictionary<TcpClient, TcpClient> doctorForClient;
 
         public ServerListener(string certificatePath, string ipv4, int port)
         {
@@ -41,7 +41,7 @@ namespace Server.Listener
             this.clientThreads = new Dictionary<TcpClient, Thread>();
 
             this.clientForClientId = new Dictionary<string, TcpClient>();
-            this.clientForDoctor = new Dictionary<TcpClient, TcpClient>();
+            this.doctorForClient = new Dictionary<TcpClient, TcpClient>();
 
             this.clientStreams = new Dictionary<TcpClient, SslStream>();
             this.serverCertificate = new X509Certificate2(certificatePath, "banaantje");
@@ -114,12 +114,6 @@ namespace Server.Listener
 
                                 switch (packetBundle.Item2)
                                 {
-                                    case PacketType.ClientStatus:
-                                        Console.WriteLine($"\t> Client Status packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
-
-                                        // Obsolete until further notice
-
-                                        break;
                                     case PacketType.ClientLogin:
                                         Console.WriteLine($"\t> Client LogIn packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
@@ -155,17 +149,22 @@ namespace Server.Listener
                                     case PacketType.ClientLogout:
                                         Console.WriteLine($"\t> Client LogOut packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        if (clientForDoctor.ContainsKey(clientInThread))
+                                        if (doctorForClient.ContainsKey(clientInThread))
                                         {
-                                            TcpClient doctorFromClient = clientForDoctor[clientInThread];
+                                            TcpClient doctorFromClient = doctorForClient[clientInThread];
 
                                             Console.WriteLine($"\t\t> Send client disconnect to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
                                             SendWithNoResponse(doctorFromClient, $"Server/ClientDisconnect\r\n");
 
-                                            clientForDoctor.Remove(clientInThread);
-                                            clientForClientId.Remove(clientForClientId.First(x => x.Value == clientInThread).Key);
+                                            doctorForClient.Remove(clientInThread);
                                         }
-                                        connectedClients.Remove(clientInThread);
+
+                                        if (clientForClientId.ContainsValue(clientInThread))
+                                            clientForClientId.Remove(clientForClientId.First(x => x.Value == clientInThread).Key);
+
+                                        if (connectedClients.Contains(clientInThread))
+                                            connectedClients.Remove(clientInThread);
+
                                         clientInThread.Close();
 
                                         Console.WriteLine($"\t\t> Client {clientInThread.Client.RemoteEndPoint.ToString()} disconnected");
@@ -180,19 +179,54 @@ namespace Server.Listener
                                     case PacketType.ClientBike:
                                         Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // TODO Realtime bike data tunneling to connected Doctor
+                                        // EG: Client/Bike\r\nCLIENT_ID\r\nBIKE_BYTES
+                                        string[] bikeData = packetBundle.Item1;
 
+                                        if (bikeData.Length == 2)
+                                        {
+                                            if (clientForClientId.ContainsKey(bikeData[0]))
+                                            {
+                                                TcpClient clientForId = clientForClientId[bikeData[0]];
+                                                if (doctorForClient.ContainsKey(clientForId))
+                                                {
+                                                    // De ontvangen data tunnelen naar de connecte doctor
+
+                                                    TcpClient connectedDoctor = doctorForClient[clientForId];
+                                                    SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData}");
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    case PacketType.ClientClose:
+                                        Console.WriteLine($"\t> Client Close packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        if (packetBundle.Item1.Length == 1)
+                                        {
+                                            if (doctorForClient.ContainsKey(clientInThread))
+                                            {
+                                                TcpClient doctorFromClient = doctorForClient[clientInThread];
+
+                                                doctorForClient.Remove(clientInThread);
+                                                Console.WriteLine($"\t\t> Closed tunnel between {doctorFromClient.Client.RemoteEndPoint.ToString()} and {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                                SendWithNoResponse(doctorFromClient, $"Server/ClientDisconnect\r\n");
+                                                Console.WriteLine($"\t\t> Send close to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
+                                            }
+                                        }
                                         break;
                                     case PacketType.ClientMessage:
                                         Console.WriteLine($"\t> Client Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        if (clientForDoctor.ContainsKey(clientInThread))
+                                        if (packetBundle.Item1.Length == 1)
                                         {
-                                            string clientMessage = packetBundle.Item1[0];
-                                            TcpClient doctorFromClient = clientForDoctor[clientInThread];
+                                            if (doctorForClient.ContainsKey(clientInThread))
+                                            {
+                                                string clientMessage = packetBundle.Item1[0];
+                                                TcpClient doctorFromClient = doctorForClient[clientInThread];
 
-                                            Console.WriteLine($"\t\t> Send message to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
-                                            SendWithNoResponse(doctorFromClient, $"Server/Message\r\n{clientMessage}");
+                                                SendWithNoResponse(doctorFromClient, $"Server/Message\r\n{clientMessage}");
+                                                Console.WriteLine($"\t\t> Send message to {doctorFromClient.Client.RemoteEndPoint.ToString()}");
+                                            }
                                         }
                                         break;
                                     case PacketType.DoctorLogin:
@@ -212,16 +246,16 @@ namespace Server.Listener
                                         }
                                         break;
                                     case PacketType.DoctorLogout:
-                                        Console.WriteLine($"\t> Doctor Logout packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                        Console.WriteLine($"\t> Doctor LogOut packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        if (clientForDoctor.Values.Contains(clientInThread))
+                                        if (doctorForClient.Values.Contains(clientInThread))
                                         {
-                                            TcpClient targetPatientClient = clientForDoctor[clientForDoctor.First(x => x.Value == clientInThread).Key];
+                                            TcpClient targetPatientClient = doctorForClient[doctorForClient.First(x => x.Value == clientInThread).Key];
 
                                             Console.WriteLine($"\t\t> Send doctor disconnect to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
                                             SendWithNoResponse(targetPatientClient, $"Server/DoctorDisconnect\r\n");
 
-                                            clientForDoctor.Remove(targetPatientClient);
+                                            doctorForClient.Remove(targetPatientClient);
                                         }
                                         connectedClients.Remove(clientInThread);
                                         clientInThread.Close();
@@ -235,11 +269,11 @@ namespace Server.Listener
                                         //Doctor/Resistance\r\nresistance
                                         if (packetBundle.Item1.Length == 1)
                                         {
-                                            if (clientForDoctor.Values.Contains(clientInThread))
+                                            if (doctorForClient.Values.Contains(clientInThread))
                                             {
                                                 string resistance = packetBundle.Item1[0];
 
-                                                TcpClient targetPatientClient = clientForDoctor[clientForDoctor.First(x => x.Value == clientInThread).Key];
+                                                TcpClient targetPatientClient = doctorForClient[doctorForClient.First(x => x.Value == clientInThread).Key];
                                                 SendWithNoResponse(targetPatientClient, $"Server/Resistance\r\n{resistance}");
                                             }
                                         }
@@ -400,19 +434,40 @@ namespace Server.Listener
                                             SendWithNoResponse(clColl[i], $"Server/Broadcast\r\n{packetBundle.Item1}");
                                         }
                                         break;
+                                    case PacketType.DoctorClose:
+                                        Console.WriteLine($"\t> Doctor Close packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        if (packetBundle.Item1.Length == 1)
+                                        {
+                                            if (doctorForClient.Values.Contains(clientInThread))
+                                            {
+                                                TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
+
+                                                if (doctorForClient.ContainsKey(targetPatientClient))
+                                                {
+                                                    doctorForClient.Remove(targetPatientClient);
+                                                    Console.WriteLine($"\t\t> Closed tunnel between {clientInThread.Client.RemoteEndPoint.ToString()} and {targetPatientClient.Client.RemoteEndPoint.ToString()}");
+
+                                                    SendWithNoResponse(targetPatientClient, $"Server/DoctorDisconnect\r\n");
+                                                    Console.WriteLine($"\t\t> Send close to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
+                                                }
+                                            }
+                                        }
+                                        break;
                                     case PacketType.DoctorMessage:
                                         Console.WriteLine($"\t> Doctor Message packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //Doctor/Message\r\n123\r\ntext
-                                        if (packetBundle.Item1.Length == 2)
+                                        //Doctor/Message\r\ntext
+                                        if (packetBundle.Item1.Length == 1)
                                         {
-                                            string id = packetBundle.Item1[0];
-                                            string doctorMessage = packetBundle.Item1[1];
+                                            string doctorMessage = packetBundle.Item1[0];
 
-                                            if (clientForClientId.ContainsKey(id))
+                                            if (doctorForClient.Values.Contains(clientInThread))
                                             {
-                                                TcpClient clientFromId = clientForClientId[id];
-                                                SendWithNoResponse(clientFromId, $"Server/Message\r\n{doctorMessage}");
+                                                TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
+                                                SendWithNoResponse(targetPatientClient, $"Server/Message\r\n{doctorMessage}");
+
+                                                Console.WriteLine($"\t\t> Send message to {targetPatientClient.Client.RemoteEndPoint.ToString()}");
                                             }
                                         }
                                         break;
@@ -425,11 +480,16 @@ namespace Server.Listener
                                             if (clientForClientId.ContainsKey(packetBundle.Item1[0]))
                                             {
                                                 TcpClient selectedPatientClient = clientForClientId[packetBundle.Item1[0]];
-                                                clientForDoctor.Add(selectedPatientClient, clientInThread);
+                                                if (!doctorForClient.ContainsKey(selectedPatientClient))
+                                                {
+                                                    doctorForClient.Add(selectedPatientClient, clientInThread);
+                                                    Console.WriteLine($"\t\t> Tunnel created between {clientInThread.Client.RemoteEndPoint.ToString()} and {selectedPatientClient.Client.RemoteEndPoint.ToString()}");
 
-                                                SendWithNoResponse(clientInThread, "Server/Status\r\nok");
-                                                Thread.Sleep(500);
-                                                SendWithNoResponse(selectedPatientClient, "Server/Status\r\nready");
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nok");
+                                                    SendWithNoResponse(selectedPatientClient, "Server/Status\r\nready");
+                                                }
+                                                else
+                                                    SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
                                             }
                                             else
                                                 SendWithNoResponse(clientInThread, "Server/Status\r\nnotok");
@@ -515,6 +575,7 @@ namespace Server.Listener
             bool sendLength = await WriteToStream(client, packetLengthBytes);
             if (sendLength)
             {
+                Thread.Sleep(300);
                 bool sendContent = await WriteToStream(client, dataBytes);
                 if (!sendContent)
                     Console.WriteLine("\t>\t> Error sending packet content");
@@ -547,6 +608,15 @@ namespace Server.Listener
                 {
                     if (clientStreams.ContainsKey(client))
                         clientStreams.Remove(client);
+
+                    if (connectedClients.Contains(client))
+                        connectedClients.Remove(client);
+
+                    if (clientForClientId.ContainsValue(client))
+                        clientForClientId.Remove(clientForClientId.First(x => x.Value == client).Key);
+
+                    if (doctorForClient.Values.Contains(client))
+                        doctorForClient.Remove(client);
 
                     Console.WriteLine($"\t> Client disconnected {client.Client.RemoteEndPoint.ToString()}");
                 }

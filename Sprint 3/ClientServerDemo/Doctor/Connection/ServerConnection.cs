@@ -80,14 +80,14 @@ namespace Doctor.Connection
                 Send(length);
                 Send(dataBytes);
 
-                byte[] packetLengthData = await ReceiveResponse(4);
+                byte[] packetLengthData = await ReceiveResponse(4, packet);
                 int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
                 Console.WriteLine("Read length");
 
                 Thread.Sleep(200);
 
-                byte[] responseData = await ReceiveResponse(packetLength);
+                byte[] responseData = await ReceiveResponse(packetLength, packet);
                 string response = Encoding.UTF8.GetString(responseData);
 
                 Console.WriteLine("Read data");
@@ -113,10 +113,12 @@ namespace Doctor.Connection
         {
             try
             {
-                byte[] packetLengthData = await ReceiveResponse(4);
+                byte[] packetLengthData = await ReceiveResponse(4, "CSW");
                 int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-                byte[] responseData = await ReceiveResponse(packetLength);
+                Thread.Sleep(200);
+
+                byte[] responseData = await ReceiveResponse(packetLength, "CSW");
                 string response = Encoding.UTF8.GetString(responseData);
 
                 return response;
@@ -127,19 +129,20 @@ namespace Doctor.Connection
             }
         }
 
-        private async Task<byte[]> ReceiveResponse(int packetLength, int readTimeOut = 5000)
+        private async Task<byte[]> ReceiveResponse(int packetLength, string test)
         {
             try
             {
-                this.sslStream.ReadTimeout = readTimeOut;
+                this.sslStream.ReadTimeout = -1;
                 byte[] receivedBuff = new byte[packetLength];
                 int readPosition = 0;
 
                 while (readPosition < packetLength)
                 {
+                    Console.WriteLine(test + ": BeginRead");
                     readPosition += await sslStream.ReadAsync(receivedBuff, readPosition, packetLength - readPosition);
                 }
-
+                Console.WriteLine(test + ": EndRead");
                 return receivedBuff;
             }
             catch (Exception ex)

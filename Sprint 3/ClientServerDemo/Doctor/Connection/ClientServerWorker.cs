@@ -6,6 +6,8 @@ namespace Doctor.Connection
 {
     public class ClientServerWorker
     {
+        public bool IsRunning { get; private set; }
+
         private ServerConnection conn;
         private PacketHandler packetHandler;
 
@@ -29,10 +31,11 @@ namespace Doctor.Connection
 
         public async void Run()
         {
+            IsRunning = true;
+
             await Task.Run(async() =>
             {
-                bool running = true;
-                while (running)
+                while (IsRunning)
                 {
                     try
                     {
@@ -55,12 +58,17 @@ namespace Doctor.Connection
                                 break;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        running = false;
+                        IsRunning = false;
                     }
                 }
             });
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
         }
     }
 

@@ -28,24 +28,41 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblWait = new System.Windows.Forms.Label();
+            this.tbMessageHistory = new System.Windows.Forms.TextBox();
+            this.txtSendMessage = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // lblWait
+            // tbMessageHistory
             // 
-            this.lblWait.AutoSize = true;
-            this.lblWait.Location = new System.Drawing.Point(12, 9);
-            this.lblWait.Name = "lblWait";
-            this.lblWait.Size = new System.Drawing.Size(163, 13);
-            this.lblWait.TabIndex = 0;
-            this.lblWait.Text = "Waiting for a doctor to connect...";
+            this.tbMessageHistory.Location = new System.Drawing.Point(11, 318);
+            this.tbMessageHistory.Margin = new System.Windows.Forms.Padding(2);
+            this.tbMessageHistory.Multiline = true;
+            this.tbMessageHistory.Name = "tbMessageHistory";
+            this.tbMessageHistory.ReadOnly = true;
+            this.tbMessageHistory.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbMessageHistory.Size = new System.Drawing.Size(301, 88);
+            this.tbMessageHistory.TabIndex = 20;
+            // 
+            // txtSendMessage
+            // 
+            this.txtSendMessage.ForeColor = System.Drawing.SystemColors.InactiveCaption;
+            this.txtSendMessage.Location = new System.Drawing.Point(11, 411);
+            this.txtSendMessage.Margin = new System.Windows.Forms.Padding(2);
+            this.txtSendMessage.Name = "txtSendMessage";
+            this.txtSendMessage.Size = new System.Drawing.Size(301, 20);
+            this.txtSendMessage.TabIndex = 19;
+            this.txtSendMessage.Text = "Stuur bericht ...";
+            this.txtSendMessage.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtSendMessage_KeyUp);
+            this.txtSendMessage.MouseEnter += new System.EventHandler(this.TxtSendMessage_Enter);
+            this.txtSendMessage.MouseLeave += new System.EventHandler(this.TxtSendMessage_Leave);
             // 
             // ClientScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 441);
-            this.Controls.Add(this.lblWait);
+            this.Controls.Add(this.tbMessageHistory);
+            this.Controls.Add(this.txtSendMessage);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "ClientScreen";
@@ -56,7 +73,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblWait;
+        private System.Windows.Forms.TextBox tbMessageHistory;
+        private System.Windows.Forms.TextBox txtSendMessage;
     }
 }

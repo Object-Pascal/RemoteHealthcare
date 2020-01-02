@@ -103,10 +103,10 @@ namespace ClientGUI.Connection
 
         public async Task<string> WaitForResponse()
         {
-            Thread.Sleep(500);
-
             byte[] packetLengthData = await ReceiveResponse(4);
             int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+
+            Thread.Sleep(200);
 
             byte[] responseData = await ReceiveResponse(packetLength);
             string response = Encoding.UTF8.GetString(responseData);

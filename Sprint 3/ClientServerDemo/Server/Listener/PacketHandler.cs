@@ -28,6 +28,8 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientVr);
                     case "Client/Bike":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientBike);
+                    case "Client/Close":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientClose);
                     case "Client/Message":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientMessage);
 
@@ -51,8 +53,10 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorGetClientHistory);
                     case "Doctor/Broadcast":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
+                    case "Doctor/Close":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorClose);
                     case "Doctor/Message":
-                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogout);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorMessage);
                     case "Doctor/ConnectToClient":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorConnectToClient);
                     default:

@@ -62,7 +62,7 @@ namespace Server.IO
         {
             string saveFolder = Directory.GetCurrentDirectory();
             string savePath = Path.Combine(saveFolder, filename);
-            return File.ReadAllText(filename);
+            return File.ReadAllText(savePath);
         }
 
         public static async void SaveFile(string filename, string content)

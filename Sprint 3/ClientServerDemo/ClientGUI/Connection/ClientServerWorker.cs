@@ -6,6 +6,8 @@ namespace ClientGUI.Connection
 {
     public class ClientServerWorker
     {
+        public bool IsRunning { get; private set; }
+
         private ServerConnection conn;
         private PacketHandler packetHandler;
 
@@ -35,10 +37,10 @@ namespace ClientGUI.Connection
 
         public async void Run()
         {
+            IsRunning = true;
             await Task.Run(async() =>
             {
-                bool running = true;
-                while (running)
+                while (IsRunning)
                 {
                     try
                     {
@@ -69,10 +71,15 @@ namespace ClientGUI.Connection
                     }
                     catch (Exception)
                     {
-                        running = false;
+                        IsRunning = false;
                     }
                 }
             });
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
         }
     }
 

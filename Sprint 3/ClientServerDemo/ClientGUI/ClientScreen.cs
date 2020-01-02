@@ -1,5 +1,9 @@
 ﻿using ClientGUI.Connection;
 using System;
+using System.Drawing;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ClientGUI
@@ -20,13 +24,35 @@ namespace ClientGUI
             this.serverConnection = serverConnection;
             this.currentSessionId = currentSessionId;
 
-            lblWait.Left = (this.ClientSize.Width - lblWait.Width) / 2;
-            lblWait.Top = (this.ClientSize.Height - lblWait.Height) / 2;
-
+            InitializeDefaultEvents();
+            ToggleControls(false);
             StartWorker();
         }
 
-        private void StartWorker()
+        private void InitializeDefaultEvents()
+        {
+            this.FormClosing += (s, e) =>
+            {
+                if (this.serverConnection.Connected)
+                {
+                    clientServerWorker.Stop();
+                    this.serverConnection.SendWithNoResponse($"Client/Close\r\n");
+                }
+            };
+        }
+
+        private async Task<bool> ReInitializeConnection()
+        {
+            return await serverConnectionVR.Connect("145.48.6.10", 6666);
+        }
+
+        private void ToggleControls(bool value)
+        {
+            for (int i = 0; i < this.Controls.Count; i++)
+                this.Controls[i].Enabled = value;
+        }
+
+        private async void StartWorker()
         {
             if (this.serverConnection.Connected)
             {
@@ -39,6 +65,15 @@ namespace ClientGUI
                 this.clientServerWorker.StopReceived += ClientServerWorker_StopReceived;
                 this.clientServerWorker.Run();
             }
+            else
+            {
+                if (MessageBox.Show("De server is op het moment niet beschikbaar, wil opnieuw proberen te verbinden?", "Server niet beschikbaar", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    bool connected = await ReInitializeConnection();
+                    if (connected)
+                        StartWorker();
+                }
+            }
         }
 
         private void ClientServerWorker_StatusReceived(StatusArgs args)
@@ -47,10 +82,8 @@ namespace ClientGUI
             {
                 this.Invoke(new MethodInvoker(delegate
                 {
-                    lblWait.Text = "Doctor connected";
+                    ToggleControls(true);
                 }));
-
-                //this.serverConnection.SendWithNoResponse($"Client/Message\r\nyeet");
 
                 // VR Starten
                 // Bike Starten
@@ -60,12 +93,21 @@ namespace ClientGUI
 
         private void ClientServerWorker_DoctorDisconnectReceived(EventArgs args)
         {
-            
+            // Bepaalde systemen uitzetten: bike, vr etc.
+
+            this.Invoke((MethodInvoker)delegate
+            {
+                AppendMessage("Systeem: De doctor heeft de verbinding gesloten");
+                clientServerWorker.Stop();
+            });
         }
 
         private void ClientServerWorker_MessageReceived(MessageArgs args)
         {
-            
+            this.Invoke((MethodInvoker)delegate
+            {
+                AppendMessage($"Doctor: {args.Message}");
+            });
         }
 
         private void ClientServerWorker_ResistanceReceived(ResistanceArgs args)
@@ -85,6 +127,43 @@ namespace ClientGUI
         private void ClientServerWorker_StopReceived(EventArgs args)
         {
 
+        }
+
+        private void AppendMessage(string message)
+        {
+            tbMessageHistory.AppendText($"[{DateTime.Now.ToShortTimeString()}] {message}\n");
+            tbMessageHistory.AppendText(Environment.NewLine);
+        }
+
+        private void TxtSendMessage_Enter(object sender, EventArgs e)
+        {
+            if (txtSendMessage.Text == "Stuur bericht ...")
+            {
+                txtSendMessage.Text = "";
+                txtSendMessage.ForeColor = Color.Black;
+            }
+        }
+
+        private void TxtSendMessage_Leave(object sender, EventArgs e)
+        {
+            if (txtSendMessage.Text == "")
+            {
+                txtSendMessage.Text = "Stuur bericht ...";
+                txtSendMessage.ForeColor = Color.Silver;
+            }
+        }
+
+        private void TxtSendMessage_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (!string.IsNullOrEmpty(txtSendMessage.Text))
+                {
+                    AppendMessage($"You: {txtSendMessage.Text}");
+                    this.serverConnection.SendWithNoResponse($"Client/Message\r\n{txtSendMessage.Text.Trim()}");
+                    txtSendMessage.Text = "";
+                }
+            }
         }
     }
 }

@@ -23,6 +23,8 @@
         DoctorLogout,
         DoctorBroadcast,
         DoctorMessage,
-        DoctorConnectToClient
+        DoctorConnectToClient,
+        ClientClose,
+        DoctorClose
     }
 }
