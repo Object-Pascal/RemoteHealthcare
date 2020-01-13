@@ -9,7 +9,8 @@ namespace ClientGUI.Bluetooth
 {
     public class BleHeartHandler
     {
-        public BLE BleHeart { get; private set; }
+        public BLE bleHeart { get; private set; }
+        public string heartData { get; set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;
         public delegate void SubscriptionHandler(BLESubscriptionValueChangedEventArgs args);
@@ -20,7 +21,7 @@ namespace ClientGUI.Bluetooth
             {
                 try
                 {
-                    this.BleHeart = new BLE();
+                    this.bleHeart = new BLE();
                     Thread.Sleep(1000);
                     return true;
                 }
@@ -31,34 +32,38 @@ namespace ClientGUI.Bluetooth
             });
         }
 
-        public async Task<List<string>> RetrieveBleBikes(string filter)
+        public async Task DataAsync()
         {
-            if (BleHeart == null)
+
+            await bleHeart.SetService("HeartRate");
+            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+        }
+
+        private void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        {
+            byte[] receivedDataSubset = e.Data;
+            if (e.Data.Length == 6)
             {
-                bool completed = await InitBleHeart();
-                if (!completed)
-                    return null;
+                heartData = ($"{receivedDataSubset[1]}");
+
             }
-            return BleHeart.ListDevices().Where(x => x.Contains(filter)).ToList();
+        }
+
+        public string sendData()
+        {
+            return heartData;
         }
 
         public async void Connect(string deviceName, string serviceName)
         {
-            // "Decathlon Dual HR"
-            // "HeartRate"
-            try
-            {
-                int errorCode = await this.BleHeart.OpenDevice(deviceName);
-                errorCode = await this.BleHeart.SetService(serviceName);
+            int errorCode = 0;
+            await this.bleHeart.OpenDevice("Decathlon Dual HR");
+            errorCode = await this.bleHeart.SetService("HeartRate");
 
             // "HeartRateMeasurement"
-            this.BleHeart.SubscriptionValueChanged += (s, e) => SubscriptionValueChanged?.Invoke(e);
-            errorCode = await this.BleHeart.SubscribeToCharacteristic(serviceName);
-            }
-            catch (Exception)
-            {
-
-            }
+            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+            await this.bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
         }
     }
 }

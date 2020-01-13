@@ -1,7 +1,9 @@
 ﻿using Client.Json_Structure;
+using ClientGUI.Bluetooth;
 using ClientGUI.Connection;
 using ClientGUI.Json_Structure.Serializables.Sub_Objects;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -17,8 +19,25 @@ namespace ClientGUI
 
         private ServerConnection serverConnection;
         private ClientServerWorker clientServerWorker;
+        private BleBikeHandler bleBikeHandler;
+        private BleHeartHandler bleHeartHandler;
+
+        private int phase = 0;
 
         private string currentSessionId;
+
+        private List<string> bleBikeList;
+
+        private int seconds = 0;
+        private int minutes = 0;
+        private int phaseTime = 120;
+        private int phaseTimeMin;
+        private int phaseTimeSec;
+        private int totalSeconds = 0;
+        private int resistance = 0;
+
+
+
 
         public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId)
         {
@@ -30,8 +49,33 @@ namespace ClientGUI
             this.currentSessionId = currentSessionId;
 
             InitializeDefaultEvents();
+            InitializeDeclarations();
+            LoadBikes(); 
             ToggleControls(false);
             StartWorker();
+        }
+
+        private void InitializeDeclarations()
+        {
+            this.bleHeartHandler = new BleHeartHandler();
+            this.bleBikeHandler = new BleBikeHandler(); 
+        }
+
+        private async void LoadBikes()
+        {
+            this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
+            await bleHeartHandler.InitBleHeart();
+            this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
+           
+        }
+
+        private void ChangeResistanceDown()
+        {
+            if (resistance > 0)
+            {
+                resistance--;
+                bleBikeHandler.ChangeResistance(resistance);
+            }
         }
 
         private void InitializeDefaultEvents()
@@ -181,5 +225,84 @@ namespace ClientGUI
                 }
             }
         }
+
+        private void drawSpeedOnChart(int time, int speed)
+        {
+            chart1.Series["BikeSpeed"].Points.AddXY(time, speed);
+        }
+
+        private void drawHeartRateOnChart(int time, int heartRate)
+        {
+            chart1.Series["HeartRate"].Points.AddXY(time, heartRate); 
+        }
+        private void Chart1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SelectBike_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateData();
+            totalSeconds++;
+            phaseTime--;
+            this.phaseTimeMin = phaseTime / 60;
+            this.phaseTimeSec = phaseTime & 60;
+            this.seconds = totalSeconds % 60;
+            this.minutes = totalSeconds / 60;
+
+           
+            if (this.seconds < 10)
+            {
+                timePassed.Text = "0" + this.minutes + ":0" + this.seconds;
+            }
+            else
+            {
+                timePassed.Text = "0" + this.minutes + ":" + this.seconds;
+            }
+
+            drawSpeedOnChart(totalSeconds, Int32.Parse(bleBikeHandler.bikeData));
+            drawHeartRateOnChart(totalSeconds, Int32.Parse(bleHeartHandler.heartData)); 
+        }
+
+        private async void Start_Click(object sender, EventArgs e)
+        {
+            if (selectBike.SelectedIndex != null)
+            {
+                await this.bleHeartHandler.InitBleHeart();
+                bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
+                bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+                await bleHeartHandler.DataAsync();
+                await bleBikeHandler.DataAsync();
+                bleBikeHandler.ChangeResistance(0);
+                Initialize_Time();
+
+            }
+            else
+            {
+                timePassed.Text = "Select bike first"; 
+            }
+            
+        }
+
+        private async void UpdateData()
+        {
+            await bleBikeHandler.DataAsync();
+            await bleHeartHandler.DataAsync();
+        }
+
+        private void Initialize_Time()
+        {
+            if (timePassed.Text == "00:00") { phase++; }
+            time.Interval = 300;
+            time.Tick += new EventHandler(Timer1_Tick);
+            time.Start();
+        }
+
+       
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Avans.TI.BLE;
-using ClientGUI.Sim;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +9,8 @@ namespace ClientGUI.Bluetooth
 {
     public class BleBikeHandler
     {
-        public BLE BleBike { get; private set; }
+        public BLE bleBike { get; private set; }
+        public string bikeData { get; set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;
         public delegate void SubscriptionHandler(BLESubscriptionValueChangedEventArgs args);
@@ -21,6 +20,9 @@ namespace ClientGUI.Bluetooth
 
         public event SimEndedHandler SimEnded;
         public delegate void SimEndedHandler();
+        public int errorCode;
+        public int percent;
+        public int workload;
 
         public async Task<bool> InitBleBike()
         {
@@ -28,7 +30,7 @@ namespace ClientGUI.Bluetooth
             {
                 try
                 {
-                    this.BleBike = new BLE();
+                    this.bleBike = new BLE();
                     Thread.Sleep(1000);
                     return true;
                 }
@@ -41,47 +43,87 @@ namespace ClientGUI.Bluetooth
 
         public async Task<List<string>> RetrieveBleBikes(string filter = "NO_FILTER")
         {
-            if (BleBike == null)
+            if (bleBike == null)
             {
                 bool completed = await InitBleBike();
                 if (!completed)
                     return null;
             }
-            return filter == "NO_FILTER" ? BleBike.ListDevices().ToList() : BleBike.ListDevices().Where(x => x.Contains(filter)).ToList();
+            return filter == "NO_FILTER" ? bleBike.ListDevices().ToList() : bleBike.ListDevices().Where(x => x.Contains(filter)).ToList();
         }
 
-        public async void Connect(string deviceName, string serviceName)
+        public async Task DataAsync()
         {
-            // "Tacx Flux 00438"
-            int errorCode = await this.BleBike.OpenDevice(deviceName);
-            errorCode = await this.BleBike.SetService(serviceName);
-
-            // "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e"
-            this.BleBike.SubscriptionValueChanged += (s, e) => SubscriptionValueChanged?.Invoke(e);
-            errorCode = await this.BleBike.SubscribeToCharacteristic(serviceName);
+            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
         }
 
-        public async void ChangeResistance(int res)
+        public async void ConnectBike()
         {
-                double resistance = res * 2.55;
-                Byte resistanceFinal = (Byte)resistance;
-                byte[] output = new byte[13];
-                output[0] = 0x4A; // Sync bit;
-                output[1] = 0x09; // Message Length
-                output[2] = 0x4E; // Message type
-                output[3] = 0x05; // Message type
-                output[4] = 0x30; // Data Type
-                output[11] = resistanceFinal;
-                output[12] = 0xFF;
-                int i = await this.BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", output);
+            errorCode = 0;
+            var services = bleBike.GetServices;
+            foreach (var service in services)
+            {
+                Console.WriteLine($"Service: {service}");
             }
 
-        public void ConnectSim(string fileName)
+            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+        }
+
+        private void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            Simulator bleBikeSim = new Simulator(fileName);
-            bleBikeSim.DataReceived += (e) => SimValueChanged?.Invoke(e);
-            bleBikeSim.Ended += () => SimEnded?.Invoke();
-            bleBikeSim.Start();
+
+            if (e.Data[4] == 0x19)
+            {
+                bikeData = $"{e.Data[6]}";
+                int instandpowerLSB = e.Data[5];
+                int instandpowerMSB = e.Data[6];
+                int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
+                workload = (int)(work1 * 6.1182972778676);
+
+            }
+        }
+        public async void Connect(string deviceName, string serviceName)
+        {
+            int errorCode = 0;
+            errorCode = errorCode = await this.bleBike.OpenDevice(deviceName);
+
+            var services = bleBike.GetServices;
+            foreach (var service in services)
+            {
+                Console.WriteLine($"Service: {service}");
+            }
+            errorCode = await this.bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+        }
+
+        public async void ChangeResistance(int percentage)
+        {
+            this.percent = percentage;
+            byte resistance = (byte)percent;
+            byte[] output = new byte[13];
+            output[0] = 0x4A; // Sync bit;
+            output[1] = 0x09; // Message Length
+            output[2] = 0x4E; // Message type
+            output[3] = 0x05; // Message type
+            output[4] = 0x30; // Data Type
+            output[11] = resistance;
+            output[12] = 0xFF;
+            await this.bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", output);
+        }
+    }
+
+    public class DataReceivedArgs : EventArgs
+    {
+        public byte[] DataLine { get; private set; }
+
+        public DataReceivedArgs(byte[] DataLine)
+        {
+            this.DataLine = DataLine;
         }
     }
 }
