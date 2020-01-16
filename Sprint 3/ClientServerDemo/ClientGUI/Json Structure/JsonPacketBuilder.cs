@@ -303,6 +303,11 @@ namespace Client.Json_Structure
             return new Tuple<string, PanelAdd>(json, obj);
         }
 
+        internal object BuildSendTunnelPacket(object destination, string clearPanelJsonRaw)
+        {
+            throw new NotImplementedException();
+        }
+
         public Tuple<string, SceneReset> BuildSceneResetPacket()
         {
             SceneReset obj = new SceneReset()
