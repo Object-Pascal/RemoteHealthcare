@@ -2,6 +2,7 @@
 using ClientGUI.Bluetooth;
 using ClientGUI.Connection;
 using ClientGUI.Json_Structure.Serializables.Sub_Objects;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,6 +15,7 @@ namespace ClientGUI
 {
     public partial class ClientScreen : Form
     {
+        private string currentSessionId;
         private ServerConnectionVR serverConnectionVR;
         private JsonPacketBuilder jsonPacketBuilder;
 
@@ -23,8 +25,6 @@ namespace ClientGUI
         private BleHeartHandler bleHeartHandler;
 
         private int phase = 0;
-
-        private string currentSessionId;
 
         private List<string> bleBikeList;
 
@@ -184,7 +184,7 @@ namespace ClientGUI
             // VR Stop uitvoeren
             this.Invoke((MethodInvoker)delegate
             {
-                Tuple<string, StopData> stopVRResponse = jsonPacketBuilder.BuildStopPacket();
+                Tuple<string, JObject> stopResponse = SendToTunnel(jsonPacketBuilder.BuildStopPacket().Item1);
                 AppendMessage("Systeem: De doctor heeft de VR gestopt");
             });
         }
@@ -271,7 +271,7 @@ namespace ClientGUI
 
         private async void Start_Click(object sender, EventArgs e)
         {
-            if (selectBike.SelectedIndex != null)
+            if (selectBike.SelectedItem != null)
             {
                 await this.bleHeartHandler.InitBleHeart();
                 bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
@@ -287,6 +287,11 @@ namespace ClientGUI
                 timePassed.Text = "Select bike first"; 
             }
             
+        }
+
+        private Tuple<string, JObject> SendToTunnel(string packet)
+        {
+            return serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(this.currentSessionId, packet).Item1);
         }
 
         private async void UpdateData()
