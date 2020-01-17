@@ -146,5 +146,10 @@ namespace ClientGUI.Connection
                 Console.WriteLine("Error while reading writing to stream:\n" + ex.Message + "\n" + ex.StackTrace);
             }
         }
+
+        internal Tuple<string, JObject> TransferSendableResponse(string clearPanelPacket)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
