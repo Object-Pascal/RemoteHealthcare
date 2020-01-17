@@ -1,7 +1,9 @@
 ﻿using Client.Json_Structure;
 using ClientGUI.Bluetooth;
 using ClientGUI.Connection;
+using ClientGUI.Conversion;
 using ClientGUI.Json_Structure.Serializables.Sub_Objects;
+using ClientGUI.Sim;
 using ClientGUI.Sub_Objects;
 using ClientGUI.Utils;
 using Newtonsoft.Json.Linq;
@@ -22,8 +24,7 @@ namespace ClientGUI
         private ServerConnectionVR serverConnectionVR;
         private JsonPacketBuilder jsonPacketBuilder;
 
-        private ServerConnection serverConnection;
-        private ClientServerWorker clientServerWorker;
+        private PageConversion pageConversion;
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
 
@@ -37,12 +38,14 @@ namespace ClientGUI
         private int phaseTimeMin;
         private int phaseTimeSec;
         private int totalSeconds = 0;
-        private int resistance = 0;
 
+        private int currResistance = 0;
+        private int currWorkload = 0;
 
+        private ServerConnection serverConnection;
+        private ClientServerWorker clientServerWorker;
 
-
-        public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId)
+        public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
             InitializeComponent();
 
@@ -51,9 +54,12 @@ namespace ClientGUI
             this.serverConnection = serverConnection;
             this.currentSessionId = currentSessionId;
 
-            InitializeDefaultEvents();
+            this.pageConversion = new PageConversion();
+            this.bleHeartHandler = bleHeartHandler;
+            this.bleBikeHandler = bleBikeHandler;
+
             InitializeDeclarations();
-            LoadBikes(); 
+            InitializeDefaultEvents();
             ToggleControls(false);
             StartWorker();
         }
@@ -62,23 +68,6 @@ namespace ClientGUI
         {
             this.bleHeartHandler = new BleHeartHandler();
             this.bleBikeHandler = new BleBikeHandler(); 
-        }
-
-        private async void LoadBikes()
-        {
-            this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
-            await bleHeartHandler.InitBleHeart();
-            this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
-           
-        }
-
-        private void ChangeResistanceDown()
-        {
-            if (resistance > 0)
-            {
-                resistance--;
-                bleBikeHandler.ChangeResistance(resistance);
-            }
         }
 
         private void InitializeDefaultEvents()
@@ -128,7 +117,7 @@ namespace ClientGUI
             }
         }
 
-        private void ClientServerWorker_StatusReceived(StatusArgs args)
+        private async void ClientServerWorker_StatusReceived(StatusArgs args)
         {
             if (args.Status == "ready")
             {
@@ -137,19 +126,76 @@ namespace ClientGUI
                     ToggleControls(true);
                 }));
 
-                // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
-                // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
+                // TODO: VR Opzetten
 
-                // VR Starten
-                // Bike Starten
-                // Etc.
+                bool heartInitComplete = await bleHeartHandler.InitBleHeart();
+                bool bikeInitComplete = await bleBikeHandler.InitBleBike();
+
+                if (heartInitComplete && bikeInitComplete)
+                {
+                    bleBikeHandler.ChangeResistance(5);
+
+                    this.bleHeartHandler.SubscriptionValueChanged += BleHeartHandler_SubscriptionValueChanged;
+                    this.bleBikeHandler.SubscriptionValueChanged += BleBikeHandler_SubscriptionValueChanged;
+
+                    int heartErrorCode = await bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
+                    int bikeErrorCode = await bleBikeHandler.Connect("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+
+                    if (heartErrorCode == 1)
+                        AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Error code 1");
+
+                    if (bikeErrorCode == 1)
+                        AppendMessage("Systeem: Verbinding met de fiets niet mogelijk: Error code 1");
+
+                    bleBikeHandler.ChangeResistance(0);
+                    Initialize_Time();
+                }
+                else if (!heartInitComplete)
+                    AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Niet gevonden");
+                else if (!bikeInitComplete)
+                    AppendMessage("Systeem: Verbinding met de fiets niet mogelijk: Error code 1");   
             }
+        }
+
+        private void BleHeartHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
+        {
+            byte[] receivedDataSubset = args.Data;
+            if (args.Data.Length == 6)
+            {
+                string heartData = $"{receivedDataSubset[1]}";
+            }
+
+            // Pakket verzenden: Client/Heart\r\HEART_BYTES
+            // Heart byte structuur: EX: []
+            //this.serverConnection.SendWithNoResponse($"Client/Heart\r\n{args.Data.ToRepString()}");
+        }
+
+        private void BleBikeHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
+        {
+            pageConversion = new PageConversion();
+            pageConversion.Page10Received += (e) =>
+            {
+
+            };
+            pageConversion.Page19Received += (e) =>
+            {
+                int instandpowerLSB = e.Data[5];
+                int instandpowerMSB = e.Data[6];
+                int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
+                this.currWorkload = (int)Math.Round(work1 * 6.1182972778676, 0);
+            };
+            pageConversion.Page50Received += (e) =>
+            {
+
+            };
+
+            // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
+            // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
+            this.serverConnection.SendWithNoResponse($"Client/Bike\r\n{args.Data.ToRepString()}");
         }
 
         private void ClientServerWorker_DoctorDisconnectReceived(EventArgs args)
         {
-            // Bepaalde systemen uitzetten: bike, vr etc.
-
             this.Invoke((MethodInvoker)delegate
             {
                 AppendMessage("Systeem: De doctor heeft de verbinding gesloten");
@@ -170,7 +216,11 @@ namespace ClientGUI
             byte resistance;
             if (byte.TryParse(args.Resistance, out resistance))
             {
-                // Resistance veranderen
+                if (resistance > 0)
+                {
+                    this.currResistance = resistance;
+                    bleBikeHandler.ChangeResistance(resistance);
+                }
             }
         }
 
@@ -184,18 +234,20 @@ namespace ClientGUI
 
         private void ClientServerWorker_StopReceived(EventArgs args)
         {
-            // VR Stop uitvoeren
             this.Invoke((MethodInvoker)delegate
             {
                 Tuple<string, JObject> stopResponse = SendToTunnel(jsonPacketBuilder.BuildStopPacket().Item1);
-                AppendMessage("Systeem: De doctor heeft de VR gestopt");
+                AppendMessage("Systeem: De doctor heeft de VR simulatie gestopt");
             });
         }
 
         private void AppendMessage(string message)
         {
-            tbMessageHistory.AppendText($"[{DateTime.Now.ToShortTimeString()}] {message}\n");
-            tbMessageHistory.AppendText(Environment.NewLine);
+            this.Invoke((MethodInvoker)delegate
+            {
+                tbMessageHistory.AppendText($"[{DateTime.Now.ToShortTimeString()}] {message}\n");
+                tbMessageHistory.AppendText(Environment.NewLine);
+            });
         }
 
         private void TxtSendMessage_Enter(object sender, EventArgs e)
@@ -250,7 +302,6 @@ namespace ClientGUI
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            UpdateData();
             totalSeconds++;
             phaseTime--;
             this.phaseTimeMin = phaseTime / 60;
@@ -270,46 +321,20 @@ namespace ClientGUI
 
             string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
             string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelAddJson).Item1;
-            Tuple<string, JObject> panelAddResponse = serverConnection.TransferSendableResponse(sendPanelAddJson);
+            Tuple<string, JObject> panelAddResponse = serverConnectionVR.TransferSendableResponse(sendPanelAddJson);
 
             string panelAddId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
 
             ClearPanel(panelAddId);
-            addAllPanels(panelAddId, 20, Int32.Parse(bleBikeHandler.bikeData), Int32.Parse(bleHeartHandler.heartData), (5, 25), (95, 25), (185, 25)) ;
+            //addAllPanels(panelAddId, 20, Int32.Parse(bleBikeHandler.bikeData), Int32.Parse(bleHeartHandler.heartData), (5, 25), (95, 25), (185, 25)) ;
 
-            drawSpeedOnChart(totalSeconds, Int32.Parse(bleBikeHandler.bikeData));
-            drawHeartRateOnChart(totalSeconds, Int32.Parse(bleHeartHandler.heartData)); 
-        }
-
-        private async void Start_Click(object sender, EventArgs e)
-        {
-            if (selectBike.SelectedItem != null)
-            {
-                await this.bleHeartHandler.InitBleHeart();
-                bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
-                bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-                await bleHeartHandler.DataAsync();
-                await bleBikeHandler.DataAsync();
-                bleBikeHandler.ChangeResistance(0);
-                Initialize_Time();
-
-            }
-            else
-            {
-                timePassed.Text = "Select bike first"; 
-            }
-            
+            //drawSpeedOnChart(totalSeconds, Int32.Parse(bleBikeHandler.bikeData));
+            //drawHeartRateOnChart(totalSeconds, Int32.Parse(bleHeartHandler.heartData)); 
         }
 
         private Tuple<string, JObject> SendToTunnel(string packet)
         {
             return serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(this.currentSessionId, packet).Item1);
-        }
-
-        private async void UpdateData()
-        {
-            await bleBikeHandler.DataAsync();
-            await bleHeartHandler.DataAsync();
         }
 
         private void Initialize_Time()
@@ -325,14 +350,14 @@ namespace ClientGUI
         {
             string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
             string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelAddJson).Item1;
-            Tuple<string, JObject> panelAddResponse = serverConnection.TransferSendableResponse(sendPanelAddJson);
+            Tuple<string, JObject> panelAddResponse = serverConnectionVR.TransferSendableResponse(sendPanelAddJson);
 
             string panelAddId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
 
             string panelJson = jsonPacketBuilder.BuildPanelPacket(panelAddId, "distance", 0, 0, 10).Item1;
             string sendJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelJson).Item1;
 
-            Tuple<string, JObject> panelResponse = serverConnection.TransferSendableResponse(sendJson);
+            Tuple<string, JObject> panelResponse = serverConnectionVR.TransferSendableResponse(sendJson);
 
             addAllPanels(panelAddId, 50, 50, 50, (5, 25), (95, 25), (185, 25));
 
@@ -353,7 +378,7 @@ namespace ClientGUI
             string clearPanelJsonRaw = @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelId + @"""}}";
             //Wat is desination? 
             string clearPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, clearPanelJsonRaw).Item1;
-            Tuple<string, JObject> panelClearResponse = serverConnection.TransferSendableResponse(clearPanelPacket);
+            Tuple<string, JObject> panelClearResponse = serverConnectionVR.TransferSendableResponse(clearPanelPacket);
             // De response boeit nog even niet zo zeer
         }
 

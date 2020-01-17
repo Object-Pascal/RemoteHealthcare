@@ -19,5 +19,22 @@ namespace ClientGUI.Utils
 
             return data;
         }
+
+        /// <summary>
+        /// Converts the byte array to it's representive string
+        /// </summary>
+        public static string ToRepString(this byte[] array, string seperator = ",")
+        {
+            string data = "[";
+            for (int i = 0; i < array.Length; i++)
+            {
+                data += array[i];
+
+                if (i != array.Length - 1)
+                    data += seperator;
+            }
+
+            return data + "]";
+        }
     }
 }

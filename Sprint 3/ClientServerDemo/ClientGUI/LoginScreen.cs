@@ -54,6 +54,7 @@ namespace ClientGUI
         {
             this.bleBikeList = await this.bleBikeHandler.RetrieveBleBikes("Tacx");
             this.bleBikeList.ForEach(x => selectBike.Items.Add(x));
+            selectBike.Items.Add("Bike Simulator");
         }
 
         private async void StartServer()
@@ -98,18 +99,15 @@ namespace ClientGUI
 
         private async void Login_Click(object sender, EventArgs e)
         {
-            if (true)
-            //if (selectBike.SelectedItem != null)
+            if (selectBike.SelectedItem != null)
             {
                 if (!string.IsNullOrEmpty(tbName.Text) && !string.IsNullOrEmpty(tbPatientNumber.Text))
                 {
                     this.IsLoggedIn = await PatientExist(tbName.Text.Trim(), tbPatientNumber.Text.Trim());
                     if (this.IsLoggedIn)
                     {
-                        //bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
-                        //bleBikeHandler.Connect(selectBike.SelectedItem.ToString(), "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-
-                        this.LoggedIn?.Invoke(new LogInArgs(tbName.Text, this.serverConnection));
+                        this.bleBikeHandler.SetDeviceName(selectBike.SelectedItem.ToString());
+                        this.LoggedIn?.Invoke(new LogInArgs(tbName.Text, this.serverConnection, this.bleHeartHandler, this.bleBikeHandler));
                         this.Close();
                     }
                     else
@@ -202,11 +200,15 @@ namespace ClientGUI
     {
         public string Name;
         public ServerConnection ServerConnection;
+        public BleHeartHandler BleHeartHandler;
+        public BleBikeHandler BleBikeHandler;
 
-        public LogInArgs(string name, ServerConnection serverConnection)
+        public LogInArgs(string name, ServerConnection serverConnection, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
             this.Name = name;
             this.ServerConnection = serverConnection;
+            this.BleHeartHandler = bleHeartHandler;
+            this.BleBikeHandler = bleBikeHandler;
         }
     }
 }

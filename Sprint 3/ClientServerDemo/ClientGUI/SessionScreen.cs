@@ -18,7 +18,9 @@ namespace ClientGUI
         private ServerConnection serverConnection;
 
         private bool vrConnected;
-        private ServerConnectionVR serverConnectionVR;       
+        private ServerConnectionVR serverConnectionVR;
+        private BleHeartHandler bleHeartHandler;
+        private BleBikeHandler bleBikeHandler;
 
         private Dictionary<string, string> users;
 
@@ -78,9 +80,8 @@ namespace ClientGUI
             loginScreen.LoggedIn += (e) =>
             {
                 this.serverConnection = e.ServerConnection;
-                BleHeartHandler bleHeart = loginScreen.bleHeartHandler;
-                BleBikeHandler bleBike = loginScreen.bleBikeHandler;
-                
+                this.bleHeartHandler = e.BleHeartHandler;
+                this.bleBikeHandler = e.BleBikeHandler;            
                 InitializeSessions();
             };
             loginScreen.ShowDialog();
@@ -149,7 +150,7 @@ namespace ClientGUI
             {
                 string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
 
-                ClientScreen clientScreen = new ClientScreen(this.serverConnectionVR, this.serverConnection, selectedSessionId);
+                ClientScreen clientScreen = new ClientScreen(this.serverConnectionVR, this.serverConnection, selectedSessionId, this.bleHeartHandler, this.bleBikeHandler);
                 clientScreen.FormClosing += (s, a) => this.Show();
 
                 this.Hide();

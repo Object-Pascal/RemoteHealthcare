@@ -36,9 +36,7 @@
             this.tbMessageHistory = new System.Windows.Forms.TextBox();
             this.txtSendMessage = new System.Windows.Forms.TextBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.selectBike = new System.Windows.Forms.ComboBox();
             this.time = new System.Windows.Forms.Timer(this.components);
-            this.Start = new System.Windows.Forms.Button();
             this.timePassed = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
@@ -90,28 +88,9 @@
             this.chart1.Text = "chart1";
             this.chart1.Click += new System.EventHandler(this.Chart1_Click);
             // 
-            // selectBike
-            // 
-            this.selectBike.FormattingEnabled = true;
-            this.selectBike.Location = new System.Drawing.Point(11, 13);
-            this.selectBike.Name = "selectBike";
-            this.selectBike.Size = new System.Drawing.Size(121, 21);
-            this.selectBike.TabIndex = 22;
-            this.selectBike.SelectedIndexChanged += new System.EventHandler(this.SelectBike_SelectedIndexChanged);
-            // 
             // time
             // 
             this.time.Tick += new System.EventHandler(this.Timer1_Tick);
-            // 
-            // Start
-            // 
-            this.Start.Location = new System.Drawing.Point(165, 13);
-            this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(75, 23);
-            this.Start.TabIndex = 23;
-            this.Start.Text = "button1";
-            this.Start.UseVisualStyleBackColor = true;
-            this.Start.Click += new System.EventHandler(this.Start_Click);
             // 
             // timePassed
             // 
@@ -126,8 +105,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 441);
             this.Controls.Add(this.timePassed);
-            this.Controls.Add(this.Start);
-            this.Controls.Add(this.selectBike);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.tbMessageHistory);
             this.Controls.Add(this.txtSendMessage);
@@ -145,9 +122,7 @@
         private System.Windows.Forms.TextBox tbMessageHistory;
         private System.Windows.Forms.TextBox txtSendMessage;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.ComboBox selectBike;
         private System.Windows.Forms.Timer time;
-        private System.Windows.Forms.Button Start;
         private System.Windows.Forms.TextBox timePassed;
     }
 }

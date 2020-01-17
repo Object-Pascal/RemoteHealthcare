@@ -10,7 +10,6 @@ namespace ClientGUI.Bluetooth
     public class BleHeartHandler
     {
         public BLE bleHeart { get; private set; }
-        public string heartData { get; set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;
         public delegate void SubscriptionHandler(BLESubscriptionValueChangedEventArgs args);
@@ -32,38 +31,17 @@ namespace ClientGUI.Bluetooth
             });
         }
 
-        public async Task DataAsync()
-        {
-
-            await bleHeart.SetService("HeartRate");
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-        }
-
-        private void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        {
-            byte[] receivedDataSubset = e.Data;
-            if (e.Data.Length == 6)
-            {
-                heartData = ($"{receivedDataSubset[1]}");
-
-            }
-        }
-
-        public string sendData()
-        {
-            return heartData;
-        }
-
-        public async void Connect(string deviceName, string serviceName)
+        public async Task<int> Connect(string deviceName, string serviceName)
         {
             int errorCode = 0;
             await this.bleHeart.OpenDevice("Decathlon Dual HR");
             errorCode = await this.bleHeart.SetService("HeartRate");
 
             // "HeartRateMeasurement"
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+            bleHeart.SubscriptionValueChanged += (s, e) => this.SubscriptionValueChanged?.Invoke(e);
             await this.bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+
+            return errorCode;
         }
     }
 }
