@@ -78,6 +78,7 @@ namespace Doctor.Connection
                 byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
                 Send(length);
+                Thread.Sleep(200);
                 Send(dataBytes);
 
                 byte[] packetLengthData = await ReceiveResponse(4, packet);

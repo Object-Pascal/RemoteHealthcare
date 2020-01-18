@@ -8,6 +8,8 @@ namespace ClientGUI.Connection
 {
     public class ServerConnectionVR
     {
+        public bool IsConnected => client.Connected;
+
         private TcpClient client;
 
         public ServerConnectionVR()

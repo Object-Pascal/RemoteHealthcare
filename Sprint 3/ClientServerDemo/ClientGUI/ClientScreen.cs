@@ -2,17 +2,13 @@
 using ClientGUI.Bluetooth;
 using ClientGUI.Connection;
 using ClientGUI.Conversion;
-using ClientGUI.Json_Structure.Serializables.Sub_Objects;
-using ClientGUI.Sim;
 using ClientGUI.Sub_Objects;
 using ClientGUI.Utils;
+using ClientGUI.Utils.DataHolders;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,17 +16,18 @@ namespace ClientGUI
 {
     public partial class ClientScreen : Form
     {
-        private string currentSessionId;
+        private ServerConnection serverConnection;
+        private ClientServerWorker clientServerWorker;
+
         private ServerConnectionVR serverConnectionVR;
         private JsonPacketBuilder jsonPacketBuilder;
+        private VRData runningVrData;
 
         private PageConversion pageConversion;
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
 
         private int phase = 0;
-
-        private List<string> bleBikeList;
 
         private int seconds = 0;
         private int minutes = 0;
@@ -42,9 +39,6 @@ namespace ClientGUI
         private int currResistance = 0;
         private int currWorkload = 0;
 
-        private ServerConnection serverConnection;
-        private ClientServerWorker clientServerWorker;
-
         public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
             InitializeComponent();
@@ -52,11 +46,13 @@ namespace ClientGUI
             this.serverConnectionVR = serverConnectionVR;
             this.jsonPacketBuilder = new JsonPacketBuilder();
             this.serverConnection = serverConnection;
-            this.currentSessionId = currentSessionId;
 
             this.pageConversion = new PageConversion();
             this.bleHeartHandler = bleHeartHandler;
             this.bleBikeHandler = bleBikeHandler;
+
+            this.runningVrData = new VRData();
+            this.runningVrData.currentSessionId = currentSessionId;
 
             InitializeDeclarations();
             InitializeDefaultEvents();
@@ -121,12 +117,14 @@ namespace ClientGUI
         {
             if (args.Status == "ready")
             {
+                AppendMessage("Systeem: Doctor verbonden");
+
                 this.Invoke(new MethodInvoker(delegate
                 {
                     ToggleControls(true);
                 }));
 
-                // TODO: VR Opzetten
+                StartVR();
 
                 bool heartInitComplete = await bleHeartHandler.InitBleHeart();
                 bool bikeInitComplete = await bleBikeHandler.InitBleBike();
@@ -281,23 +279,14 @@ namespace ClientGUI
             }
         }
 
-        private void drawSpeedOnChart(int time, int speed)
+        private void DrawSpeedOnChart(int time, int speed)
         {
             chart1.Series["BikeSpeed"].Points.AddXY(time, speed);
         }
 
-        private void drawHeartRateOnChart(int time, int heartRate)
+        private void DrawHeartRateOnChart(int time, int heartRate)
         {
             chart1.Series["HeartRate"].Points.AddXY(time, heartRate); 
-        }
-        private void Chart1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void SelectBike_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
@@ -318,115 +307,109 @@ namespace ClientGUI
             {
                 timePassed.Text = "0" + this.minutes + ":" + this.seconds;
             }
-
-            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
-            string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelAddJson).Item1;
-            Tuple<string, JObject> panelAddResponse = serverConnectionVR.TransferSendableResponse(sendPanelAddJson);
-
-            string panelAddId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
-
-            ClearPanel(panelAddId);
-            //addAllPanels(panelAddId, 20, Int32.Parse(bleBikeHandler.bikeData), Int32.Parse(bleHeartHandler.heartData), (5, 25), (95, 25), (185, 25)) ;
-
-            //drawSpeedOnChart(totalSeconds, Int32.Parse(bleBikeHandler.bikeData));
-            //drawHeartRateOnChart(totalSeconds, Int32.Parse(bleHeartHandler.heartData)); 
         }
 
         private Tuple<string, JObject> SendToTunnel(string packet)
         {
-            return serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(this.currentSessionId, packet).Item1);
+            return serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, packet).Item1);
         }
 
         private void Initialize_Time()
         {
-            if (timePassed.Text == "00:00") { phase++; }
+            if (timePassed.Text == "00:00")
+                phase++;
+
             time.Interval = 300;
             time.Tick += new EventHandler(Timer1_Tick);
-            startVR(); 
-            time.Start();
+            //StartVR(); 
+            //time.Start();
         }
 
-        private void startVR()
+        private void StartVR()
         {
-            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket("Boeie", new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
-            string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelAddJson).Item1;
+            if (serverConnectionVR.IsConnected)
+            {
+                AppendMessage("Systeem: De VR omgeving wordt opgezet");
+
+                OpenTunnel();
+                ResetVRScene();
+
+                LoadTerrainAndDeleteGroundPlane(256, 256);
+                AddObjectSurroundings();
+                AddPanel("BikePanel");
+                AddAndShowAndFollowRoute();
+
+                if (runningVrData.BikePanelId != null)
+                {
+                    string addPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, jsonPacketBuilder.BuildPanelPacket(runningVrData.BikePanelId, "distance", 0, 0, 10).Item1).Item1;
+                    Tuple<string, JObject> panelResponse = serverConnectionVR.TransferSendableResponse(addPanelPacket);
+
+                    ClearPanel(runningVrData.BikePanelId);
+                    AddAllPanels(runningVrData.BikePanelId, 0, 0, 0, (5, 25), (95, 25), (185, 25));
+
+                    Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
+                    string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
+                    Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(runningVrData.BikePanelId, cameraId, 0.5, 0.3, 1.2, -0.5, -40, 0, 0).Item1);
+                }
+            }
+            else
+                AppendMessage("Systeem: De applicatie is niet verbonden met de VR-server");
+        }
+
+        private void OpenTunnel()
+        {
+            Tuple<string, JObject> openTunnelResponse = serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildTunnelPacket(this.runningVrData.currentSessionId, "banaantje").Item1);
+            this.runningVrData.currentTunnelId = openTunnelResponse.Item2.SelectToken("data.id").ToString();
+        }
+
+        private string AddPanel(string name)
+        {
+            string panelAddJson = jsonPacketBuilder.BuildPanelAddPacket(name, new int[] { 1, 1 }, new int[] { 250, 250 }, new int[] { 1, 1, 1, 1 }).Item1;
+            string sendPanelAddJson = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, panelAddJson).Item1;
             Tuple<string, JObject> panelAddResponse = serverConnectionVR.TransferSendableResponse(sendPanelAddJson);
 
-            string panelAddId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
-
-            string panelJson = jsonPacketBuilder.BuildPanelPacket(panelAddId, "distance", 0, 0, 10).Item1;
-            string sendJson = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, panelJson).Item1;
-
-            Tuple<string, JObject> panelResponse = serverConnectionVR.TransferSendableResponse(sendJson);
-
-            addAllPanels(panelAddId, 50, 50, 50, (5, 25), (95, 25), (185, 25));
-
-            //Zorgt dat het Panel in beeld blijft staan:
-            Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
-            string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(panelAddId, cameraId, 0.5, 0.3, 1.2, -0.5, -40, 0, 0).Item1);
-
-            // ff wat simuleren
-            // Thread.Sleep(3000);
-
-            ClearPanel(panelAddId);
-            addAllPanels(panelAddId, 20, 30, 40, (5, 25), (95, 25), (185, 25));
+            runningVrData.BikePanelId = panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
+            return panelAddResponse.Item2.SelectToken("data.data.data.uuid").ToString();
         }
 
         private void ClearPanel(string panelId)
         {
-            string clearPanelJsonRaw = @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelId + @"""}}";
-            //Wat is desination? 
-            string clearPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(currentSessionId, clearPanelJsonRaw).Item1;
+            string clearPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelId + @"""}}").Item1;
             Tuple<string, JObject> panelClearResponse = serverConnectionVR.TransferSendableResponse(clearPanelPacket);
-            // De response boeit nog even niet zo zeer
         }
-
-        private void AddRoute_Click(object sender, EventArgs e)
+     
+        private void AddAndShowAndFollowRoute()
         {
-            //resetVRScene();
-            // addAndShowAndFollowRoute1("data/NetworkEngine/models/cars/white/car_white.obj");
-            loadTerrainAndDeleteGroundPlane(256, 256);
-            // addAndShowAndFollowRoute2("data/NetworkEngine/models/cars/white/car_white.obj");
-            //string path = @"C:\Users\joelle\Desktop\meeeeee3\RemoteHealthcare\Sprint 3\ClientServerDemo\ClientGUI\Bike\Mountain_Bike\OBJ\Mountain_Bike.obj";
-            //                C:\Users\joelle\Desktop\meeeeee3\RemoteHealthcare\Sprint 3\ClientServerDemo\ClientGUI\Bike\Mountain_Bike\OBJ\Mountain_Bike.obj
-
             string[] segments = new Uri(Directory.GetCurrentDirectory()).Segments;
             string folderPath = segments.SubArray(0, segments.Length - 2).ToFullString() + @"Bike\Mountain_Bike\OBJ";
-            string path = folderPath.Replace("%20", " ").Replace("/", @"\").Remove(0, 1) + @"\Mountain_Bike.obj";
-            addAndShowAndFollowRoute2(path);
+            string objectPath = folderPath.Replace("%20", " ").Replace("/", @"\").Remove(0, 1) + @"\Mountain_Bike.obj";
 
-
-            addObjectsInSurroundings();
-
-        }
-
-       
-
-        private void addAndShowAndFollowRoute1(string objectPath)
-        {
-            RouteNode[] routeArray = new RouteNode[] {  new RouteNode(new int[]{ 0, 0, 0 },new int[] { 5, 0, -5 }) ,
-                                                        new RouteNode(new int[]{ 50, 0, 0 },new int[] { 5, 0, 5 }) ,
-                                                        new RouteNode(new int[]{ 50, 0, 50 },new int[] { -5, 0, 5 }) ,
-                                                        new RouteNode(new int[]{ 0, 0, 50 },new int[] { -5, 0, -5 })};
+            RouteNode[] routeArray = new RouteNode[] {
+                new RouteNode(new int[]{ -120, 0, -120 },new int[] { -80, 0, -80}),
+                new RouteNode(new int[]{-50, 0, -80}, new int[] {0, 0, -50}),
+                new RouteNode(new int[]{ 0, 0, 0 }, new int[]{ 50, 0, 0 }),
+                new RouteNode(new int[]{ 80, 0, 50 }, new int[]{ 100, 0, 50 })
+            };
 
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
-            Console.WriteLine(addroute);
+            string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
             Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 1, true, false, "animationname").Item1);
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 1.0f, 0.0f, "XYZ", 0.0f).Item1);
-        }
-        //Deze methode voegt een route toe en laat hier een object over heen rijden
+            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.1, true, false, "animationname").Item1);
+            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 2.0f, 1f, "XYZ", 1.0f).Item1);
+            RoadAdd(routeId);
 
-        private void loadTerrainAndDeleteGroundPlane(int width, int lenght)
+            Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
+            string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
+            Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(cameraId, addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 7, 0, 0, 0, 0, 0, 0).Item1);
+        }
+
+        private void LoadTerrainAndDeleteGroundPlane(int width, int lenght)
         {
             int sizeHeightMap = width * lenght;
             float[] heightmap = new float[sizeHeightMap];
             int i = 0;
             int writePlace = 0;
             int timesTheHeightChanges = width / 20;
-
-            //TODO: fix deze logica naar iets mooiers
 
             for (int k = 0; k < 8; k++)
             {
@@ -438,90 +421,50 @@ namespace ClientGUI
                 i++;
             }
 
-
-
-
-
-
             Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
             Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", -128, 0, -128, 1, true).Item1);
         }
-        //Deze methode voegt een terrein toe met hoogte verschillen
-        private void addAndShowAndFollowRoute2(string objectPath)
-        {
 
-            RouteNode[] routeArray = new RouteNode[] {  new RouteNode(new int[]{ -120, 0, -120 },new int[] { -80, 0, -80}),
-                                                        new RouteNode(new int[]{-50, 0, -80}, new int[] {0, 0, -50}),
-                                                        new RouteNode(new int[]{ 0, 0, 0 }, new int[]{ 50, 0, 0 }),
-                                                        new RouteNode(new int[]{ 80, 0, 50 }, new int[]{ 100, 0, 50 }),
-                                                       };
-
-            /*Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
-            string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
-            Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
-            Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.1, true, false, "animationname").Item1);
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 2.0f, 1f, "XYZ", 1.0f).Item1);
-            roadAdd(routeId);*/
-
-            // De camera volgt de auto door de volgende code:
-            Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
-
-            string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-            //Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(cameraId, addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 7, 0, 0, 0, 0, 0, 0).Item1);
-        }
-        //Deze methode voegt een route toe en laat hier een object over heen rijden. Deze route loopt over de hoogtemap van loadTerrainAndDeleteGroundPlane
-        private void resetVRScene()
+        private void ResetVRScene()
         {
             Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneResetPacket().Item1);
         }
-        //Deze methode reset de VR Scene
-        private void roadAdd(string routeId)
+
+        private void RoadAdd(string routeId)
         {
             Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAddPacket(routeId).Item1);
         }
-        //Deze methode laat een weg over de route lopen
 
-        private void addObjectsInSurroundings()
+        private void AddObjectSurroundings()
         {
-
-            //for (int i = 10; i < 100; i = i +10)
-            //{
-            //    addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", -120 + i, 0, -100);
-            //    addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 1, -80);
-            //    addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 2, -60);
-            //    addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", -120 + i, 3, -40);
-            //    addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", -120 + i, 4, -20);
-            //}
-
             Random random = new Random();
 
-
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(-100, 0);
                 int z = random.Next(-120, -110);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 0, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 0, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(-100, 0);
                 int z = random.Next(-120, -110);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 0, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 0, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(0, 120);
                 int z = random.Next(-90, -70);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", x, 1, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree3.obj", x, 1, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(0, 120);
                 int z = random.Next(-90, -70);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 1, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 1, z);
             }
 
 
@@ -529,28 +472,28 @@ namespace ClientGUI
             {
                 int x = random.Next(0, 120);
                 int z = random.Next(-60, -50);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 2, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 2, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(0, 120);
                 int z = random.Next(-60, -50);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(-120, -50);
                 int z = random.Next(-30, -10);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", x, 2, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree2.obj", x, 2, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(-120, -80);
                 int z = random.Next(-60, -50);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree1.obj", x, 2, z);
             }
 
 
@@ -558,37 +501,37 @@ namespace ClientGUI
             {
                 int x = random.Next(-120, -80);
                 int z = random.Next(-60, -50);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
             }
 
             for (int i = 0; i < 10; i++)
             {
                 int x = random.Next(-120, -50);
                 int z = random.Next(-30, -10);
-                addObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
+                AddObject("data/NetworkEngine/models/trees/fantasy/tree4.obj", x, 3, z);
             }
         }
 
-        private void addObject(string objectPath, int x, int y, int z)
+        private void AddObject(string objectPath, int x, int y, int z)
         {
             Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
         }
 
-        private void addAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
+        private void AddAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
         {
-            addPanel(id, $"{speed}m/s", speed2.Item1, speed2.Item2, 32);
-            addPanel(id, $"{heartrate}bpm", heartrate2.Item1, heartrate2.Item2, 32);
-            addPanel(id, $"{meters}m", meters2.Item1, meters2.Item2, 32);
+            AddPanel(id, $"{speed}m/s", speed2.Item1, speed2.Item2, 32);
+            AddPanel(id, $"{heartrate}bpm", heartrate2.Item1, heartrate2.Item2, 32);
+            AddPanel(id, $"{meters}m", meters2.Item1, meters2.Item2, 32);
 
-            swapPanel(id);
+            SwapPanel(id);
         }
 
-        private void swapPanel(string id)
+        private void SwapPanel(string id)
         {
             Tuple<string, JObject> swapPanel = SendToTunnel(jsonPacketBuilder.BuildSwapPanelPacket(id).Item1);
         }
 
-        private void addPanel(string id, string text, int x, int y, double size)
+        private void AddPanel(string id, string text, int x, int y, double size)
         {
             Tuple<string, JObject> addPanel = SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
         }

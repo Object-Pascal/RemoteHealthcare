@@ -10,7 +10,6 @@ namespace ClientGUI.Bluetooth
     public class BleBikeHandler
     {
         public BLE bleBike { get; private set; }
-        public string bikeData { get; set; }
         public string deviceName { get; private set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;

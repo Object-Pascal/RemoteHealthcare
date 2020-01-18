@@ -49,7 +49,7 @@
             this.tbMessageHistory.Name = "tbMessageHistory";
             this.tbMessageHistory.ReadOnly = true;
             this.tbMessageHistory.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbMessageHistory.Size = new System.Drawing.Size(301, 88);
+            this.tbMessageHistory.Size = new System.Drawing.Size(336, 88);
             this.tbMessageHistory.TabIndex = 20;
             // 
             // txtSendMessage
@@ -58,7 +58,7 @@
             this.txtSendMessage.Location = new System.Drawing.Point(11, 411);
             this.txtSendMessage.Margin = new System.Windows.Forms.Padding(2);
             this.txtSendMessage.Name = "txtSendMessage";
-            this.txtSendMessage.Size = new System.Drawing.Size(301, 20);
+            this.txtSendMessage.Size = new System.Drawing.Size(336, 20);
             this.txtSendMessage.TabIndex = 19;
             this.txtSendMessage.Text = "Stuur bericht ...";
             this.txtSendMessage.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtSendMessage_KeyUp);
@@ -71,7 +71,7 @@
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(352, 106);
+            this.chart1.Location = new System.Drawing.Point(352, 12);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
@@ -83,10 +83,9 @@
             series2.Name = "HeartRate";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
-            this.chart1.Size = new System.Drawing.Size(300, 300);
+            this.chart1.Size = new System.Drawing.Size(340, 394);
             this.chart1.TabIndex = 21;
             this.chart1.Text = "chart1";
-            this.chart1.Click += new System.EventHandler(this.Chart1_Click);
             // 
             // time
             // 
@@ -94,7 +93,7 @@
             // 
             // timePassed
             // 
-            this.timePassed.Location = new System.Drawing.Point(361, 410);
+            this.timePassed.Location = new System.Drawing.Point(352, 411);
             this.timePassed.Name = "timePassed";
             this.timePassed.Size = new System.Drawing.Size(100, 20);
             this.timePassed.TabIndex = 24;
