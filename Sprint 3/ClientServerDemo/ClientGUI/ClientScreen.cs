@@ -342,14 +342,14 @@ namespace ClientGUI
                 if (runningVrData.BikePanelId != null)
                 {
                     string addPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, jsonPacketBuilder.BuildPanelPacket(runningVrData.BikePanelId, "distance", 0, 0, 10).Item1).Item1;
-                    Tuple<string, JObject> panelResponse = serverConnectionVR.TransferSendableResponse(addPanelPacket);
+                    serverConnectionVR.TransferSendableResponse(addPanelPacket);
 
                     ClearPanel(runningVrData.BikePanelId);
                     AddAllPanels(runningVrData.BikePanelId, 0, 0, 0, (5, 25), (95, 25), (185, 25));
 
                     Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
                     string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
-                    Tuple<string, JObject> updateCamera = SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(runningVrData.BikePanelId, cameraId, 0.5, 0.3, 1.2, -0.5, -40, 0, 0).Item1);
+                    SendToTunnel(jsonPacketBuilder.BuildUpdateNodePacket(runningVrData.BikePanelId, cameraId, 0.5, 0.3, 1.2, -0.5, -40, 0, 0).Item1);
                 }
             }
             else
@@ -375,7 +375,7 @@ namespace ClientGUI
         private void ClearPanel(string panelId)
         {
             string clearPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, @"{""id"":""scene/panel/clear"",""data"":{""id"":""" + panelId + @"""}}").Item1;
-            Tuple<string, JObject> panelClearResponse = serverConnectionVR.TransferSendableResponse(clearPanelPacket);
+            serverConnectionVR.TransferSendableResponse(clearPanelPacket);
         }
      
         private void AddAndShowAndFollowRoute()
@@ -393,9 +393,9 @@ namespace ClientGUI
 
             Tuple<string, JObject> addroute = SendToTunnel(jsonPacketBuilder.BuildRouteAddPacket(routeArray).Item1);
             string routeId = addroute.Item2.SelectToken("data.data.data.uuid").ToString();
-            Tuple<string, JObject> showRoute = SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildRouteShowPacket(true).Item1);
             Tuple<string, JObject> addBike = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("bike", objectPath, 0, 0, 0, 0.1, true, false, "animationname").Item1);
-            Tuple<string, JObject> followRoute = SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 2.0f, 1f, "XYZ", 1.0f).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildRouteFollowPacket(addroute.Item2.SelectToken("data.data.data.uuid").ToString(), addBike.Item2.SelectToken("data.data.data.uuid").ToString(), 2.0f, 1f, "XYZ", 1.0f).Item1);
             RoadAdd(routeId);
 
             Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
@@ -421,18 +421,18 @@ namespace ClientGUI
                 i++;
             }
 
-            Tuple<string, JObject> addTerrain = SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
-            Tuple<string, JObject> AddTerrainNode = SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", -128, 0, -128, 1, true).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildTerrainPacket(width, lenght, heightmap).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildTerrainNodePacket("terrain", -128, 0, -128, 1, true).Item1);
         }
 
         private void ResetVRScene()
         {
-            Tuple<string, JObject> resetTerrain = SendToTunnel(jsonPacketBuilder.BuildSceneResetPacket().Item1);
+            SendToTunnel(jsonPacketBuilder.BuildSceneResetPacket().Item1);
         }
 
         private void RoadAdd(string routeId)
         {
-            Tuple<string, JObject> roadAdd = SendToTunnel(jsonPacketBuilder.BuildRoadAddPacket(routeId).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildRoadAddPacket(routeId).Item1);
         }
 
         private void AddObjectSurroundings()
@@ -514,7 +514,7 @@ namespace ClientGUI
 
         private void AddObject(string objectPath, int x, int y, int z)
         {
-            Tuple<string, JObject> addObject = SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
+            SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
         }
 
         private void AddAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
@@ -528,12 +528,12 @@ namespace ClientGUI
 
         private void SwapPanel(string id)
         {
-            Tuple<string, JObject> swapPanel = SendToTunnel(jsonPacketBuilder.BuildSwapPanelPacket(id).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildSwapPanelPacket(id).Item1);
         }
 
         private void AddPanel(string id, string text, int x, int y, double size)
         {
-            Tuple<string, JObject> addPanel = SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
+            SendToTunnel(jsonPacketBuilder.BuildPanelPacket(id, text, x, y, size).Item1);
         }
     }
 }
