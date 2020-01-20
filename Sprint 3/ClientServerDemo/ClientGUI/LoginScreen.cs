@@ -107,7 +107,7 @@ namespace ClientGUI
                     if (this.IsLoggedIn)
                     {
                         this.bleBikeHandler.SetDeviceName(selectBike.SelectedItem.ToString());
-                        this.LoggedIn?.Invoke(new LogInArgs(tbName.Text, this.serverConnection, this.bleHeartHandler, this.bleBikeHandler));
+                        this.LoggedIn?.Invoke(new LogInArgs(tbName.Text.Trim(), tbPatientNumber.Text.Trim(), this.serverConnection, this.bleHeartHandler, this.bleBikeHandler));
                         this.Close();
                     }
                     else
@@ -199,13 +199,16 @@ namespace ClientGUI
     public class LogInArgs : EventArgs
     {
         public string Name;
+        public string Id;
+
         public ServerConnection ServerConnection;
         public BleHeartHandler BleHeartHandler;
         public BleBikeHandler BleBikeHandler;
 
-        public LogInArgs(string name, ServerConnection serverConnection, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
+        public LogInArgs(string name, string id, ServerConnection serverConnection, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
             this.Name = name;
+            this.Id = id;
             this.ServerConnection = serverConnection;
             this.BleHeartHandler = bleHeartHandler;
             this.BleBikeHandler = bleBikeHandler;

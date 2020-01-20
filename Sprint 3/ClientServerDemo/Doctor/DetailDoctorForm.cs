@@ -1,8 +1,9 @@
 ﻿using Doctor.Connection;
+using Doctor.Conversion;
 using Doctor.PacketHandling;
+using Doctor.Utils;
 using System;
 using System.Drawing;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,6 +12,7 @@ namespace Doctor
     public partial class DetailDoctorForm : Form
     {
         private ServerConnection serverConnection;
+        private PageConversion pageConversion;
 
         private ClientServerWorker clientServerWorker;
         private PacketHandler packetHandler;
@@ -76,6 +78,7 @@ namespace Doctor
                     if (packetHandler.IsStatusOk(responsePacket))
                     {
                         ToggleControls(true);
+                        AppendMessage($"Systeem: Verbonden met client: {patient.Name} - {patient.Id}");
 
                         return true;
                     }
@@ -92,6 +95,7 @@ namespace Doctor
         {
             this.clientServerWorker = new ClientServerWorker(this.serverConnection);
             this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
+            this.clientServerWorker.BikeReceived += ClientServerWorker_BikeReceived;
             this.clientServerWorker.ClientDisconnectReceived += ClientServerWorker_ClientDisconnectReceived;
             this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
             this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
@@ -101,6 +105,32 @@ namespace Doctor
         private void ClientServerWorker_StatusReceived(StatusArgs args)
         {
             // Obsolute until further notice
+        }
+
+        private void ClientServerWorker_BikeReceived(BikeArgs args)
+        {
+            pageConversion = new PageConversion();
+            pageConversion.Page10Received += (e) =>
+            {
+
+            };
+            pageConversion.Page19Received += (e) =>
+            {
+                int instandpowerLSB = e.Data[5];
+                int instandpowerMSB = e.Data[6];
+                int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
+
+                int currSpeed = (int)Math.Round(work1 * 6.1182972778676, 0);
+
+                //DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
+            };
+            pageConversion.Page50Received += (e) =>
+            {
+
+            };
+
+            byte[] data = args.Data.ParseRepString();
+            pageConversion.RegisterData(data.SubArray(4, args.Data.Length - 4));
         }
 
         private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)

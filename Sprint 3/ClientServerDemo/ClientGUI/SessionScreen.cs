@@ -13,8 +13,10 @@ namespace ClientGUI
 {
     public partial class SessionScreen : Form
     {
-        private JsonPacketBuilder jsonPacketBuilder;
+        private string Name;
+        private string Id;
 
+        private JsonPacketBuilder jsonPacketBuilder;
         private ServerConnection serverConnection;
 
         private bool vrConnected;
@@ -79,6 +81,9 @@ namespace ClientGUI
 
             loginScreen.LoggedIn += (e) =>
             {
+                this.Name = e.Name;
+                this.Id = e.Id;
+
                 this.serverConnection = e.ServerConnection;
                 this.bleHeartHandler = e.BleHeartHandler;
                 this.bleBikeHandler = e.BleBikeHandler;            
@@ -150,7 +155,7 @@ namespace ClientGUI
             {
                 string selectedSessionId = Regex.Split(lstbSessions.SelectedItem.ToString(), ":")[0];
 
-                ClientScreen clientScreen = new ClientScreen(this.serverConnectionVR, this.serverConnection, selectedSessionId, this.bleHeartHandler, this.bleBikeHandler);
+                ClientScreen clientScreen = new ClientScreen(this.Name, this.Id, this.serverConnectionVR, this.serverConnection, selectedSessionId, this.bleHeartHandler, this.bleBikeHandler);
                 clientScreen.FormClosing += (s, a) => this.Show();
 
                 this.Hide();

@@ -84,15 +84,10 @@ namespace Doctor.Connection
                 byte[] packetLengthData = await ReceiveResponse(4, packet);
                 int packetLength = BitConverter.ToInt32(packetLengthData, 0);
 
-                Console.WriteLine("Read length");
-
                 Thread.Sleep(200);
 
                 byte[] responseData = await ReceiveResponse(packetLength, packet);
                 string response = Encoding.UTF8.GetString(responseData);
-
-                Console.WriteLine("Read data");
-
                 return response;
             }
             catch (ArgumentNullException)
@@ -107,6 +102,7 @@ namespace Doctor.Connection
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
             Send(length);
+            Thread.Sleep(200);
             Send(dataBytes);
         }
 

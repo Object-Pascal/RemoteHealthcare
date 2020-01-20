@@ -73,16 +73,17 @@ namespace ClientGUI.Connection
 
         public async Task<string> SendWithResponse(string packet)
         {
-            Thread.Sleep(500);
-
             byte[] length = BitConverter.GetBytes(packet.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
-            Send(length);  
+            Send(length);
+            Thread.Sleep(200);
             Send(dataBytes);
 
             byte[] packetLengthData = await ReceiveResponse(4);
             int packetLength = BitConverter.ToInt32(packetLengthData, 0);
+
+            Thread.Sleep(200);
 
             byte[] responseData = await ReceiveResponse(packetLength);
             string response = Encoding.UTF8.GetString(responseData);
@@ -92,12 +93,11 @@ namespace ClientGUI.Connection
 
         public void SendWithNoResponse(string packet)
         {
-            Thread.Sleep(500);
-
             byte[] length = BitConverter.GetBytes(packet.Length);
             byte[] dataBytes = Encoding.UTF8.GetBytes(packet);
 
             Send(length);
+            Thread.Sleep(200);
             Send(dataBytes);
         }
 

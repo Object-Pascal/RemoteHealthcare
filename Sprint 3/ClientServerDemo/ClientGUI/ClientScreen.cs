@@ -16,6 +16,9 @@ namespace ClientGUI
 {
     public partial class ClientScreen : Form
     {
+        private string name;
+        private string id;
+
         private ServerConnection serverConnection;
         private ClientServerWorker clientServerWorker;
 
@@ -27,6 +30,11 @@ namespace ClientGUI
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
 
+        private int chrtSpeedIndexCounter = 1;
+        private DateTime previousTimeBike;
+        private int chrtBpmIndexCounter = 1;
+        private DateTime previousTimeBpm;
+
         private int phase = 0;
 
         private int seconds = 0;
@@ -37,11 +45,14 @@ namespace ClientGUI
         private int totalSeconds = 0;
 
         private int currResistance = 0;
-        private int currWorkload = 0;
+        private int currSpeed = 0;
 
-        public ClientScreen(ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
+        public ClientScreen(string name, string id, ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
             InitializeComponent();
+
+            this.name = name;
+            this.id = id;
 
             this.serverConnectionVR = serverConnectionVR;
             this.jsonPacketBuilder = new JsonPacketBuilder();
@@ -54,16 +65,9 @@ namespace ClientGUI
             this.runningVrData = new VRData();
             this.runningVrData.currentSessionId = currentSessionId;
 
-            InitializeDeclarations();
             InitializeDefaultEvents();
             ToggleControls(false);
             StartWorker();
-        }
-
-        private void InitializeDeclarations()
-        {
-            this.bleHeartHandler = new BleHeartHandler();
-            this.bleBikeHandler = new BleBikeHandler(); 
         }
 
         private void InitializeDefaultEvents()
@@ -119,77 +123,114 @@ namespace ClientGUI
             {
                 AppendMessage("Systeem: Doctor verbonden");
 
-                this.Invoke(new MethodInvoker(delegate
-                {
+                this.Invoke(new MethodInvoker(delegate {
                     ToggleControls(true);
                 }));
 
                 StartVR();
 
-                bool heartInitComplete = await bleHeartHandler.InitBleHeart();
-                bool bikeInitComplete = await bleBikeHandler.InitBleBike();
-
-                if (heartInitComplete && bikeInitComplete)
+                if (this.bleHeartHandler != null && this.bleBikeHandler != null)
                 {
-                    bleBikeHandler.ChangeResistance(5);
+                    bool heartInitComplete = await bleHeartHandler.InitBleHeart();
+                    bool bikeInitComplete = await bleBikeHandler.InitBleBike();
 
-                    this.bleHeartHandler.SubscriptionValueChanged += BleHeartHandler_SubscriptionValueChanged;
-                    this.bleBikeHandler.SubscriptionValueChanged += BleBikeHandler_SubscriptionValueChanged;
+                    if (heartInitComplete && bikeInitComplete)
+                    {
+                        bleBikeHandler.ChangeResistance(5);
 
-                    int heartErrorCode = await bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
-                    int bikeErrorCode = await bleBikeHandler.Connect("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+                        previousTimeBpm = DateTime.Now;
+                        this.bleHeartHandler.SubscriptionValueChanged += BleHeartHandler_SubscriptionValueChanged;
 
-                    if (heartErrorCode == 1)
+                        previousTimeBike = DateTime.Now;
+                        this.bleBikeHandler.SubscriptionValueChanged += BleBikeHandler_SubscriptionValueChanged;
+
+                        AppendMessage("Systeem: Verbinden met de hartslag monitor...");
+                        int heartErrorCode = await bleHeartHandler.Connect("Decathlon Dual HR", "Heartrate");
+
+                        AppendMessage($"Systeem: Verbinden met de fiets {this.bleBikeHandler.deviceName}...");
+                        int bikeErrorCode = await bleBikeHandler.Connect("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+
+                        if (heartErrorCode == 1)
+                            AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Error code 1");
+                        else
+                            AppendMessage("Systeem: Verbonden met de hartslag monitor");
+
+                        if (bikeErrorCode == 1)
+                            AppendMessage("Systeem: Verbinding met de fiets niet mogelijk: Error code 1");
+                        else
+                        {
+                            AppendMessage($"Systeem: Verbonden met de fiets {this.bleBikeHandler.deviceName}");
+                            this.Invoke(new MethodInvoker(delegate
+                            {
+                                this.Text = $"{this.Text} - {this.bleBikeHandler.deviceName}";
+                            }));
+                        }
+
+                        //Initialize_Time();
+                    }
+                    else if (!heartInitComplete)
                         AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Error code 1");
-
-                    if (bikeErrorCode == 1)
+                    else if (!bikeInitComplete)
                         AppendMessage("Systeem: Verbinding met de fiets niet mogelijk: Error code 1");
-
-                    bleBikeHandler.ChangeResistance(0);
-                    Initialize_Time();
                 }
-                else if (!heartInitComplete)
-                    AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Niet gevonden");
-                else if (!bikeInitComplete)
-                    AppendMessage("Systeem: Verbinding met de fiets niet mogelijk: Error code 1");   
+                else
+                    AppendMessage("Systeem: Verbinding met de fiets en de hartslag monitor niet mogelijk: Initialisation failure");
             }
         }
 
         private void BleHeartHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
         {
-            byte[] receivedDataSubset = args.Data;
-            if (args.Data.Length == 6)
+            TimeSpan result = DateTime.Now - previousTimeBike;
+            if (result.TotalSeconds >= 1)
             {
-                string heartData = $"{receivedDataSubset[1]}";
-            }
+                byte[] receivedDataSubset = args.Data;
+                if (args.Data.Length == 6)
+                {
+                    string heartData = $"{receivedDataSubset[1]}";
+                }
 
-            // Pakket verzenden: Client/Heart\r\HEART_BYTES
-            // Heart byte structuur: EX: []
-            //this.serverConnection.SendWithNoResponse($"Client/Heart\r\n{args.Data.ToRepString()}");
+                // Pakket verzenden: Client/Heart\r\HEART_BYTES
+                // Heart byte structuur: EX: []
+                //this.serverConnection.SendWithNoResponse($"Client/Heart\r\n{args.Data.ToRepString()}");
+
+                chrtBpmIndexCounter++;
+                previousTimeBpm = DateTime.Now;
+            }
         }
 
         private void BleBikeHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
         {
-            pageConversion = new PageConversion();
-            pageConversion.Page10Received += (e) =>
+            TimeSpan result = DateTime.Now - previousTimeBike;
+            if (result.TotalSeconds >= 1)
             {
+                pageConversion = new PageConversion();
+                pageConversion.Page10Received += (e) =>
+                {
 
-            };
-            pageConversion.Page19Received += (e) =>
-            {
-                int instandpowerLSB = e.Data[5];
-                int instandpowerMSB = e.Data[6];
-                int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
-                this.currWorkload = (int)Math.Round(work1 * 6.1182972778676, 0);
-            };
-            pageConversion.Page50Received += (e) =>
-            {
+                };
+                pageConversion.Page19Received += (e) =>
+                {
+                    int instandpowerLSB = e.Data[5];
+                    int instandpowerMSB = e.Data[6];
+                    int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
+                    this.currSpeed = (int)Math.Round(work1 * 6.1182972778676, 0);
 
-            };
+                    DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
+                };
+                pageConversion.Page50Received += (e) =>
+                {
 
-            // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
-            // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
-            this.serverConnection.SendWithNoResponse($"Client/Bike\r\n{args.Data.ToRepString()}");
+                };
+
+                pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
+
+                // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
+                // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
+                this.serverConnection.SendWithNoResponse($"Client/Bike\r\n{this.id}\r\n{args.Data.ToRepString()}");
+
+                chrtSpeedIndexCounter++;
+                previousTimeBike = DateTime.Now;
+            }
         }
 
         private void ClientServerWorker_DoctorDisconnectReceived(EventArgs args)
@@ -281,12 +322,26 @@ namespace ClientGUI
 
         private void DrawSpeedOnChart(int time, int speed)
         {
-            chart1.Series["BikeSpeed"].Points.AddXY(time, speed);
+            try
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chart1.Series["BikeSpeed"].Points.AddXY(time, speed);
+                });
+            }
+            catch (InvalidOperationException) { }
         }
 
         private void DrawHeartRateOnChart(int time, int heartRate)
         {
-            chart1.Series["HeartRate"].Points.AddXY(time, heartRate); 
+            try
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chart1.Series["HeartRate"].Points.AddXY(time, heartRate);
+                });
+            }
+            catch (InvalidOperationException) { }
         }
 
         private void Timer1_Tick(object sender, EventArgs e)

@@ -14,6 +14,9 @@ namespace Doctor.Connection
         public event StatusHandler StatusReceived;
         public delegate void StatusHandler(StatusArgs args);
 
+        public event BikeHandler BikeReceived;
+        public delegate void BikeHandler(BikeArgs args);
+
         public event BroadcastHandler BroadcastReceived;
         public delegate void BroadcastHandler(BroadcastArgs args);
 
@@ -47,6 +50,9 @@ namespace Doctor.Connection
                             case PacketType.Status:
                                 StatusReceived?.Invoke(new StatusArgs(packet.Item1[1]));
                                 break;
+                            case PacketType.Bike:
+                                BikeReceived?.Invoke(new BikeArgs(packet.Item1[1]));
+                                break;
                             case PacketType.ClientDisconnect:
                                 ClientDisconnectReceived?.Invoke(new EventArgs());
                                 break;
@@ -79,6 +85,16 @@ namespace Doctor.Connection
         public StatusArgs(string status)
         {
             this.Status = status;
+        }
+    }
+
+    public class BikeArgs : EventArgs
+    {
+        public string Data;
+
+        public BikeArgs(string data)
+        {
+            this.Data = data;
         }
     }
 
