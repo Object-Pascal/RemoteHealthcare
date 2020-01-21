@@ -65,7 +65,7 @@
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series3.Legend = "Legend1";
-            series3.Name = "Series1";
+            series3.Name = "BikeSpeed";
             this.chBikeSpeed.Series.Add(series3);
             this.chBikeSpeed.Size = new System.Drawing.Size(300, 244);
             this.chBikeSpeed.TabIndex = 3;
@@ -104,8 +104,9 @@
             this.chHeartRate.Name = "chHeartRate";
             series4.ChartArea = "ChartArea1";
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Color = System.Drawing.Color.Red;
             series4.Legend = "Legend1";
-            series4.Name = "Series1";
+            series4.Name = "BPM";
             this.chHeartRate.Series.Add(series4);
             this.chHeartRate.Size = new System.Drawing.Size(300, 244);
             this.chHeartRate.TabIndex = 6;
@@ -204,9 +205,12 @@
             // 
             this.trackBarResistance.Location = new System.Drawing.Point(314, 314);
             this.trackBarResistance.Margin = new System.Windows.Forms.Padding(2);
+            this.trackBarResistance.Maximum = 255;
+            this.trackBarResistance.Minimum = 1;
             this.trackBarResistance.Name = "trackBarResistance";
             this.trackBarResistance.Size = new System.Drawing.Size(299, 45);
             this.trackBarResistance.TabIndex = 100;
+            this.trackBarResistance.Value = 1;
             // 
             // buttonResistance
             // 

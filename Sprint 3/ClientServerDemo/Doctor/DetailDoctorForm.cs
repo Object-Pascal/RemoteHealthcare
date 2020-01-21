@@ -18,7 +18,9 @@ namespace Doctor
         private PacketHandler packetHandler;
 
         private Patient patient;
-        
+        private int chrtSpeedIndexCounter = 1;
+        private int chrtBpmIndexCounter = 1;
+
         public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();
@@ -96,6 +98,7 @@ namespace Doctor
             this.clientServerWorker = new ClientServerWorker(this.serverConnection);
             this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
             this.clientServerWorker.BikeReceived += ClientServerWorker_BikeReceived;
+            this.clientServerWorker.HeartReceived += ClientServerWorker_HeartReceived;
             this.clientServerWorker.ClientDisconnectReceived += ClientServerWorker_ClientDisconnectReceived;
             this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
             this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
@@ -121,16 +124,20 @@ namespace Doctor
                 int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
 
                 int currSpeed = (int)Math.Round(work1 * 6.1182972778676, 0);
-
-                //DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
-            };
-            pageConversion.Page50Received += (e) =>
-            {
-
+                DrawSpeedOnChart(chrtSpeedIndexCounter, currSpeed);
             };
 
             byte[] data = args.Data.ParseRepString();
-            pageConversion.RegisterData(data.SubArray(4, args.Data.Length - 4));
+            pageConversion.RegisterData(data.SubArray(4, data.Length - 4));
+
+            chrtSpeedIndexCounter++;
+        }
+
+        private void ClientServerWorker_HeartReceived(HeartArgs args)
+        {
+            byte[] data = args.Data.ParseRepString();
+            DrawHeartRateOnChart(chrtBpmIndexCounter, data[1]);
+            chrtBpmIndexCounter++;
         }
 
         private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)
@@ -167,6 +174,30 @@ namespace Doctor
             {
                 e.Cancel = true;
             }
+        }
+
+        private void DrawSpeedOnChart(int time, int speed)
+        {
+            try
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chBikeSpeed.Series["BikeSpeed"].Points.AddXY(time, speed);
+                });
+            }
+            catch (InvalidOperationException) { }
+        }
+
+        private void DrawHeartRateOnChart(int time, int heartRate)
+        {
+            try
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chHeartRate.Series["BPM"].Points.AddXY(time, heartRate);
+                });
+            }
+            catch (InvalidOperationException) { }
         }
 
         private void StartSesion_Click(object sender, EventArgs e)
@@ -241,34 +272,9 @@ namespace Doctor
 
         private void buttonResistance_Click(object sender, EventArgs e)
         {
-            DetailDoctorForm detailDoctorForm = new DetailDoctorForm(patient, serverConnection);
-            int resistanceValue = detailDoctorForm.trackBarResistance.Value;
-
-            // Moet via het sturen naar de server die het dan weer stuurt naar de client
-            // Je hebt als doctor geen directe connectie met de bike
-            //
-            //BleBikeHandler ble = new BleBikeHandler();
-            //ble.ChangeResistance(resistanceValue);
+            AppendMessage($"Systeem: Fiets weerstand veranderd naar {trackBarResistance.Value} watt");
+            this.serverConnection.SendWithNoResponse($"Doctor/Resistance\r\n{trackBarResistance.Value}");
 
         }
-
-        /*private void writechHearthRate(Patient patient)
-        {
-            int i = 0;
-            foreach (double hearbeat in patient.heartbeat)
-            {
-                chHeartRate.Series["VO2Now"].Points.AddXY(i, patient.heartrate);
-                i++;
-            }
-        }
-        private void writechBikeSpeed(Patient patient)
-        {
-            int i = 0;
-            foreach (double hearbeat in patient.heartbeat)
-            {
-                chBikeSpeed.Series["VO2Now"].Points.AddXY(i, Bikespeed);
-                i++;
-            }
-        }*/
     }
 }

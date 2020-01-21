@@ -101,7 +101,7 @@ namespace Server.Listener
                         try
                         {
                             clientInThread = clientConnected;
-                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4);
+                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4, 5000);
 
                             if (packetLengthBytes.Length == 4)
                             {
@@ -179,9 +179,7 @@ namespace Server.Listener
                                     case PacketType.ClientBike:
                                         Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // EG: Client/Bike\r\nBIKE_BYTES
                                         string[] bikeData = packetBundle.Item1;
-
                                         if (bikeData.Length == 2)
                                         {
                                             if (clientForClientId.ContainsKey(bikeData[0]))
@@ -191,6 +189,23 @@ namespace Server.Listener
                                                 {
                                                     TcpClient connectedDoctor = doctorForClient[clientForId];
                                                     SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData[1]}");
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    case PacketType.ClientHeart:
+                                        Console.WriteLine($"\t> Client Heart packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        string[] heartData = packetBundle.Item1;
+                                        if (heartData.Length == 2)
+                                        {
+                                            if (clientForClientId.ContainsKey(heartData[0]))
+                                            {
+                                                TcpClient clientForId = clientForClientId[heartData[0]];
+                                                if (doctorForClient.ContainsKey(clientForId))
+                                                {
+                                                    TcpClient connectedDoctor = doctorForClient[clientForId];
+                                                    SendWithNoResponse(connectedDoctor, $"Server/Heart\r\n{heartData[1]}");
                                                 }
                                             }
                                         }
@@ -264,14 +279,14 @@ namespace Server.Listener
                                     case PacketType.DoctorResistance:
                                         Console.WriteLine($"\t> Doctor Resistance packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //Doctor/Resistance\r\nresistance
+                                        //Doctor/Resistance\r\nRESISTANCE
                                         if (packetBundle.Item1.Length == 1)
                                         {
                                             if (doctorForClient.Values.Contains(clientInThread))
                                             {
                                                 string resistance = packetBundle.Item1[0];
 
-                                                TcpClient targetPatientClient = doctorForClient[doctorForClient.First(x => x.Value == clientInThread).Key];
+                                                TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
                                                 SendWithNoResponse(targetPatientClient, $"Server/Resistance\r\n{resistance}");
                                             }
                                         }

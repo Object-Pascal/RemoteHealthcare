@@ -1,10 +1,6 @@
 ﻿using Server.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Server.Listener
 {
@@ -28,6 +24,8 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientVr);
                     case "Client/Bike":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientBike);
+                    case "Client/Heart":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientHeart);
                     case "Client/Close":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientClose);
                     case "Client/Message":

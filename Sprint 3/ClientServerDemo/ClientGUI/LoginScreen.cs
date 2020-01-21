@@ -66,7 +66,7 @@ namespace ClientGUI
                 tbName.Enabled = false;
                 tbPatientNumber.Enabled = false;
 
-                bool connected = await this.serverConnection.Connect("80.115.121.54", 25545);
+                bool connected = await this.serverConnection.Connect("127.0.0.1", 25545);
                 if (connected)
                 {
                     login.Enabled = true;

@@ -17,6 +17,9 @@ namespace Doctor.Connection
         public event BikeHandler BikeReceived;
         public delegate void BikeHandler(BikeArgs args);
 
+        public event HeartHandler HeartReceived;
+        public delegate void HeartHandler(HeartArgs args);
+
         public event BroadcastHandler BroadcastReceived;
         public delegate void BroadcastHandler(BroadcastArgs args);
 
@@ -53,6 +56,9 @@ namespace Doctor.Connection
                             case PacketType.Bike:
                                 BikeReceived?.Invoke(new BikeArgs(packet.Item1[1]));
                                 break;
+                            case PacketType.Heart:
+                                HeartReceived?.Invoke(new HeartArgs(packet.Item1[1]));
+                                break;
                             case PacketType.ClientDisconnect:
                                 ClientDisconnectReceived?.Invoke(new EventArgs());
                                 break;
@@ -64,7 +70,7 @@ namespace Doctor.Connection
                                 break;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         IsRunning = false;
                     }
@@ -93,6 +99,16 @@ namespace Doctor.Connection
         public string Data;
 
         public BikeArgs(string data)
+        {
+            this.Data = data;
+        }
+    }
+
+    public class HeartArgs : EventArgs
+    {
+        public string Data;
+
+        public HeartArgs(string data)
         {
             this.Data = data;
         }

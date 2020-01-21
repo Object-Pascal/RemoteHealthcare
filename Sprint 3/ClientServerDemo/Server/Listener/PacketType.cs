@@ -10,6 +10,7 @@
         ClientLogout,
         ClientVr,
         ClientBike,
+        ClientHeart,
         ClientMessage,
         ClientClose,
 

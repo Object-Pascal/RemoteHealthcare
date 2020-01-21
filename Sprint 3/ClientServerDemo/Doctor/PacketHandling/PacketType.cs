@@ -9,6 +9,7 @@
         DataGet,
         UnknownPacket,
         EmptyPacket,
-        Bike
+        Bike,
+        Heart
     }
 }

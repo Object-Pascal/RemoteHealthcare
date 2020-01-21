@@ -34,7 +34,7 @@ namespace Doctor
             txtDoctorPassword.Enabled = true;
             login.Enabled = false;
 
-            this.serverConnected = await serverConnection.Connect("80.115.121.54", 25545);
+            this.serverConnected = await serverConnection.Connect("127.0.0.1", 25545);
 
             txtDoctorName.Enabled = true;
             txtDoctorPassword.Enabled = true;
