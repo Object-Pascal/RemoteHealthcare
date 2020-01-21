@@ -182,7 +182,7 @@ namespace Server.Listener
                                         // EG: Client/Bike\r\nBIKE_BYTES
                                         string[] bikeData = packetBundle.Item1;
 
-                                        if (bikeData.Length == 1)
+                                        if (bikeData.Length == 2)
                                         {
                                             if (clientForClientId.ContainsKey(bikeData[0]))
                                             {
@@ -190,7 +190,7 @@ namespace Server.Listener
                                                 if (doctorForClient.ContainsKey(clientForId))
                                                 {
                                                     TcpClient connectedDoctor = doctorForClient[clientForId];
-                                                    SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData}");
+                                                    SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData[1]}");
                                                 }
                                             }
                                         }
