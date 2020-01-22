@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -36,8 +35,6 @@
             this.tbMessageHistory = new System.Windows.Forms.TextBox();
             this.txtSendMessage = new System.Windows.Forms.TextBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.time = new System.Windows.Forms.Timer(this.components);
-            this.timePassed = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,31 +76,20 @@
             series1.Name = "BikeSpeed";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Color = System.Drawing.Color.Red;
             series2.Legend = "Legend1";
-            series2.Name = "HeartRate";
+            series2.Name = "BPM";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
-            this.chart1.Size = new System.Drawing.Size(340, 394);
+            this.chart1.Size = new System.Drawing.Size(340, 419);
             this.chart1.TabIndex = 21;
             this.chart1.Text = "chart1";
-            // 
-            // time
-            // 
-            this.time.Tick += new System.EventHandler(this.Timer1_Tick);
-            // 
-            // timePassed
-            // 
-            this.timePassed.Location = new System.Drawing.Point(352, 411);
-            this.timePassed.Name = "timePassed";
-            this.timePassed.Size = new System.Drawing.Size(100, 20);
-            this.timePassed.TabIndex = 24;
             // 
             // ClientScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 441);
-            this.Controls.Add(this.timePassed);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.tbMessageHistory);
             this.Controls.Add(this.txtSendMessage);
@@ -121,7 +107,5 @@
         private System.Windows.Forms.TextBox tbMessageHistory;
         private System.Windows.Forms.TextBox txtSendMessage;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.Timer time;
-        private System.Windows.Forms.TextBox timePassed;
     }
 }

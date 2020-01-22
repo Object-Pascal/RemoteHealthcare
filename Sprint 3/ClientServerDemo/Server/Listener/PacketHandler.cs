@@ -1,10 +1,6 @@
 ﻿using Server.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Server.Listener
 {
@@ -26,8 +22,8 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientLogout);
                     case "Client/VR":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientVr);
-                    case "Client/Bike":
-                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientBike);
+                    case "Client/SyncData":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientSyncData);
                     case "Client/Close":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientClose);
                     case "Client/Message":
@@ -54,7 +50,7 @@ namespace Server.Listener
                     case "Doctor/GetClientHistory":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorGetClientHistory);
                     case "Doctor/Broadcast":
-                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorLogin);
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorBroadcast);
                     case "Doctor/Close":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.DoctorClose);
                     case "Doctor/Message":

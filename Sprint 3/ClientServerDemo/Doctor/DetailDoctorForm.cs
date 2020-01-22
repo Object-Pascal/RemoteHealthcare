@@ -2,8 +2,12 @@
 using Doctor.Conversion;
 using Doctor.PacketHandling;
 using Doctor.Utils;
+using Doctor.Utils.DataHolders;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,8 +21,18 @@ namespace Doctor
         private ClientServerWorker clientServerWorker;
         private PacketHandler packetHandler;
 
+        private List<byte[]> historyBikeData;
+        private List<byte[]> historyHeartData;
+
         private Patient patient;
-        
+        private int chrtSpeedIndexCounter = 1;
+        private int chrtBpmIndexCounter = 1;
+
+        private int travelledDistance;
+        private byte travelledDistanceRawPrev;
+        private byte travelledDistanceStartingValue;
+        private bool started = true;
+
         public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();
@@ -27,6 +41,9 @@ namespace Doctor
             this.serverConnection = serverConnection;
             this.packetHandler = new PacketHandler();
 
+            this.historyBikeData = new List<byte[]>();
+            this.historyHeartData = new List<byte[]>();
+
             InitializeDefaultEvents();
             SetDefaultValues();
             SetupDoctorSync();
@@ -34,12 +51,33 @@ namespace Doctor
 
         private void InitializeDefaultEvents()
         {
-            this.FormClosing += (s, e) =>
+            this.FormClosing += async(s, e) =>
             {
                 if (this.serverConnection.Connected)
                 {
-                    clientServerWorker.Stop();
-                    this.serverConnection.SendWithNoResponse($"Doctor/Close\r\n");
+                    if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten." + 
+                        "\r\n" + "Weet je zeker dat je de sessie stoppen?", "Stop Sessie", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        clientServerWorker.Stop();
+                        Thread.Sleep(1000);
+
+                        HistoryItem newHistoryItem = new HistoryItem(this.historyBikeData, this.historyHeartData);
+                        string json = JsonConvert.SerializeObject(newHistoryItem);
+
+                        string rawResponse = await this.serverConnection.SendWithResponse($"Doctor/AddClientHistory\r\n{this.patient.Id}\r\n{DateTime.Now}\r\n{json}");
+                        if (packetHandler.IsStatusOk(packetHandler.HandlePacket(rawResponse)))
+                        {
+                            if (MessageBox.Show("De data is opgeslagen", "Data opslag", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                                this.serverConnection.SendWithNoResponse($"Doctor/Close\r\n");
+                        }
+                        else
+                        {
+                            if (MessageBox.Show("Probleem tijdens het verkrijgen van een response", "Data opslag", MessageBoxButtons.OK, MessageBoxIcon.Error) == DialogResult.OK)
+                                this.serverConnection.SendWithNoResponse($"Doctor/Close\r\n");
+                        }
+                    }
+                    else
+                        e.Cancel = true;
                 }
             };
         }
@@ -95,7 +133,7 @@ namespace Doctor
         {
             this.clientServerWorker = new ClientServerWorker(this.serverConnection);
             this.clientServerWorker.StatusReceived += ClientServerWorker_StatusReceived;
-            this.clientServerWorker.BikeReceived += ClientServerWorker_BikeReceived;
+            this.clientServerWorker.SyncDataReceived += ClientServerWorker_SyncDataReceived;
             this.clientServerWorker.ClientDisconnectReceived += ClientServerWorker_ClientDisconnectReceived;
             this.clientServerWorker.BroadcastReceived += ClientServerWorker_BroadcastReceived;
             this.clientServerWorker.MessageReceived += ClientServerWorker_MessageReceived;
@@ -107,30 +145,58 @@ namespace Doctor
             // Obsolute until further notice
         }
 
-        private void ClientServerWorker_BikeReceived(BikeArgs args)
+        private void ClientServerWorker_SyncDataReceived(SyncDataArgs args)
         {
             pageConversion = new PageConversion();
             pageConversion.Page10Received += (e) =>
             {
+                byte[] internalBikeData = args.BikeData.ParseRepString();
 
+                if (started)
+                {
+                    travelledDistanceStartingValue = internalBikeData[7];
+                    started = false;
+                }
+
+                int t = internalBikeData[7] - travelledDistanceRawPrev;
+                if (t < 0)
+                {
+                    t += 256;
+                }
+                travelledDistance += t;
+                travelledDistanceRawPrev = (byte)travelledDistance;
+
+                this.Invoke((MethodInvoker)delegate
+                {
+                    lblDistance.Text = $"Distance: {travelledDistance - travelledDistanceStartingValue}m";
+                });
             };
             pageConversion.Page19Received += (e) =>
             {
-                int instandpowerLSB = e.Data[5];
-                int instandpowerMSB = e.Data[6];
-                int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
+                int lsb = e.Data[4];
+                int msb = e.Data[5];
+                int work1 = lsb + (msb << 8);
 
-                int currSpeed = (int)Math.Round(work1 * 6.1182972778676, 0);
-
-                //DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
-            };
-            pageConversion.Page50Received += (e) =>
-            {
-
+                int currSpeed = (int)Math.Round((double)(work1 / 1000), 0);
+                DrawSpeedOnChart(chrtSpeedIndexCounter, currSpeed);
             };
 
-            byte[] data = args.Data.ParseRepString();
-            pageConversion.RegisterData(data.SubArray(4, args.Data.Length - 4));
+            byte[] bikeData = args.BikeData.ParseRepString();
+            byte[] heartData = args.HeartData.ParseRepString();
+
+            if (bikeData.Length > 0)
+                pageConversion.RegisterData(bikeData.SubArray(4, bikeData.Length - 4));
+
+            if (heartData.Length > 0)
+                DrawHeartRateOnChart(chrtBpmIndexCounter, heartData[1]);
+            else
+                DrawHeartRateOnChart(chrtBpmIndexCounter, 0);
+
+            this.historyBikeData.Add(bikeData);
+            this.historyHeartData.Add(heartData);
+
+            chrtBpmIndexCounter++;
+            chrtSpeedIndexCounter++;
         }
 
         private void ClientServerWorker_ClientDisconnectReceived(EventArgs args)
@@ -158,32 +224,35 @@ namespace Doctor
             });
         }
 
-        private void Form2_FormClosing(object sender, FormClosingEventArgs e)
+        private void DrawSpeedOnChart(int time, int speed)
         {
-            if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten."+ "\r\n" + "Weet je zeker dat je de sessie stoppen?",
-                               "Stop Sessie",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Information) == DialogResult.No)
+            try
             {
-                e.Cancel = true;
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chBikeSpeed.Series["BikeSpeed"].Points.AddXY(time, speed);
+                });
             }
+            catch (InvalidOperationException) { }
         }
 
-        private void StartSesion_Click(object sender, EventArgs e)
+        private void DrawHeartRateOnChart(int time, int heartRate)
         {
-
+            try
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    chHeartRate.Series["BPM"].Points.AddXY(time, heartRate);
+                });
+            }
+            catch (InvalidOperationException) { }
         }
 
         private void StopSession_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Als je de sessie afsluit wordt de huidige data opgeslagen en de sessie afgesloten." + "\r\n" + "Weet je zeker dat je de sessie stoppen?",
-                               "Stop Sessie",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Information) == DialogResult.Yes)
-            {
-                this.Close();
-            }
+            this.Close();
         }
+
         private void EmergencyBreak_Click(object sender, EventArgs e)
         {
             // Ook de VR pause aanroepen & misschien de tekst van de panel aanpassen
@@ -235,40 +304,20 @@ namespace Doctor
 
         private void BtnHistory_Click(object sender, EventArgs e)
         {
-            ClientHistoryForm clientHistoryForm = new ClientHistoryForm();
+            ClientHistoryForm clientHistoryForm = new ClientHistoryForm(this.patient.Id);
             clientHistoryForm.ShowDialog();
         }
 
         private void buttonResistance_Click(object sender, EventArgs e)
         {
-            DetailDoctorForm detailDoctorForm = new DetailDoctorForm(patient, serverConnection);
-            int resistanceValue = detailDoctorForm.trackBarResistance.Value;
-
-            // Moet via het sturen naar de server die het dan weer stuurt naar de client
-            // Je hebt als doctor geen directe connectie met de bike
-            //
-            //BleBikeHandler ble = new BleBikeHandler();
-            //ble.ChangeResistance(resistanceValue);
+            AppendMessage($"Systeem: Fiets weerstand veranderd naar {trackBarResistance.Value} watt");
+            this.serverConnection.SendWithNoResponse($"Doctor/Resistance\r\n{trackBarResistance.Value}");
 
         }
 
-        /*private void writechHearthRate(Patient patient)
+        private void TrackBarResistance_ValueChanged(object sender, EventArgs e)
         {
-            int i = 0;
-            foreach (double hearbeat in patient.heartbeat)
-            {
-                chHeartRate.Series["VO2Now"].Points.AddXY(i, patient.heartrate);
-                i++;
-            }
+            lblResistance.Text = $"Resistance: {trackBarResistance.Value}w";
         }
-        private void writechBikeSpeed(Patient patient)
-        {
-            int i = 0;
-            foreach (double hearbeat in patient.heartbeat)
-            {
-                chBikeSpeed.Series["VO2Now"].Points.AddXY(i, Bikespeed);
-                i++;
-            }
-        }*/
     }
 }

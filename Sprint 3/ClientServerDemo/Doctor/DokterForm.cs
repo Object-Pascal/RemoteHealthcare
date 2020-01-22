@@ -140,7 +140,7 @@ namespace Doctor
             //Send message to server for broadcasting
 
             string broadcastmessage = BroadcastTextBox.Text;
-            this.serverConnection.SendWithNoResponse($"Doctor/Broadcast\r\n{broadcastmessage}\r\n");
+            this.serverConnection.SendWithNoResponse($"Doctor/Broadcast\r\n{broadcastmessage}");
 
             //Clears textbox
             BroadcastTextBox.Clear();

@@ -49,27 +49,11 @@ namespace Server.IO
             }
         }
 
-        #region obsolete stuff
-        public static void SaveTestEncryptedData()
-        {
-            byte[] c = Crypto.CryptoHandler.EncryptContent(JsonHandler.GetFileRaw("doctorData_old.json"));
-            string data = System.Text.Encoding.UTF8.GetString(c);
-
-            JsonHandler.SaveFile("doctorData.json", c);
-        }
-
         public static string GetFileRaw(string filename)
         {
             string saveFolder = Directory.GetCurrentDirectory();
             string savePath = Path.Combine(saveFolder, filename);
             return File.ReadAllText(savePath);
-        }
-
-        public static async void SaveFile(string filename, string content)
-        {
-            string saveFolder = Directory.GetCurrentDirectory();
-            string savePath = Path.Combine(saveFolder, filename);
-            await Task.Run(() => File.WriteAllText(savePath, content));
         }
 
         public static void SaveFile(string filename, byte[] content)
@@ -78,20 +62,5 @@ namespace Server.IO
             string savePath = Path.Combine(saveFolder, filename);
             File.WriteAllBytes(savePath, content);
         }
-
-        public static async void DeleteFile(string filename)
-        {
-            string saveFolder = Directory.GetCurrentDirectory();
-            string savePath = Path.Combine(saveFolder, filename);
-            await Task.Run(() => File.Delete(savePath));
-        }
-
-        public static bool FileExists(string filename)
-        {
-            string saveFolder = Directory.GetCurrentDirectory();
-            string savePath = Path.Combine(saveFolder, filename);
-            return File.Exists(savePath);
-        }
-        #endregion
     }
 }

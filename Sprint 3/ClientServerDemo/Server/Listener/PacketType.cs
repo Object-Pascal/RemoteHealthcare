@@ -9,7 +9,8 @@
         ClientLogin,
         ClientLogout,
         ClientVr,
-        ClientBike,
+        ClientSyncData,
+        ClientHeart,
         ClientMessage,
         ClientClose,
 

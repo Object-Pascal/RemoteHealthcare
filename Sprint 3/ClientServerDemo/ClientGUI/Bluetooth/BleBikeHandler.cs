@@ -10,6 +10,7 @@ namespace ClientGUI.Bluetooth
     public class BleBikeHandler
     {
         public BLE bleBike { get; private set; }
+        public bool IsConnected { get; set; }
         public string deviceName { get; private set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;
@@ -24,6 +25,10 @@ namespace ClientGUI.Bluetooth
         public int percent;
         public int workload;
 
+        public BleBikeHandler()
+        {
+            this.IsConnected = false;
+        }
         public async Task<bool> InitBleBike()
         {
             return await Task.Run(() =>
@@ -67,6 +72,9 @@ namespace ClientGUI.Bluetooth
                 errorCode = await this.bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
                 bleBike.SubscriptionValueChanged += (s, e) => this.SubscriptionValueChanged?.Invoke(e);
                 errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+
+                if (errorCode == 0)
+                    this.IsConnected = true;
 
                 return errorCode;
             }

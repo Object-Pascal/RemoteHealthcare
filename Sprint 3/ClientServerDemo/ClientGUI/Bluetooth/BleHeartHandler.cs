@@ -10,9 +10,15 @@ namespace ClientGUI.Bluetooth
     public class BleHeartHandler
     {
         public BLE bleHeart { get; private set; }
+        public bool IsConnected { get; set; }
 
         public event SubscriptionHandler SubscriptionValueChanged;
         public delegate void SubscriptionHandler(BLESubscriptionValueChangedEventArgs args);
+
+        public BleHeartHandler()
+        {
+            this.IsConnected = false;
+        }
 
         public async Task<bool> InitBleHeart()
         {
@@ -40,6 +46,9 @@ namespace ClientGUI.Bluetooth
             // "HeartRateMeasurement"
             bleHeart.SubscriptionValueChanged += (s, e) => this.SubscriptionValueChanged?.Invoke(e);
             await this.bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+
+            if (errorCode == 0)
+                this.IsConnected = true;
 
             return errorCode;
         }

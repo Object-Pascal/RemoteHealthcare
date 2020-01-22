@@ -69,7 +69,7 @@ namespace ClientGUI.Connection
                                 break;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         IsRunning = false;
                     }

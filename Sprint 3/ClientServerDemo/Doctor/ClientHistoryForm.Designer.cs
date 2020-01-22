@@ -28,133 +28,66 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblGender = new System.Windows.Forms.Label();
-            this.lblPantiëntKey = new System.Windows.Forms.Label();
-            this.lblBirthDate = new System.Windows.Forms.Label();
-            this.lblName = new System.Windows.Forms.Label();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Speed = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TraveldDistance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.chrtData = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            ((System.ComponentModel.ISupportInitialize)(this.chrtData)).BeginInit();
             this.SuspendLayout();
-            // 
-            // lblGender
-            // 
-            this.lblGender.AutoSize = true;
-            this.lblGender.Location = new System.Drawing.Point(12, 43);
-            this.lblGender.Name = "lblGender";
-            this.lblGender.Size = new System.Drawing.Size(56, 17);
-            this.lblGender.TabIndex = 21;
-            this.lblGender.Text = "Gender";
-            this.lblGender.Click += new System.EventHandler(this.LblGender_Click);
-            // 
-            // lblPantiëntKey
-            // 
-            this.lblPantiëntKey.AutoSize = true;
-            this.lblPantiëntKey.Location = new System.Drawing.Point(12, 60);
-            this.lblPantiëntKey.Name = "lblPantiëntKey";
-            this.lblPantiëntKey.Size = new System.Drawing.Size(84, 17);
-            this.lblPantiëntKey.TabIndex = 20;
-            this.lblPantiëntKey.Text = "PantiëntKey";
-            this.lblPantiëntKey.Click += new System.EventHandler(this.LblPantiëntKey_Click);
-            // 
-            // lblBirthDate
-            // 
-            this.lblBirthDate.AutoSize = true;
-            this.lblBirthDate.Location = new System.Drawing.Point(12, 26);
-            this.lblBirthDate.Name = "lblBirthDate";
-            this.lblBirthDate.Size = new System.Drawing.Size(67, 17);
-            this.lblBirthDate.TabIndex = 19;
-            this.lblBirthDate.Text = "BirthDate";
-            this.lblBirthDate.Click += new System.EventHandler(this.LblBirthDate_Click);
-            // 
-            // lblName
-            // 
-            this.lblName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblName.AutoSize = true;
-            this.lblName.Location = new System.Drawing.Point(12, 9);
-            this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(45, 17);
-            this.lblName.TabIndex = 18;
-            this.lblName.Text = "Name";
-            this.lblName.Click += new System.EventHandler(this.LblName_Click);
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(15, 80);
+            this.dateTimePicker1.Location = new System.Drawing.Point(12, 11);
+            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(2);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(240, 22);
+            this.dateTimePicker1.Size = new System.Drawing.Size(372, 20);
             this.dateTimePicker1.TabIndex = 23;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.DateTimePicker1_ValueChanged);
             // 
-            // dataGridView2
+            // chrtData
             // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Time,
-            this.Speed,
-            this.TraveldDistance});
-            this.dataGridView2.Location = new System.Drawing.Point(15, 108);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowHeadersWidth = 51;
-            this.dataGridView2.RowTemplate.Height = 24;
-            this.dataGridView2.Size = new System.Drawing.Size(500, 400);
-            this.dataGridView2.TabIndex = 24;
-            this.dataGridView2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView2_CellContentClick);
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "Tijd";
-            this.Time.MinimumWidth = 6;
-            this.Time.Name = "Time";
-            this.Time.ReadOnly = true;
-            // 
-            // Speed
-            // 
-            this.Speed.HeaderText = "Snelheid";
-            this.Speed.MinimumWidth = 6;
-            this.Speed.Name = "Speed";
-            this.Speed.ReadOnly = true;
-            // 
-            // TraveldDistance
-            // 
-            this.TraveldDistance.HeaderText = "Afgelegde Weg";
-            this.TraveldDistance.MinimumWidth = 6;
-            this.TraveldDistance.Name = "TraveldDistance";
-            this.TraveldDistance.ReadOnly = true;
+            chartArea1.Name = "ChartArea1";
+            this.chrtData.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chrtData.Legends.Add(legend1);
+            this.chrtData.Location = new System.Drawing.Point(11, 36);
+            this.chrtData.Name = "chrtData";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series1.Legend = "Legend1";
+            series1.Name = "BikeSpeed";
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series2.Color = System.Drawing.Color.Red;
+            series2.Legend = "Legend1";
+            series2.Name = "BPM";
+            this.chrtData.Series.Add(series1);
+            this.chrtData.Series.Add(series2);
+            this.chrtData.Size = new System.Drawing.Size(372, 373);
+            this.chrtData.TabIndex = 24;
+            this.chrtData.Text = "chart1";
             // 
             // ClientHistoryForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(527, 518);
-            this.Controls.Add(this.dataGridView2);
+            this.ClientSize = new System.Drawing.Size(395, 421);
+            this.Controls.Add(this.chrtData);
             this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.lblGender);
-            this.Controls.Add(this.lblPantiëntKey);
-            this.Controls.Add(this.lblBirthDate);
-            this.Controls.Add(this.lblName);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
             this.Name = "ClientHistoryForm";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.Text = "History";
+            ((System.ComponentModel.ISupportInitialize)(this.chrtData)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblGender;
-        private System.Windows.Forms.Label lblPantiëntKey;
-        private System.Windows.Forms.Label lblBirthDate;
-        private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Speed;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TraveldDistance;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chrtData;
     }
 }

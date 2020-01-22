@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Server.Listener
 {
@@ -176,21 +177,23 @@ namespace Server.Listener
                                         // Obsolete until further notice
 
                                         break;
-                                    case PacketType.ClientBike:
-                                        Console.WriteLine($"\t> Client Bike packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+                                    case PacketType.ClientSyncData:
+                                        Console.WriteLine($"\t> Client SyncData packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // EG: Client/Bike\r\nBIKE_BYTES
-                                        string[] bikeData = packetBundle.Item1;
+                                        // Client/SyncData\r\nBIKE\r\nHEART
 
-                                        if (bikeData.Length == 2)
+                                        string[] syncData = packetBundle.Item1;
+                                        if (syncData.Length == 3)
                                         {
-                                            if (clientForClientId.ContainsKey(bikeData[0]))
+                                            if (clientForClientId.ContainsKey(syncData[0]))
                                             {
-                                                TcpClient clientForId = clientForClientId[bikeData[0]];
+                                                TcpClient clientForId = clientForClientId[syncData[0]];
                                                 if (doctorForClient.ContainsKey(clientForId))
                                                 {
                                                     TcpClient connectedDoctor = doctorForClient[clientForId];
-                                                    SendWithNoResponse(connectedDoctor, $"Server/Bike\r\n{bikeData[1]}");
+                                                    SendWithNoResponse(connectedDoctor, $"Server/SyncData\r\n{syncData[1]}\r\n{syncData[2]}");
+
+                                                    Console.WriteLine($"\t\t> Send client sync data to {connectedDoctor.Client.RemoteEndPoint.ToString()}");
                                                 }
                                             }
                                         }
@@ -264,14 +267,14 @@ namespace Server.Listener
                                     case PacketType.DoctorResistance:
                                         Console.WriteLine($"\t> Doctor Resistance packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        //Doctor/Resistance\r\nresistance
+                                        //Doctor/Resistance\r\nRESISTANCE
                                         if (packetBundle.Item1.Length == 1)
                                         {
                                             if (doctorForClient.Values.Contains(clientInThread))
                                             {
                                                 string resistance = packetBundle.Item1[0];
 
-                                                TcpClient targetPatientClient = doctorForClient[doctorForClient.First(x => x.Value == clientInThread).Key];
+                                                TcpClient targetPatientClient = doctorForClient.First(x => x.Value == clientInThread).Key;
                                                 SendWithNoResponse(targetPatientClient, $"Server/Resistance\r\n{resistance}");
                                             }
                                         }
@@ -329,10 +332,10 @@ namespace Server.Listener
                                     case PacketType.DoctorAddClientHistory:
                                         Console.WriteLine($"\t> Doctor AddClientHistory packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        // EG: Doctor/AddClientHistory\r\nCLIENT_ID\r\nDATETIME\r\nHEARTRATE_BYTES\r\nBIKE_BYTES
+                                        // EG: Doctor/AddClientHistory\r\nCLIENT_ID\r\nDATETIME\r\nHEARTRATE_BIKE_JSON_DATA
                                         string[] saveData = packetBundle.Item1;
 
-                                        if (saveData.Length == 4)
+                                        if (saveData.Length == 3)
                                         {
                                             int idParseResult = 0;
                                             if (int.TryParse(saveData[0], out idParseResult))
@@ -348,25 +351,13 @@ namespace Server.Listener
                                                     {
                                                         newClientDataEntry.Date = dateParseResult;
 
-                                                        string[] heartRateDataLines = Regex.Split(saveData[2], "//");
-                                                        if (heartRateDataLines.Length > 0)
-                                                        {
-                                                            for (int i = 0; i < heartRateDataLines.Length; i++)
-                                                            {
-                                                                newClientDataEntry.heartRateData.Add(heartRateDataLines[i]);
-                                                            }
-                                                        }
+                                                        HistoryItem historyItem = JsonConvert.DeserializeObject<HistoryItem>(saveData[2]);
+                                                        newClientDataEntry.bikeData = historyItem.BikeData;
+                                                        newClientDataEntry.heartRateData = historyItem.HeartData;
 
-                                                        string[] bikeDataLines = Regex.Split(saveData[3], "//");
-                                                        if (bikeDataLines.Length > 0)
-                                                        {
-                                                            for (int i = 0; i < bikeDataLines.Length; i++)
-                                                            {
-                                                                newClientDataEntry.bikeData.Add(bikeDataLines[i]);
-                                                            }
-                                                        }
 
                                                         bool saved = await iODataHandler.AddClientDataAsync(newClientDataEntry);
+                                                        Thread.Sleep(200);
                                                         if (saved)
                                                             SendWithNoResponse(clientInThread, "Server/Status\r\nok");
                                                         else
@@ -399,19 +390,12 @@ namespace Server.Listener
                                                 DateTime dateParseResult;
                                                 if (DateTime.TryParse(getData[1], out dateParseResult))
                                                 {
-                                                    // Filter based on year, month and day (TODO possible time check implemented later)
+                                                    // Filter based on year, month and day
                                                     ClientData clientData = await iODataHandler.GetClientDataAsync(idParseResult, dateParseResult);
 
-                                                    string heartRateBytesRaw = "";
-                                                    for (int i = 0; i < clientData.heartRateData.Count; i++)
-                                                        heartRateBytesRaw += clientData.heartRateData[i] + "//";
+                                                    string json = JsonConvert.SerializeObject(clientData);
+                                                    string packet = $"Server/GetClientHistory\r\n{clientData.Date.ToString()}\r\n{json}";
 
-                                                    string bikeBytesRaw = "";
-                                                    for (int i = 0; i < clientData.bikeData.Count; i++)
-                                                        bikeBytesRaw += clientData.bikeData[i] + "//";
-
-                                                    // EG: Server/GetClientHistory\r\nDATETIME\r\nHEARTRATE_BYTES\r\nBIKE_BYTES
-                                                    string packet = $"Server/GetClientHistory\r\n{clientData.Date.ToString()}\r\n{heartRateBytesRaw}\r\n{bikeBytesRaw}";
                                                     SendWithNoResponse(clientInThread, packet);
                                                 }
 
@@ -426,10 +410,21 @@ namespace Server.Listener
                                     case PacketType.DoctorBroadcast:
                                         Console.WriteLine($"\t> Doctor Broadcast packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
 
-                                        TcpClient[] clColl = clientForClientId.Values.ToArray();
-                                        for (int i = 0; i < clColl.Length; i++)
+                                        if (packetBundle.Item1.Length == 1)
                                         {
-                                            SendWithNoResponse(clColl[i], $"Server/Broadcast\r\n{packetBundle.Item1}");
+                                            TcpClient[] clColl = doctorForClient.Keys.ToArray();
+                                            for (int i = 0; i < clColl.Length; i++)
+                                            {
+                                                SendWithNoResponse(clColl[i], $"Server/Broadcast\r\n{packetBundle.Item1[0]}");
+                                                Thread.Sleep(100);
+                                            }
+
+                                            TcpClient[] dcColl = doctorForClient.Values.ToArray();
+                                            for (int i = 0; i < dcColl.Length; i++)
+                                            {
+                                                SendWithNoResponse(dcColl[i], $"Server/Broadcast\r\n{packetBundle.Item1[0]}");
+                                                Thread.Sleep(100);
+                                            }
                                         }
                                         break;
                                     case PacketType.DoctorClose:

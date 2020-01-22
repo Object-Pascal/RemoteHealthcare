@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Server.IO.Data
+namespace Doctor.Utils.DataHolders
 {
     public class ClientData
     {

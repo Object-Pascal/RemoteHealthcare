@@ -58,6 +58,7 @@
     <Compile Include="IO\Data\ClientDataCollection.cs" />
     <Compile Include="IO\Data\Doctor.cs" />
     <Compile Include="IO\Data\DoctorCollection.cs" />
+    <Compile Include="IO\Data\HistoryItem.cs" />
     <Compile Include="Listener\PacketHandler.cs" />
     <Compile Include="Listener\PacketType.cs" />
     <Compile Include="Listener\ServerListener.cs" />

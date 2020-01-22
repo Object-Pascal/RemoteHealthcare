@@ -17,10 +17,10 @@ namespace Server
 
             if (!File.Exists(cerFile) && !File.Exists(pfxFile))
             {
-                CreateCertificate("192.168.1.2");
+                CreateCertificate("127.0.0.1");
             }
 
-            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "192.168.1.2", 25545);
+            server = new ServerListener(Directory.GetCurrentDirectory() + "\\certificate.pfx", "127.0.0.1", 25545);
             server.Start();
 
             Console.ReadKey();

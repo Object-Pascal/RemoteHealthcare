@@ -30,10 +30,17 @@ namespace ClientGUI
         private BleBikeHandler bleBikeHandler;
         private BleHeartHandler bleHeartHandler;
 
+        private Timer syncTimer;
+
         private int chrtSpeedIndexCounter = 1;
         private DateTime previousTimeBike;
         private int chrtBpmIndexCounter = 1;
         private DateTime previousTimeBpm;
+
+        private int travelledDistance;
+        private byte travelledDistanceRawPrev;
+        private byte travelledDistanceStartingValue;
+        private bool started = true;
 
         private int phase = 0;
 
@@ -45,7 +52,11 @@ namespace ClientGUI
         private int totalSeconds = 0;
 
         private int currResistance = 0;
+        private int currDistance = 0;
         private int currSpeed = 0;
+        private byte[] currHeartData = new byte[0];
+        private byte[] currBikeData = new byte[0];
+        private int currBpm = 0;
 
         public ClientScreen(string name, string id, ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
         {
@@ -136,6 +147,13 @@ namespace ClientGUI
 
                     if (heartInitComplete && bikeInitComplete)
                     {
+                        this.Invoke(new MethodInvoker(delegate {
+                            syncTimer = new Timer();
+                            syncTimer.Interval = 1000;
+                            syncTimer.Tick += SyncTimer_Tick;
+                            syncTimer.Start();
+                        }));
+
                         bleBikeHandler.ChangeResistance(5);
 
                         previousTimeBpm = DateTime.Now;
@@ -165,8 +183,6 @@ namespace ClientGUI
                                 this.Text = $"{this.Text} - {this.bleBikeHandler.deviceName}";
                             }));
                         }
-
-                        //Initialize_Time();
                     }
                     else if (!heartInitComplete)
                         AppendMessage("Systeem: Verbinding met de hartslag monitor niet mogelijk: Error code 1");
@@ -178,59 +194,72 @@ namespace ClientGUI
             }
         }
 
+        private void SyncTimer_Tick(object sender, EventArgs e)
+        {
+            if (!bleHeartHandler.IsConnected && !bleBikeHandler.IsConnected)
+                return;
+
+            byte[] finalBikeData = new byte[0];
+            byte[] finalHeartData = new byte[0];
+
+            if (this.currHeartData.Length > 0)
+                finalHeartData = this.currHeartData;
+
+            if (this.currBikeData.Length > 0)
+                finalBikeData = this.currBikeData;
+
+            DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
+            AddAllPanels(this.runningVrData.BikePanelId, (int)Math.Round(this.currSpeed / 3.6, 0), this.currBpm, this.currDistance);
+            chrtSpeedIndexCounter++;
+
+            DrawHeartRateOnChart(chrtBpmIndexCounter, this.currBpm);
+            //AddAllPanels(this.runningVrData.BikePanelId, (int)Math.Round(this.currSpeed / 3.6, 0), this.currBpm, this.currDistance);
+            chrtBpmIndexCounter++;
+
+            // Pakket verzenden: Client/SyncData\r\nBIKE_BYTES\r\nHEART_BYTES
+            this.serverConnection.SendWithNoResponse($"Client/SyncData\r\n{this.id}\r\n{finalBikeData.ToRepString()}\r\n{finalHeartData.ToRepString()}");
+        }
+
         private void BleHeartHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
         {
-            TimeSpan result = DateTime.Now - previousTimeBike;
-            if (result.TotalSeconds >= 1)
+            if (args.Data.Length == 6)
             {
-                byte[] receivedDataSubset = args.Data;
-                if (args.Data.Length == 6)
-                {
-                    string heartData = $"{receivedDataSubset[1]}";
-                }
-
-                // Pakket verzenden: Client/Heart\r\HEART_BYTES
-                // Heart byte structuur: EX: []
-                //this.serverConnection.SendWithNoResponse($"Client/Heart\r\n{args.Data.ToRepString()}");
-
-                chrtBpmIndexCounter++;
-                previousTimeBpm = DateTime.Now;
+                this.currHeartData = args.Data;
+                this.currBpm = args.Data[1];
             }
         }
 
         private void BleBikeHandler_SubscriptionValueChanged(Avans.TI.BLE.BLESubscriptionValueChangedEventArgs args)
         {
-            TimeSpan result = DateTime.Now - previousTimeBike;
-            if (result.TotalSeconds >= 1)
+            pageConversion = new PageConversion();
+            pageConversion.Page10Received += (e) =>
             {
-                pageConversion = new PageConversion();
-                pageConversion.Page10Received += (e) =>
+                if (started)
                 {
+                    travelledDistanceStartingValue = args.Data[7];
+                    started = false;
+                }
 
-                };
-                pageConversion.Page19Received += (e) =>
+                int t = args.Data[7] - travelledDistanceRawPrev;
+                if (t < 0)
                 {
-                    int instandpowerLSB = e.Data[5];
-                    int instandpowerMSB = e.Data[6];
-                    int work1 = (((instandpowerMSB | 0b11110000) ^ 0b11110000) << 8) | instandpowerLSB;
-                    this.currSpeed = (int)Math.Round(work1 * 6.1182972778676, 0);
+                    t += 256;
+                }
+                travelledDistance += t;
+                travelledDistanceRawPrev = (byte)travelledDistance;
+                this.currDistance = travelledDistance - travelledDistanceStartingValue;
+            };
+            pageConversion.Page19Received += (e) =>
+            {
+                int lsb = e.Data[4];
+                int msb = e.Data[5];
+                int work1 = lsb + (msb << 8);
 
-                    DrawSpeedOnChart(chrtSpeedIndexCounter, this.currSpeed);
-                };
-                pageConversion.Page50Received += (e) =>
-                {
+                this.currSpeed = (int)Math.Round((double)(work1 / 1000), 0);
+            };
 
-                };
-
-                pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
-
-                // Pakket verzenden: Client/Bike\r\nBIKE_BYTES
-                // Bike byte structuur: EX: [164,9,78,5,25,174,0,106,26,0,96,32,97]
-                this.serverConnection.SendWithNoResponse($"Client/Bike\r\n{this.id}\r\n{args.Data.ToRepString()}");
-
-                chrtSpeedIndexCounter++;
-                previousTimeBike = DateTime.Now;
-            }
+            this.currBikeData = args.Data;
+            pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
         }
 
         private void ClientServerWorker_DoctorDisconnectReceived(EventArgs args)
@@ -259,6 +288,8 @@ namespace ClientGUI
                 {
                     this.currResistance = resistance;
                     bleBikeHandler.ChangeResistance(resistance);
+
+                    AppendMessage($"Systeem: Fiets weerstand veranderd naar {resistance} watt");
                 }
             }
         }
@@ -338,46 +369,15 @@ namespace ClientGUI
             {
                 this.Invoke((MethodInvoker)delegate
                 {
-                    chart1.Series["HeartRate"].Points.AddXY(time, heartRate);
+                    chart1.Series["BPM"].Points.AddXY(time, heartRate);
                 });
             }
             catch (InvalidOperationException) { }
         }
 
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
-            totalSeconds++;
-            phaseTime--;
-            this.phaseTimeMin = phaseTime / 60;
-            this.phaseTimeSec = phaseTime & 60;
-            this.seconds = totalSeconds % 60;
-            this.minutes = totalSeconds / 60;
-
-           
-            if (this.seconds < 10)
-            {
-                timePassed.Text = "0" + this.minutes + ":0" + this.seconds;
-            }
-            else
-            {
-                timePassed.Text = "0" + this.minutes + ":" + this.seconds;
-            }
-        }
-
         private Tuple<string, JObject> SendToTunnel(string packet)
         {
             return serverConnectionVR.TransferSendableResponse(jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, packet).Item1);
-        }
-
-        private void Initialize_Time()
-        {
-            if (timePassed.Text == "00:00")
-                phase++;
-
-            time.Interval = 300;
-            time.Tick += new EventHandler(Timer1_Tick);
-            //StartVR(); 
-            //time.Start();
         }
 
         private void StartVR()
@@ -399,8 +399,7 @@ namespace ClientGUI
                     string addPanelPacket = jsonPacketBuilder.BuildSendTunnelPacket(this.runningVrData.currentTunnelId, jsonPacketBuilder.BuildPanelPacket(runningVrData.BikePanelId, "distance", 0, 0, 10).Item1).Item1;
                     serverConnectionVR.TransferSendableResponse(addPanelPacket);
 
-                    ClearPanel(runningVrData.BikePanelId);
-                    AddAllPanels(runningVrData.BikePanelId, 0, 0, 0, (5, 25), (95, 25), (185, 25));
+                    AddAllPanels(runningVrData.BikePanelId, 0, 0, 0);
 
                     Tuple<string, JObject> cameraNode = SendToTunnel(jsonPacketBuilder.BuildFindNodePacket("Camera").Item1);
                     string cameraId = (cameraNode.Item2.SelectToken("data.data.data") as JArray)[0].SelectToken("uuid").ToString();
@@ -572,11 +571,12 @@ namespace ClientGUI
             SendToTunnel(jsonPacketBuilder.BuildModelLoadPacket("object", objectPath, x, y, z, 1, true, false, "animationname").Item1);
         }
 
-        private void AddAllPanels(string id, int speed, int heartrate, int meters, (int, int) speed2, (int, int) heartrate2, (int, int) meters2)
+        private void AddAllPanels(string id, int speed, int heartrate, int distance)
         {
-            AddPanel(id, $"{speed}m/s", speed2.Item1, speed2.Item2, 32);
-            AddPanel(id, $"{heartrate}bpm", heartrate2.Item1, heartrate2.Item2, 32);
-            AddPanel(id, $"{meters}m", meters2.Item1, meters2.Item2, 32);
+            ClearPanel(id);
+            AddPanel(id, $"{speed}m/s", 5, 25, 32);
+            AddPanel(id, $"{heartrate}bpm", 95, 25, 32);
+            AddPanel(id, $"{distance}m", 185, 25, 32);
 
             SwapPanel(id);
         }
