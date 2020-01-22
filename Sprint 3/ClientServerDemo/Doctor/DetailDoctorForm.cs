@@ -32,7 +32,6 @@ namespace Doctor
         private byte travelledDistanceRawPrev;
         private byte travelledDistanceStartingValue;
         private bool started = true;
-
         public DetailDoctorForm(Patient patient, ServerConnection serverConnection)
         {
             InitializeComponent();

@@ -17,6 +17,9 @@ namespace Doctor.Connection
         public event SyncDataHandler SyncDataReceived;
         public delegate void SyncDataHandler(SyncDataArgs args);
 
+        public event HeartHandler HeartReceived;
+        public delegate void HeartHandler(HeartArgs args);
+
         public event BroadcastHandler BroadcastReceived;
         public delegate void BroadcastHandler(BroadcastArgs args);
 
@@ -52,6 +55,9 @@ namespace Doctor.Connection
                                 break;
                             case PacketType.SyncData:
                                 SyncDataReceived?.Invoke(new SyncDataArgs(packet.Item1));
+                                break;
+                            case PacketType.Heart:
+                                HeartReceived?.Invoke(new HeartArgs(packet.Item1[1]));
                                 break;
                             case PacketType.ClientDisconnect:
                                 ClientDisconnectReceived?.Invoke(new EventArgs());
@@ -97,6 +103,16 @@ namespace Doctor.Connection
         {
             this.BikeData = data[1];
             this.HeartData = data[2];
+        }
+    }
+
+    public class HeartArgs : EventArgs
+    {
+        public string Data;
+
+        public HeartArgs(string data)
+        {
+            this.Data = data;
         }
     }
 

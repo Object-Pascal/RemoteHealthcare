@@ -102,7 +102,7 @@ namespace Server.Listener
                         try
                         {
                             clientInThread = clientConnected;
-                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4);
+                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4, 5000);
 
                             if (packetLengthBytes.Length == 4)
                             {
@@ -194,6 +194,23 @@ namespace Server.Listener
                                                     SendWithNoResponse(connectedDoctor, $"Server/SyncData\r\n{syncData[1]}\r\n{syncData[2]}");
 
                                                     Console.WriteLine($"\t\t> Send client sync data to {connectedDoctor.Client.RemoteEndPoint.ToString()}");
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    case PacketType.ClientHeart:
+                                        Console.WriteLine($"\t> Client Heart packet received from {clientInThread.Client.RemoteEndPoint.ToString()}");
+
+                                        string[] heartData = packetBundle.Item1;
+                                        if (heartData.Length == 2)
+                                        {
+                                            if (clientForClientId.ContainsKey(heartData[0]))
+                                            {
+                                                TcpClient clientForId = clientForClientId[heartData[0]];
+                                                if (doctorForClient.ContainsKey(clientForId))
+                                                {
+                                                    TcpClient connectedDoctor = doctorForClient[clientForId];
+                                                    SendWithNoResponse(connectedDoctor, $"Server/Heart\r\n{heartData[1]}");
                                                 }
                                             }
                                         }

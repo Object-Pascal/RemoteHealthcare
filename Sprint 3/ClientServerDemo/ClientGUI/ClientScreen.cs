@@ -56,6 +56,7 @@ namespace ClientGUI
         private int currSpeed = 0;
         private byte[] currHeartData = new byte[0];
         private byte[] currBikeData = new byte[0];
+
         private int currBpm = 0;
 
         public ClientScreen(string name, string id, ServerConnectionVR serverConnectionVR, ServerConnection serverConnection, string currentSessionId, BleHeartHandler bleHeartHandler, BleBikeHandler bleBikeHandler)
@@ -254,10 +255,13 @@ namespace ClientGUI
                 int lsb = e.Data[4];
                 int msb = e.Data[5];
                 int work1 = lsb + (msb << 8);
+                
+
+                pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
+                AddAllPanels(this.runningVrData.BikePanelId, (int)Math.Round(this.currSpeed / 3.6, 0), this.currBpm, this.currDistance);
 
                 this.currSpeed = (int)Math.Round((double)(work1 / 1000), 0);
             };
-
             this.currBikeData = args.Data;
             pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
         }

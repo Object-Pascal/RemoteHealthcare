@@ -22,8 +22,15 @@ namespace Server.Listener
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientLogout);
                     case "Client/VR":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientVr);
+<<<<<<< HEAD
                     case "Client/SyncData":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientSyncData);
+=======
+                    case "Client/Bike":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientBike);
+                    case "Client/Heart":
+                        return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientHeart);
+>>>>>>> d43102f4b8c4be3970a8692b3e89f5425c9e15e5
                     case "Client/Close":
                         return new Tuple<string[], PacketType>(lines.SubArray(1, lines.Length - 1), PacketType.ClientClose);
                     case "Client/Message":
