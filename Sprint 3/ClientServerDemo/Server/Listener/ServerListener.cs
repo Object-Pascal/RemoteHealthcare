@@ -102,7 +102,7 @@ namespace Server.Listener
                         try
                         {
                             clientInThread = clientConnected;
-                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4, 5000);
+                            byte[] packetLengthBytes = ReadFromStream(clientInThread, 4);
 
                             if (packetLengthBytes.Length == 4)
                             {
