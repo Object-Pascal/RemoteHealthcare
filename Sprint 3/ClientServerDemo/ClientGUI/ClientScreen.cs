@@ -255,10 +255,6 @@ namespace ClientGUI
                 int lsb = e.Data[4];
                 int msb = e.Data[5];
                 int work1 = lsb + (msb << 8);
-                
-
-                pageConversion.RegisterData(args.Data.SubArray(4, args.Data.Length - 4));
-                AddAllPanels(this.runningVrData.BikePanelId, (int)Math.Round(this.currSpeed / 3.6, 0), this.currBpm, this.currDistance);
 
                 this.currSpeed = (int)Math.Round((double)(work1 / 1000), 0);
             };
@@ -310,6 +306,7 @@ namespace ClientGUI
         {
             this.Invoke((MethodInvoker)delegate
             {
+                bleBikeHandler.ChangeResistance(254);
                 Tuple<string, JObject> stopResponse = SendToTunnel(jsonPacketBuilder.BuildStopPacket().Item1);
                 AppendMessage("Systeem: De doctor heeft de VR simulatie gestopt");
             });

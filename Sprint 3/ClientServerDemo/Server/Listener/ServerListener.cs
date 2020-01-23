@@ -1,17 +1,16 @@
-﻿using Server.IO;
+﻿using Newtonsoft.Json;
+using Server.IO;
 using Server.IO.Data;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Server.Listener
 {
